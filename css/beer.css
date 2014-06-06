@@ -3,6 +3,8 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 ul{
@@ -10,6 +12,44 @@ ul{
     margin: 0;
     list-style: none;
 }
+
 body{
     font-family: Helvetica, Arial, sans-serif;
+}
+
+/* -----------------------------------
+ * --typography
+ * ----------------------------------- */
+
+
+/* -----------------------------------
+ * --layout
+ * ----------------------------------- */
+
+html, body,
+#main-nav,
+#main{
+    height: 100%;
+}
+
+#main-nav{
+    background: #666;
+    float: left;
+    width: 200px;
+}
+
+#main{
+    margin-left: 200px;
+}
+
+.container{
+    padding: 20px;
+}
+
+/* -----------------------------------
+ * --modules
+ * ----------------------------------- */
+.list-container{
+    height: 200px;
+    border: 1px solid #ccc;
 }

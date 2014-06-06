@@ -8,12 +8,32 @@
 </head>
 <body>
 
-<button id="refresh">Refresh</button>
+    <nav id="main-nav" class="container">
+        <h1>Main</h1>
+        <button id="refresh">Refresh</button>
+    </nav>
 
-<ul id="checkins">
-    
-</ul>
+    <div id="main" class="container">
 
+        <section id="checkins">
+            <h2>Checkins</h2>
+            <ul class="list-container"></ul>
+        </section>
+
+        <section id="beers">
+            <ul class="list-container"></ul>
+        </section>
+
+        <section id="breweries">
+            <h2>Breweries</h2>
+            <ul class="list-container"></ul>
+        </section>
+
+        <section id="stats">
+            <h2>Stats</h2>
+            <div id="streak"></div>
+        </section>
+    </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="js/beer.js"></script>
