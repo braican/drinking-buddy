@@ -40,6 +40,7 @@ html, body,
 
 #main{
     margin-left: 200px;
+    position: relative;
 }
 
 .container{
@@ -54,6 +55,85 @@ html, body,
     border: 1px solid #ccc;
 }
 
-canvas{
-    width: 100% !important;
+/* data */
+#data{
+    visibility: hidden;
+}
+
+/* charts */
+
+/* -----------------------------------
+ * --messages
+ * ----------------------------------- */
+#messages,
+#messages > div{
+    display: none;
+}
+
+#messages{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 30%;
+}
+
+#messages .error{
+    color: #c00;
+}
+
+/* -----------------------------------
+ * --loading
+ * ----------------------------------- */
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-o-keyframes spin {
+    from { -o-transform: rotate(0deg); }
+    to { -o-transform: rotate(360deg); }
+}
+@-ms-keyframes spin {
+    from { -ms-transform: rotate(0deg); }
+    to { -ms-transform: rotate(360deg); }
+}
+@keyframes spin {
+    from { transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+#loading{
+    width: 100%;
+    position: absolute;
+    top: 30%;
+    text-align: center;
+}
+#loading svg{
+    
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 2000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+
+    -moz-animation-name: spin;
+    -moz-animation-duration: 2000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+
+    -o-animation-name: spin;
+    -o-animation-duration: 2000ms;
+    -o-animation-iteration-count: infinite;
+    -o-animation-timing-function: linear;
+    
+    -ms-animation-name: spin;
+    -ms-animation-duration: 2000ms;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+    
+    animation-name: spin;
+    animation-duration: 2000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
