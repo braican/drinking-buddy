@@ -84,6 +84,7 @@ html, body,
 /* -----------------------------------
  * --loading
  * ----------------------------------- */
+
 @-webkit-keyframes spin {
     from { -webkit-transform: rotate(0deg); }
     to { -webkit-transform: rotate(360deg); }
@@ -137,3 +138,23 @@ html, body,
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
+
+/* loading bar */
+#loading .loading-bar{
+    vertical-align: middle;
+}
+#loading .loading-bar .tick{
+    display: inline-block;
+    background: #ccc;
+    width: 10px;
+    height: 10px;
+    margin: 0 20px;
+    border-radius: 100%;
+}
+#loading .loading-bar .tick.fill{
+    background: green;
+}
+
+
+
+
