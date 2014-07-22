@@ -31,7 +31,17 @@
 
             <section id="beers">
                 <h2>Beers</h2>
-                <ul class="list-container"></ul>
+                <table class="list-container">
+                    <thead><tr>
+                        <th width="30%">Beer</th>
+                        <th width="30%">Brewery</th>
+                        <th width="20%">Count</th>
+                        <th width="20%">Rating</th>
+                    </tr></thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
             </section>
 
             <section id="breweries">
@@ -56,7 +66,6 @@
         <div id="loading">
             <div class="number-of-beers"></div>
 
-            <!--
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="80px" viewBox="0 0 300 800" enable-background="new 0 0 300 800" xml:space="preserve">
             <path d="M157.824,761.117c6.686,0,15.451,0.194,23.232-0.06c3.716-0.115,7.482-0.345,11.174-0.647
                 c3.84-0.209,7.197-0.506,10.138-0.923c5.31-0.575,9.843-1.561,13.989-3.076l0.555-0.217c1.33-0.533,7.717-2.747,12.883-8.413
@@ -79,7 +88,6 @@
                 c0,0,2.5,12.89,7.666,18.556s11.553,7.882,12.884,8.415l0.554,0.222c4.146,1.516,8.68,2.512,13.99,3.087
                 c2.94,0.417,6.297,0.733,10.138,0.943c3.691,0.302,7.458,0.491,11.173,0.606c7.782,0.254,16.547,0.06,23.233,0.06H157.824z"/>
             </svg>
-            -->
 
             <p>One sec, we're loading everything up...</p>
 
@@ -92,6 +100,8 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="js/lib/highcharts.js"></script>
+<script src="js/lib/jquery.tablesorter.js"></script>
+<script src="js/plugins.js"></script>
 <script src="js/beer.js"></script>
 </body>
 </html>

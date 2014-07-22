@@ -51,8 +51,19 @@ html, body,
  * --modules
  * ----------------------------------- */
 .list-container{
-    height: 200px;
-    border: 1px solid #ccc;
+    /*height: 200px;*/
+    /*display:block;*/
+    text-align:left;
+    /*margin-top:30px;*/
+}
+
+.list-container tbody tr:nth-child(even){
+    background: #efefef;
+}
+
+.list-container td,
+.list-container th{
+    padding: 6px;
 }
 
 /* data */
