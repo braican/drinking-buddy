@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Beer</title>
-
+    
+    <link href='http://fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/beer.css">
 </head>
 <body>
@@ -26,32 +27,39 @@
             </header>
             <section id="checkins">
                 <h2>Checkins</h2>
-                <ul class="list-container"></ul>
+                <table class="list-container">
+                    <thead><tr>
+                        <th width="80%">Beer</th>
+                        <th width="20%">Venue</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
             </section>
 
             <section id="beers">
                 <h2>Beers</h2>
                 <table class="list-container">
                     <thead><tr>
-                        <th width="30%">Beer</th>
-                        <th width="30%">Brewery</th>
-                        <th width="20%">Count</th>
-                        <th width="20%">Rating</th>
+                        <th width="36%">Beer</th>
+                        <th width="36%">Brewery</th>
+                        <th width="14%">Count</th>
+                        <th width="14%">Rating</th>
                     </tr></thead>
 
-                    <tbody>
-                        <tr>
-                            <td colspan="4">
-                                <div class="scrollable"></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </section>
 
             <section id="breweries">
                 <h2>Breweries</h2>
-                <ul class="list-container"></ul>
+                <table class="list-container">
+                    <thead><tr>
+                        <th width="70%">Brewery</th>
+                        <th width="30%">Checkins</th>
+                    </tr></thead>
+
+                    <tbody></tbody>
+                </table>
             </section>
 
             <section id="stats">

@@ -3,8 +3,6 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    padding: 0;
-    margin: 0;
 }
 
 ul{
@@ -14,7 +12,10 @@ ul{
 }
 
 body{
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 400;
+    padding: 0;
+    margin: 0;
 }
 
 /* -----------------------------------
@@ -46,24 +47,38 @@ html, body,
 .container{
     padding: 20px;
 }
+section{
+    margin: 40px 0;
+}
 
 /* -----------------------------------
  * --modules
  * ----------------------------------- */
-.list-container{
-    /*height: 200px;*/
-    /*display:block;*/
-    text-align:left;
-    /*margin-top:30px;*/
-}
 
+.list-container{
+    display:block;
+    text-align:left;
+    width: 100%;
+}
+.list-container tbody,
+.list-container thead{
+    display: block;
+}
+.list-container tbody{
+    height: 400px;
+}
 .list-container tbody tr:nth-child(even){
     background: #efefef;
 }
 
+.list-container tr{
+    display: block;
+}
 .list-container td,
 .list-container th{
     padding: 6px;
+    display: block;
+    float: left;
 }
 
 /* data */
