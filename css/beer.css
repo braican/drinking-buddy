@@ -398,11 +398,11 @@ section header{
     background: #ccc;
     width: 10px;
     height: 10px;
-    margin: 0 20px;
+    margin: 0 4px;
     border-radius: 100%;
 }
 #loading .loading-bar .tick.fill{
-    background: green;
+    background: #fc0;
 }
 
 
