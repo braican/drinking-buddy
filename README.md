@@ -1,4 +1,4 @@
-drinking-buddy
+Drinking Buddy
 ==============
 
 Hooray drinking stats.
