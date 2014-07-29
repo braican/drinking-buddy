@@ -63,6 +63,9 @@ section{
  * ----------------------------------- */
 
 /* the userdata */
+.user-image{
+    border: 4px solid #050958;
+}
 .userstats .data{
     font-weight: 700;
     float: right;
@@ -88,14 +91,25 @@ section{
     display: block;
 }
 .list-container tbody{
-    height: 400px;
+    max-height: 400px;
 }
-.list-container tbody tr:nth-child(even){
-    background: #efefef;
+
+.list-container thead tr{
+    border-bottom: 1px solid #ccc;
+}
+.list-container tbody tr{
+    border-bottom: 1px solid #eee;
 }
 
 .list-container tr{
     display: block;
+}
+.list-container tr.hiderow{
+    display: none;
+}
+.list-container tr.active{
+    font-weight: 700;
+    background: #eee;
 }
 .list-container td,
 .list-container th{
@@ -104,7 +118,12 @@ section{
     float: left;
 }
 
+/* beers */
 
+/* breweries */
+#breweries tbody tr{
+    cursor: pointer;
+}
 
 /* data */
 #data{
