@@ -23,11 +23,15 @@ body{
  * ----------------------------------- */
 
 h2{
-    font-size: 24px;
+    display: inline-block;
+    padding-right: 40px;
+    font-size: 28px;
     margin: 0;
+    vertical-align: middle;    
 }
 h3{
     font-size: 18px;
+    margin: 0;
 }
 
 a{
@@ -38,15 +42,9 @@ button{
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    display: block;
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0 0;
-    background: #fc0;
-    color: #fff;
+    display: inline-block;
     border: 0;
-    text-align: center;
-    font-size: 16px;
+    margin: 10px 0 0;
     text-transform: uppercase;
     cursor: pointer;
     -webkit-border-radius: 0;
@@ -55,15 +53,42 @@ button{
     -o-border-radius: 0;
     border-radius: 0;
 }
+.button{
+    padding: 8px;
+    background: #fc0;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    vertical-align: middle;
+}
+.cta{
+    display: none;
+    cursor: pointer;
+}
+.cta.active{
+    display: inline-block;
+}
 
 /* --forms */
 input[type="text"]{
-    padding: 4px 8px;
-    font-size: 16px;
+    padding: 0;
     margin: 0;
     display: block;
     width: 100%;
     font-family: 'Noto Sans', sans-serif;
+    background: transparent;
+}
+.new-user-name{
+    border: 0;
+    font-weight: 700;
+    font-size: 80px;
+}
+.new-user-name:focus{
+    outline: none;
+}
+#new-user-search button{
+    color: #fc0;
+    background: transparent;
 }
 
 /* -----------------------------------
@@ -75,7 +100,7 @@ html, body, .page{
 
 .main-container{
     padding-top: 44px;
-    margin-bottom: 160px;
+    margin-bottom: 153px;
     background: #fff;
     position: relative;
     z-index: 5;
@@ -87,25 +112,36 @@ html, body, .page{
     background: #fff;
     margin-left: 0;
 
-    -webkit-transition: margin-left .5s;
-    -moz-transition: margin-left .5s;
-    -ms-transition: margin-left .5s;
-    -o-transition: margin-left .5s;
-    transition: margin-left .5s;
+    -webkit-transition: margin-left .5s, padding-top .5s;
+    -moz-transition: margin-left .5s, padding-top .5s;
+    -ms-transition: margin-left .5s, padding-top .5s;
+    -o-transition: margin-left .5s, padding-top .5s;
+    transition: margin-left .5s, padding-top .5s;
 }
 .main-content.sidebar-reveal{
     margin-left: 260px;
 }
-.main-content.sidebar-reveal + .sidebar-content{
-    display: block;
+.main-content.pushdown{
+    padding-top: 210px;
 }
 
 .container{
     padding: 20px;
 }
 section{
-    margin-bottom: 40px;
+    padding: 40px 20px;
+    border-bottom: 1px solid #fc0;
 }
+section header{
+    padding-bottom: 20px;
+}
+.noborder{
+    border: 0;
+}
+
+/* -----------------------------------
+ * --components
+ * ----------------------------------- */
 
 /* --banner */
 .page-banner{
@@ -121,6 +157,36 @@ section{
     margin: 0;
     padding: 10px 0;
 }
+.header-link{
+    color: #fff;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+
+/* --new user search */
+#new-user-search{
+    padding-top: 40px;
+    border-bottom: 1px solid #eee;
+    position: fixed;
+    width: 100%;
+    top: -273px;
+    z-index: 9;
+    background: #fff;
+    background: rgba(255,255,255,.9);
+
+    -webkit-transition: top .5s;
+    -moz-transition: top .5s;
+    -ms-transition: top .5s;
+    -o-transition: top .5s;
+    transition: top .5s;
+}
+#new-user-search.active{
+    top: 0px;
+}
+#new-user-search button{
+    font-size: 28px;
+}
 
 /* --sidebar */
 .sidebar-content{
@@ -128,31 +194,23 @@ section{
     width: 260px;
     top: 44px;
     z-index: 4;
-    display: none;
-}
 
-.load-user{
-    margin-top: 80px;
+    -webkit-transition: top .5s;
+    -moz-transition: top .5s;
+    -ms-transition: top .5s;
+    -o-transition: top .5s;
+    transition: top .5s;
 }
-
-/* --footer */
-.page-footer{
-    position: fixed;
+.sidebar-content.pushdown{
+    top: 254px;
+}
+.sidebar-content .button{
     width: 100%;
-    bottom: 0;
-    z-index: 1;
-    background: #404041;
-    color: #fff;
-    font-size: 14px;
 }
 
-/* -----------------------------------
- * --modules
- * ----------------------------------- */
-
-/* the userdata */
+/* --userdata */
 .user-image{
-    border: 4px solid #050958;
+    border: 4px solid #0074ab;
 }
 .userstats .data{
     font-weight: 700;
@@ -168,14 +226,35 @@ section{
     border-top:0;
 }
 
-/* the tables */
+/* --footer */
+.page-footer{
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 1;
+    background: #404041;
+    color: #fff;
+    font-size: 14px;
+}
+
+/* -----------------------------------
+ * --data
+ * ----------------------------------- */
+
+#data{
+    display: none;
+    border-left: 1px solid #eee;
+}
+
+/* --tables */
 .list-container{
     display:block;
     text-align:left;
     width: 100%;
 }
 .list-container tbody,
-.list-container thead{
+.list-container thead,
+.list-container tr{
     display: block;
 }
 .list-container tbody{
@@ -188,10 +267,6 @@ section{
 .list-container tbody tr{
     border-bottom: 1px solid #eee;
 }
-
-.list-container tr{
-    display: block;
-}
 .list-container tr.hiderow{
     display: none;
 }
@@ -199,11 +274,35 @@ section{
     font-weight: 700;
     background: #eee;
 }
+.list-container tr.active td:first-child{
+    padding-left: 6px;
+}
 .list-container td,
 .list-container th{
-    padding: 6px;
+    padding: 6px 10px 6px 0;
     display: block;
     float: left;
+}
+
+.list-container th{
+    cursor: pointer;
+    
+}
+.list-container th span{
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    width: 14px;
+    height: 8px;
+    margin-left:6px;
+    background-repeat: no-repeat;
+}
+
+.list-container th.headerSortDown span{
+    background-image: url(../svg/arrow-up.svg);
+}
+.list-container th.headerSortUp span{
+    background-image: url(../svg/arrow-down.svg);
 }
 
 /* beers */
@@ -211,11 +310,6 @@ section{
 /* breweries */
 #breweries tbody tr{
     cursor: pointer;
-}
-
-/* data */
-#data{
-    display: none;
 }
 
 /* charts */
@@ -231,18 +325,11 @@ section{
 #messages{
     width: 100%;
     text-align: center;
-    margin-top: 100px;
+    margin-top: 230px;
 }
 
 #messages .error{
     color: #c00;
-}
-
-/* -----------------------------------
- * --pick
- * ----------------------------------- */
-#pick-a-user{
-    display: none;
 }
 
 /* -----------------------------------
