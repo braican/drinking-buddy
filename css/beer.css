@@ -22,26 +22,82 @@ body{
  * --typography
  * ----------------------------------- */
 
-h1{
-    font-size: 36px;
-}
 h2{
     font-size: 24px;
+    margin: 0;
 }
 h3{
     font-size: 18px;
 }
 
+a{
+    color: #fc0;
+}
+
+button{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0 0;
+    background: #fc0;
+    color: #fff;
+    border: 0;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+}
+
+/* --forms */
+input[type="text"]{
+    padding: 4px 8px;
+    font-size: 16px;
+    margin: 0;
+    display: block;
+    width: 100%;
+    font-family: 'Noto Sans', sans-serif;
+}
+
 /* -----------------------------------
  * --layout
  * ----------------------------------- */
-html, body{
+html, body, .page{
     height: 100%;
 }
 
-#main{
-    margin-left: 260px;
+.main-container{
+    padding-top: 44px;
+    margin-bottom: 160px;
+    background: #fff;
     position: relative;
+    z-index: 5;
+}
+.main-content{
+    margin-left: 0;
+    position: relative;
+    z-index: 7;
+    background: #fff;
+    margin-left: 0;
+
+    -webkit-transition: margin-left .5s;
+    -moz-transition: margin-left .5s;
+    -ms-transition: margin-left .5s;
+    -o-transition: margin-left .5s;
+    transition: margin-left .5s;
+}
+.main-content.sidebar-reveal{
+    margin-left: 260px;
+}
+.main-content.sidebar-reveal + .sidebar-content{
+    display: block;
 }
 
 .container{
@@ -51,12 +107,44 @@ section{
     margin-bottom: 40px;
 }
 
-/* sidebar */
-#main-nav{
+/* --banner */
+.page-banner{
     position: fixed;
-    width: 260px;
+    width: 100%;
+    background: #fc0;
+    z-index: 10;
+    color: #fff;
+}
+.site-title{
+    font-size: 18px;
+    text-align: center;
+    margin: 0;
+    padding: 10px 0;
 }
 
+/* --sidebar */
+.sidebar-content{
+    position: fixed;
+    width: 260px;
+    top: 44px;
+    z-index: 4;
+    display: none;
+}
+
+.load-user{
+    margin-top: 80px;
+}
+
+/* --footer */
+.page-footer{
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 1;
+    background: #404041;
+    color: #fff;
+    font-size: 14px;
+}
 
 /* -----------------------------------
  * --modules
@@ -127,7 +215,7 @@ section{
 
 /* data */
 #data{
-    visibility: hidden;
+    display: none;
 }
 
 /* charts */
@@ -141,14 +229,20 @@ section{
 }
 
 #messages{
-    position: absolute;
     width: 100%;
     text-align: center;
-    top: 30%;
+    margin-top: 100px;
 }
 
 #messages .error{
     color: #c00;
+}
+
+/* -----------------------------------
+ * --pick
+ * ----------------------------------- */
+#pick-a-user{
+    display: none;
 }
 
 /* -----------------------------------
@@ -176,13 +270,12 @@ section{
     to {transform:rotate(360deg);}
 }
 #loading{
+    display: none;
     width: 100%;
-    position: absolute;
-    top: 100px;
+    margin-top: 100px;
     text-align: center;
 }
 #loading svg{
-    
     -webkit-animation-name: spin;
     -webkit-animation-duration: 2000ms;
     -webkit-animation-iteration-count: infinite;
