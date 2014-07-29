@@ -10,7 +10,15 @@
 <body>
 
     <nav id="main-nav" class="container">
-        <h1>Main</h1>
+        <div class="data-header">
+            <h3 class="username"></h3>
+            
+            <div class="userstats">
+                <div class="stat-cell" id="total_checkins">Total Checkins <span class="data"></span></div>
+                <div class="stat-cell" id="total_beers">Unique Beers <span class="data"></span></div>
+                <div class="stat-cell" id="total_badges">Badges Acquired <span class="data"></span></div>
+            </div>
+        </div>
         <button id="refresh">Refresh</button>
 
         <div id="load-new">
@@ -22,9 +30,6 @@
     <div id="main">
         
         <div id="data" class="container">
-            <header class="data-header">
-                <h1></h1>
-            </header>
             <section id="checkins">
                 <h2>Checkins</h2>
                 <table class="list-container">

@@ -22,25 +22,25 @@ body{
  * --typography
  * ----------------------------------- */
 
+h1{
+    font-size: 36px;
+}
+h2{
+    font-size: 24px;
+}
+h3{
+    font-size: 18px;
+}
 
 /* -----------------------------------
  * --layout
  * ----------------------------------- */
-
-html, body,
-#main-nav,
-#main{
+html, body{
     height: 100%;
 }
 
-#main-nav{
-    background: #666;
-    float: left;
-    width: 200px;
-}
-
 #main{
-    margin-left: 200px;
+    margin-left: 260px;
     position: relative;
 }
 
@@ -48,13 +48,36 @@ html, body,
     padding: 20px;
 }
 section{
-    margin: 40px 0;
+    margin-bottom: 40px;
 }
+
+/* sidebar */
+#main-nav{
+    position: fixed;
+    width: 260px;
+}
+
 
 /* -----------------------------------
  * --modules
  * ----------------------------------- */
 
+/* the userdata */
+.userstats .data{
+    font-weight: 700;
+    float: right;
+    font-size: 18px;
+}
+.stat-cell{
+    border-top: 1px solid #eee;
+    padding: 10px 0;
+    font-size: 14px;
+}
+.stat-cell:first-child{
+    border-top:0;
+}
+
+/* the tables */
 .list-container{
     display:block;
     text-align:left;
@@ -80,6 +103,8 @@ section{
     display: block;
     float: left;
 }
+
+
 
 /* data */
 #data{
@@ -134,7 +159,7 @@ section{
 #loading{
     width: 100%;
     position: absolute;
-    top: 30%;
+    top: 100px;
     text-align: center;
 }
 #loading svg{
