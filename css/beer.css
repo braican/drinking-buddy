@@ -298,11 +298,11 @@ section header{
     background-repeat: no-repeat;
 }
 
-.list-container th.headerSortDown span{
-    background-image: url(../svg/arrow-up.svg);
-}
-.list-container th.headerSortUp span{
+.list-container th.tablesorter-headerDesc span{
     background-image: url(../svg/arrow-down.svg);
+}
+.list-container th.tablesorter-headerAsc span{
+    background-image: url(../svg/arrow-up.svg);
 }
 
 /* beers */
