@@ -40,9 +40,10 @@
                     </header>
                     <table class="list-container">
                         <thead><tr>
-                            <th width="50%">Beer <span></span></th>
-                            <th width="30%">Venue <span></span></th>
-                            <th width="20%" data-sorter="usLongDate">Date <span></span></th>
+                            <th width="5%" class="util">&nbsp;</th>
+                            <th width="49%">Beer <span></span></th>
+                            <th width="28%">Venue <span></span></th>
+                            <th width="18%" data-sorter="usLongDate">Date <span></span></th>
                         </tr></thead>
                         <tbody></tbody>
                     </table>
@@ -87,15 +88,16 @@
                         <h2>Stats</h2>
                     </header>
                     <div id="streak"></div>
+                    <div id="beers-per-week"></div>
                 </section><!-- #stats -->
 
                 <section id="charts" class="noborder">
                     <header>
                         <h2>Graphs</h2>
                     </header>
-                    <div id="day-of-week"></div>
+                    <div id="chart_day-of-week" class="untappd-chart"></div>
 
-                    <div id="beers-per-week"></div>
+                    <div id="chart_beers-per-week" class="untappd-chart"></div>
                 </section><!-- #charts -->
 
             </div><!-- #data -->

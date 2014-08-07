@@ -260,12 +260,20 @@ section header{
 .list-container tbody{
     max-height: 400px;
 }
-
 .list-container thead tr{
     border-bottom: 1px solid #ccc;
 }
 .list-container tbody tr{
     border-bottom: 1px solid #eee;
+    overflow: visible;
+    clear: both;
+}
+.list-container tbody tr:after{
+    visibility: hidden;
+    display: block;
+    content: "";
+    clear: both;
+    height: 0;
 }
 .list-container tr.hiderow{
     display: none;
@@ -273,6 +281,9 @@ section header{
 .list-container tr.active{
     font-weight: 700;
     background: #eee;
+}
+.list-container tr.hoverstyle:hover{
+    background:#eee;
 }
 .list-container tr.active td:first-child{
     padding-left: 6px;
@@ -283,10 +294,8 @@ section header{
     display: block;
     float: left;
 }
-
 .list-container th{
     cursor: pointer;
-    
 }
 .list-container th span{
     display: inline-block;
@@ -305,6 +314,28 @@ section header{
     background-image: url(../svg/arrow-up.svg);
 }
 
+/* checkins */
+.util{
+    overflow: visible;
+}
+.util svg{
+    vertical-align: middle;
+}
+.comment-container{
+    position: relative;
+    overflow: visible;
+}
+.comment-container:hover:after{
+    content:attr(data-comment);
+    position: absolute;
+    z-index: 100;
+    min-width: 250px;
+    top: 26px;
+    background: #fff;
+    padding: 6px;
+    box-shadow: 0 0 2px rgba(0,0,0,.5);
+}
+
 /* beers */
 
 /* breweries */
@@ -313,6 +344,10 @@ section header{
 }
 
 /* charts */
+.untappd-chart{
+    width: 100%;
+    min-height: 10px;
+}
 
 /* -----------------------------------
  * --messages
