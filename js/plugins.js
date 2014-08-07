@@ -31,7 +31,7 @@
         w: function() { return this.getDay(); },
         z: function() { var d = new Date(this.getFullYear(),0,1); return Math.ceil((this - d) / 86400000); }, // Fixed now
         // Week
-        W: function() { var d = new Date(this.getFullYear(), 0, 1); return Math.ceil((((this - d) / 86400000) + d.getDay() + 1) / 7); }, // Fixed now
+        W: function() { var d = new Date(this.getFullYear(), 0, 1); var dd = Math.ceil((((this - d) / 86400000) + d.getDay() - 1) / 7); return dd > 52 ? 1 : dd; }, // Fixed now
         // Month
         F: function() { return Date.longMonths[this.getMonth()]; },
         m: function() { return (this.getMonth() < 9 ? '0' : '') + (this.getMonth() + 1); },
