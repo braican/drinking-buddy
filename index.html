@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
     <title>Beer</title>
     
     <link href='http://fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -30,9 +31,23 @@
     </div>
     
     <main class="main-container">
+
+        <nav class="sidebar-content container">
+            <div class="data-header">
+                <h3 class="username"></h3>
+                
+                <div class="userstats">
+                    <div class="stat-cell" id="total_checkins">Total Checkins <span class="data"></span></div>
+                    <div class="stat-cell" id="total_beers">Unique Beers <span class="data"></span></div>
+                    <div class="stat-cell" id="total_at_venues">Checkins at Venues <span class="data"></span></div>
+                    <div class="stat-cell" id="total_breweries">Unique Breweries <span class="data"></span></div>
+                    <div class="stat-cell" id="total_badges">Badges Acquired <span class="data"></span></div>
+                </div>
+            </div>
+            <button class="button" id="refresh">Refresh</button>
+        </nav><!-- .sidebar-content -->
     
-        <div id="main" class="main-content">
-            
+        <div id="main" class="main-content"> 
             <div id="data">
                 <section id="checkins">
                     <header>
@@ -146,23 +161,6 @@
             </div><!-- #loading -->
 
         </div><!-- #main -->
-
-        <nav class="sidebar-content container">
-            <div class="data-header">
-                <h3 class="username"></h3>
-                
-                <div class="userstats">
-                    <div class="stat-cell" id="total_checkins">Total Checkins <span class="data"></span></div>
-                    <div class="stat-cell" id="total_beers">Unique Beers <span class="data"></span></div>
-                    <div class="stat-cell" id="total_at_venues">Checkins at Venues <span class="data"></span></div>
-                    <div class="stat-cell" id="total_breweries">Unique Breweries <span class="data"></span></div>
-                    <div class="stat-cell" id="total_badges">Badges Acquired <span class="data"></span></div>
-                </div>
-            </div>
-            <button class="button" id="refresh">Refresh</button>
-        </nav><!-- .sidebar-content -->
-
-
     </main><!-- main -->
 
     <footer class="page-footer">
