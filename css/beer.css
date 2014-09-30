@@ -448,4 +448,24 @@ section header{
 
 
 
+/* ==============================================================
+   --media queries
+   ============================================================== */
+
+@media screen and (max-width: 900px){
+    .sidebar-content{
+        position: static;
+        width: 100%;
+    }
+    .main-content.sidebar-reveal{
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 580px){
+    body{
+        font-size: 12px;
+    }
+}
+
 
