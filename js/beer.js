@@ -194,6 +194,40 @@
 
         return dObj;
     }
+
+    /**
+     * getAverageBreweryHads
+     *
+     * return the average number of hads for all of this user's breweries
+     */
+    function getAverageBreweryHads(){
+        var numBreweries = 0,
+            hads = 0;
+
+        $.each(_BREWERIES, function(index, b) {
+            numBreweries++;
+            hads += b.hads;
+        });
+
+        return hads / numBreweries;
+    }
+
+    /**
+     * getAverageBreweryRating
+     *
+     * return the average rating for this user's breweries
+     */
+    function getAverageBreweryRating(){
+        var numBreweries = 0,
+            totalAverage = 0;
+
+        $.each(_BREWERIES, function(index, b) {
+            numBreweries++;
+            totalAverage += b._aggregateRating / Object.size(b.uniqueBeers);
+        });
+
+        return totalAverage / numBreweries;
+    }
     
     // --------------------------
     // aux functions
@@ -558,6 +592,9 @@
                 setTimeout(function(){
                     // draw charts
                     drawTheCharts(checkins);
+
+                    // add the maps
+                    addVenueMap();
                 }, 1000);
                 
             }, FADESPEED);
@@ -566,44 +603,6 @@
         
     }
 
-    function getAverageBreweryHads(){
-        var numBreweries = 0,
-            hads = 0;
-
-        $.each(_BREWERIES, function(index, b) {
-            numBreweries++;
-            hads += b.hads;
-        });
-
-        return hads / numBreweries;
-    }
-
-    function getAverageBreweryRating(){
-        var numBreweries = 0,
-            totalAverage = 0;
-
-        $.each(_BREWERIES, function(index, b) {
-            numBreweries++;
-            totalAverage += b._aggregateRating / Object.size(b.uniqueBeers);
-        });
-
-        return totalAverage / numBreweries;
-    }
-
-    /**
-     * addCoolStats
-     * @param (array) checkins : because you never know what we may be able to do 
-     *                           with the list of checkins
-     *
-     * this function's name should be pretty self explanitory
-     */
-    function addCoolStats(checkins){
-
-        var averagePerWeek = Math.round((checkins.length/_STATS.weeksOnUntappd) * 100) / 100;
-
-        $('#streak').html('longest streak - ' + _STATS.streak.number + ' ' + _STATS.streak.beer + ' in a row');
-        $('#beers-per-week').html('Beers per week - ' + averagePerWeek)
-    }
 
     // -------------------------------
     // data creation functions
@@ -878,10 +877,11 @@
         var powerRating = 0;
         $.each(uniques, function(index, val) {
             // powerRating += (Math.log(val.hads + 1) * Math.pow( (val.rating / 2.5), 2) * Object.size(uniques + 1) );
-            powerRating += ( Math.log(val.hads + 1) * Math.pow( (val.rating / totalAvgRating), 2) + 1);
+            powerRating += ( (Math.log(val.hads + 1) * 12) * Math.pow( (val.rating / totalAvgRating), 5) );
+            // powerRating += val.hads * Math.pow( (val.rating / totalAvgRating), 6);
         });
 
-        return Math.round(((powerRating / 41) * 100) * 10) / 10;
+        return Math.round(((powerRating / 248) * 100) * 10) / 10;
         // return Math.round(powerRating * 100) / 100;
     }
 
@@ -1005,6 +1005,74 @@
             }]
 
         });
+    }
+
+    /**
+     * addCoolStats
+     * @param (array) checkins : because you never know what we may be able to do 
+     *                           with the list of checkins
+     *
+     * this function's name should be pretty self explanitory
+     */
+    function addCoolStats(checkins){
+
+        var averagePerWeek = Math.round((checkins.length/_STATS.weeksOnUntappd) * 100) / 100;
+
+        $('#streak').html('longest streak - ' + _STATS.streak.number + ' ' + _STATS.streak.beer + ' in a row');
+        $('#beers-per-week').html('Beers per week - ' + averagePerWeek)
+    }
+
+    /**
+     * addVenueMap
+     * 
+     * create the map of all the venues
+     */
+    function addVenueMap(){
+        var bounds = new google.maps.LatLngBounds(),
+            markers = [],
+            infowindows = [];
+
+        var map = new google.maps.Map(document.getElementById('map-canvas'), {
+            center: new google.maps.LatLng(42.365885, -71.258658),
+            zoom: 10,
+            maxZoom: 17,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        $.each(_VENUES, function(index, venue) {
+            
+            var venueName = venue.name,
+                lat = venue.location.lat,
+                lng = venue.location.lng,
+                googleLatLng = new google.maps.LatLng(lat, lng);
+
+            bounds.extend(googleLatLng);
+
+            var marker = new google.maps.Marker({
+                position: googleLatLng,
+                map: map
+            });
+
+            markers.push(marker);
+
+            var infowindow = new google.maps.InfoWindow({
+                content: venueName
+            });
+
+            infowindows.push(infowindow);
+
+            google.maps.event.addListener(marker, 'click', function(){
+                
+                $.each(infowindows, function(index, ifw) {
+                    ifw.close();
+                });
+
+                infowindow.open(map, marker);
+            });
+        });
+
+        google.maps.event.trigger(map, 'resize');
+        
     }
 
 

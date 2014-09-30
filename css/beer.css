@@ -1,5 +1,4 @@
 *{
-    overflow: auto;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -135,7 +134,7 @@ section{
 section header{
     padding-bottom: 20px;
 }
-.noborder{
+#data section:last-child{
     border: 0;
 }
 
@@ -196,10 +195,10 @@ section header{
     z-index: 4;
 
     -webkit-transition: top .5s;
-    -moz-transition: top .5s;
-    -ms-transition: top .5s;
-    -o-transition: top .5s;
-    transition: top .5s;
+       -moz-transition: top .5s;
+        -ms-transition: top .5s;
+         -o-transition: top .5s;
+            transition: top .5s;
 }
 .sidebar-content.pushdown{
     top: 254px;
@@ -256,6 +255,7 @@ section header{
 .list-container thead,
 .list-container tr{
     display: block;
+    overflow: auto;
 }
 .list-container tbody{
     max-height: 400px;
@@ -314,7 +314,7 @@ section header{
     background-image: url(../svg/arrow-up.svg);
 }
 
-/* checkins */
+/* --checkins */
 .util{
     overflow: visible;
 }
@@ -336,17 +336,23 @@ section header{
     box-shadow: 0 0 2px rgba(0,0,0,.5);
 }
 
-/* beers */
+/* --beers */
 
-/* breweries */
+/* --breweries */
 #breweries tbody tr{
     cursor: pointer;
 }
 
-/* charts */
+/* --charts */
 .untappd-chart{
     width: 100%;
     min-height: 10px;
+}
+
+/* --maps */
+#map-canvas{
+    height: 1000px;
+    width: 100%;
 }
 
 /* -----------------------------------
@@ -394,7 +400,7 @@ section header{
 #loading{
     display: none;
     width: 100%;
-    margin-top: 100px;
+    padding-top: 100px;
     text-align: center;
 }
 #loading svg{
