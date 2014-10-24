@@ -595,6 +595,7 @@
 
                     // add the maps
                     addVenueMap();
+                    addBreweryMap();
                 }, 1000);
                 
             }, FADESPEED);
@@ -875,9 +876,10 @@
 
     function getPowerRating(uniques, totalAvgRating){
         var powerRating = 0;
+        console.log(totalAvgRating);
         $.each(uniques, function(index, val) {
             // powerRating += (Math.log(val.hads + 1) * Math.pow( (val.rating / 2.5), 2) * Object.size(uniques + 1) );
-            powerRating += ( (Math.log(val.hads + 1) * 12) * Math.pow( (val.rating / totalAvgRating), 5) );
+            powerRating += (Math.log(val.hads + 1) * 12) * Math.pow( (val.rating / totalAvgRating), 5);
             // powerRating += val.hads * Math.pow( (val.rating / totalAvgRating), 6);
         });
 
@@ -1032,7 +1034,7 @@
             markers = [],
             infowindows = [];
 
-        var map = new google.maps.Map(document.getElementById('map-canvas'), {
+        var map = new google.maps.Map(document.getElementById('map-venues'), {
             center: new google.maps.LatLng(42.365885, -71.258658),
             zoom: 10,
             maxZoom: 17,
@@ -1057,6 +1059,59 @@
 
             var infowindow = new google.maps.InfoWindow({
                 content: venueName
+            });
+
+            infowindows.push(infowindow);
+
+            google.maps.event.addListener(marker, 'click', function(){
+                
+                $.each(infowindows, function(index, ifw) {
+                    ifw.close();
+                });
+
+                infowindow.open(map, marker);
+            });
+        });
+
+        google.maps.event.trigger(map, 'resize');
+        
+    }
+
+    /**
+     * addBreweryMap
+     * 
+     * create the map of all the breweries
+     */
+    function addBreweryMap(){
+        var bounds = new google.maps.LatLngBounds(),
+            markers = [],
+            infowindows = [];
+
+        var map = new google.maps.Map(document.getElementById('map-breweries'), {
+            center: new google.maps.LatLng(42.365885, -71.258658),
+            zoom: 10,
+            maxZoom: 17,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        $.each(_BREWERIES, function(index, brewery) {
+            
+            var breweryName = brewery.name,
+                lat = brewery.location.lat,
+                lng = brewery.location.lng,
+                googleLatLng = new google.maps.LatLng(lat, lng);
+
+            bounds.extend(googleLatLng);
+
+            var marker = new google.maps.Marker({
+                position: googleLatLng,
+                map: map
+            });
+
+            markers.push(marker);
+
+            var infowindow = new google.maps.InfoWindow({
+                content: breweryName
             });
 
             infowindows.push(infowindow);
