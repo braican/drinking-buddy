@@ -462,7 +462,7 @@
         $('#loading').fadeIn(FADESPEED);
 
         if(user){
-            $.getJSON('http://api.untappd.com/v4/user/info/' + user + '?client_id=' + BEER.api_id + '&client_secret=' + BEER.api_secret + '&compact=true', function(data){
+            $.getJSON('https://api.untappd.com/v4/user/info/' + user + '?client_id=' + BEER.api_id + '&client_secret=' + BEER.api_secret + '&compact=true', function(data){
                 checkins = data.response.user.stats.total_checkins;
 
                 var loadingBarMarkup = '',
@@ -876,11 +876,10 @@
 
     function getPowerRating(uniques, totalAvgRating){
         var powerRating = 0;
-        console.log(totalAvgRating);
         $.each(uniques, function(index, val) {
             // powerRating += (Math.log(val.hads + 1) * Math.pow( (val.rating / 2.5), 2) * Object.size(uniques + 1) );
             powerRating += (Math.log(val.hads + 1) * 12) * Math.pow( (val.rating / totalAvgRating), 5);
-            // powerRating += val.hads * Math.pow( (val.rating / totalAvgRating), 6);
+            // powerRating += val.hads * Math.pow( (val.rating / totalAvgRating), 5);
         });
 
         return Math.round(((powerRating / 248) * 100) * 10) / 10;
