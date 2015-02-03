@@ -488,7 +488,7 @@
             }).error(ajaxError);
 
             function create(remCheckins, offset, index){
-                $.getJSON('http://api.untappd.com/v4/user/checkins/' + user + '?client_id=' + BEER.api_id + '&client_secret=' + BEER.api_secret + '&limit=50&max_id=' + offset, function(data){
+                $.getJSON('https://api.untappd.com/v4/user/checkins/' + user + '?client_id=' + BEER.api_id + '&client_secret=' + BEER.api_secret + '&limit=50&max_id=' + offset, function(data){
                     var _tmpCheckins = data.response.checkins.items,
                         lastCheckin = data.response.pagination.max_id;
                         
