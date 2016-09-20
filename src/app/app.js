@@ -1,6 +1,9 @@
 
 angular.module('drinkingBuddyApp', [
-    'ngRoute'
+    'ngRoute',
+    'drinkingBuddyApp.sidebar',
+    'drinkingBuddyApp.maps',
+    'drinkingBuddyApp.fullList'
 ])
 .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider){
     $locationProvider.hashPrefix('!');
