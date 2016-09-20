@@ -1,6 +1,7 @@
 
 angular.module('drinkingBuddyApp', [
     'ngRoute',
+    'firebase',
     'drinkingBuddyApp.sidebar',
     'drinkingBuddyApp.maps',
     'drinkingBuddyApp.fullList'
@@ -19,8 +20,4 @@ angular.module('drinkingBuddyApp', [
     '$routeParams',
     '$location',
 function MainCtrl($route, $routeParams, $location) {
-    console.log( $route );
-    this.$route = $route;
-    this.$location = $location;
-    this.$routeParams = $routeParams;
 }]);
