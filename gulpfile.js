@@ -103,8 +103,8 @@ gulp.task('js-lint', 'Run JSHint on all application javascript files.', function
 // Javascript Compile
 
 
-gulp.task('js', 'Compile javascript files.', ['js-lint'], function () {
-  gulp.src(['src/app/*.js', 'src/app/**/*.js'])
+gulp.task('js', 'Compile javascript files.', function () {
+  gulp.src(['src/app/*.js', 'src/app/**/*.js', '!src/app/factories/untappdKeys-sample.js'])
     .pipe(sourcemaps.init())
       .pipe(concat('dist/js/app.js'))
       .pipe(ngAnnotate())

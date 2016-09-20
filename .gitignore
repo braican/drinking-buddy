@@ -1,7 +1,8 @@
 
 .DS_Store
 
-src/app/config.js
+# the untappd API keys
+src/app/factories/untappdKeys.js
 
 node_modules/
 dist/
