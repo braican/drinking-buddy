@@ -44,7 +44,7 @@ gulp.task('favicon', function(){
 gulp.task('templates', 'Registers templates with Angular cache', function () {
   return gulp.src('src/app/**/*.html')
     .pipe(tmplcache('templates.js', {
-        module: 'fedex',
+        module: 'drinkingBuddyApp',
         transformUrl: function(url) {
           var split = url.split('/');
           return split[split.length - 1];
@@ -78,7 +78,7 @@ gulp.task('reload-server', 'Reload the local development server.', function () {
 
 
 gulp.task('js-lint', 'Run JSHint on all application javascript files.', function() {
-  gulp.src(['src/app/*.js', 'src/app/**/*.js'])
+  gulp.src(['src/app/*.js', 'src/app/**/*.js', '!src/app/vendor/*.js'])
     .pipe(plumber({
       errorHandler: function (error) {
         utility.beep();
@@ -92,7 +92,9 @@ gulp.task('js-lint', 'Run JSHint on all application javascript files.', function
         this.emit('end');
       }
     }))
-    .pipe(jshint())
+    .pipe(jshint({
+      strict: false
+    }))
     .pipe(jshint.reporter(stylish))
     .pipe(jshint.reporter('fail'))
 });
@@ -107,7 +109,7 @@ gulp.task('js', 'Compile javascript files.', ['js-lint'], function () {
       .pipe(concat('dist/js/app.js'))
       .pipe(ngAnnotate())
       .pipe(uglify())
-    .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('.'))
 });
 
@@ -141,7 +143,7 @@ gulp.task('css', 'Compile Sass files into CSS.', function() {
       .pipe(rename("style.css"))
       .pipe(clean({compatibility: 'ie9'}))
       .pipe(autoprefixer('last 2 versions'))
-    .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./dist/css'))
     .pipe(browserSync.reload({stream:true}))
 });
