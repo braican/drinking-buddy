@@ -1,13 +1,12 @@
 
-angular.module('drinkingBuddyApp.maps', ['ngRoute'])
+angular.module('drinkingBuddyApp.maps', ['ngRoute', 'drinkingBuddyApp'])
 
 .config(['$routeProvider', function( $routeProvider ){
     $routeProvider.when('/maps',{
-        template   : 'maps.html',
-        controller : 'MapsCtrl'
+        templateUrl : 'maps.html',
+        controller  : 'MapsCtrl'
     });
 }])
 
 .controller('MapsCtrl', [function(){
-
 }]);
