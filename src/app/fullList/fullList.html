@@ -1,2 +1,10 @@
+{{ user | json }}
 
-{{data.test}}
+<div>
+    <div>
+        {{user.untappd.userData.first_name}} {{user.untappd.userData.last_name}}
+    </div>
+    <div>
+        <img ng-show="user.untappd.userData.user_avatar" ng-src="{{user.untappd.userData.user_avatar}}" alt="">
+    </div>
+</div>

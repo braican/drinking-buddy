@@ -3,12 +3,19 @@
     
     <h6>user: {{user.username}}</h6>
 
-    <div ng-hide="user.firebase.$value === null">
-        {{user.firebase | json}}
-    </div>
-
     <form ng-submit="loadUser()">
         <input type="text" ng-model="newUser">
         <button type="submit">Go</button>
     </form>
+
+
+    <div>
+        <div>
+            {{user.untappd.userData.first_name}} {{user.untappd.userData.last_name}}
+        </div>
+        <div>
+            <img ng-show="user.untappd.userData.user_avatar" ng-src="{{user.untappd.userData.user_avatar}}" alt="">
+        </div>
+    </div>
+
 </div>

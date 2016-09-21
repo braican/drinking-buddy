@@ -8,13 +8,6 @@ function( $scope, userData ){
 
     $scope.user = userData.data;
     
-    var creds = untappdKeys;
-
-
-
-    console.log( creds );
-
-
 
     /* ------------------------------------------
      * --functions
