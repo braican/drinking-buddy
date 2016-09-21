@@ -34,7 +34,7 @@ angular.module('drinkingBuddyApp')
      *   - the username of the user we're trying to get
      */
     function getUserFromFirebase(user){
-        console.log( "get em" );
+        console.log( "get user " + user );
         var
             // the reference to the firebase database
             ref        = firebase.database().ref().child('/drinking-buddy/' + user),
@@ -42,16 +42,60 @@ angular.module('drinkingBuddyApp')
             // the data
             syncObject = $firebaseObject( ref );
 
+
+        // load up the user data from firebase
         syncObject.$loaded(function( response ){
             console.log( response );
 
+            // if the user doesn't exist in Firebase, we'll need to
+            //  call the untappd api to get the data.
             if( response.$value === null ){
 
-            } else {
-                data.firebase = response;
-            }
-            
+                // endpoint for untappd user data
+                var userEndpoint = 'https://api.untappd.com/v4/user/info/' + user + '?client_id=' + untappdKeys.api_id + '&client_secret=' + untappdKeys.api_secret + '&compact=true';
 
+                // call the untappd API
+                $http.get( userEndpoint ).then(
+
+                    // the untappd call was a success.
+                    function( resp ){
+
+                        // error
+                        if( resp.status !== 200 ){
+                            console.error( "The Untappd call was successful, but returned a non-success status code." );
+                            return false;
+                        }
+
+                        // success
+                        var userData = resp.data.response.user;
+
+                        syncObject.userData = userData;
+
+                        console.log( userData );
+                        data.untappd = userData;
+
+                        syncObject.$save().then(function(ref){
+                            ref.key === syncObject.$id;
+                        }, function( error ){
+                            console.error( error );
+                        });
+                    },
+
+                    // the untappd call failed.
+                    function( error ){
+                        console.error( "Something went wrong with the call to the Untappd API." );
+
+                        if( error && error.data && error.data.meta ){
+                            console.error( error.data.meta.error_detail );
+                        }
+                    }
+                );
+
+            } else {
+                console.log( "user exists..." );
+                console.log( response );
+                data.untappd = response;
+            }
         });
     }
 
@@ -74,6 +118,11 @@ angular.module('drinkingBuddyApp')
     }
     api.updateUser = updateUser;
 
+
+
+    /* ------------------------------------------
+     * --return
+     * ------------------------------------------ */
 
 
     // set the api data key to the data object we've set up

@@ -8,8 +8,14 @@ angular.module('drinkingBuddyApp.fullList', ['ngRoute'])
     });
 }])
 
-.controller('FullListCtrl', ['$scope', 'beerData', function( $scope, beerData ){
+.controller('FullListCtrl', [
+    '$scope',
+    'beerData',
+    'userData',
+function( $scope, beerData, userData ){
 
     $scope.data = beerData;
+
+    $scope.user = userData.data;
 
 }]);
