@@ -16,6 +16,17 @@
         <div>
             <img ng-show="user.untappd.userData.user_avatar" ng-src="{{user.untappd.userData.user_avatar}}" alt="">
         </div>
+
+        <div>
+            <h6>Stats</h6>
+
+            <ul>
+                <li>Badges: {{ user.untappd.userData.stats.total_badges }}</li>
+                <li>Unique Beers: {{ user.untappd.userData.stats.total_beers }}</li>
+                <li>Total Beers: {{ user.untappd.userData.stats.total_checkins }}</li>
+            </ul>
+
+        </div>
     </div>
 
 </div>

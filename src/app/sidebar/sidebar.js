@@ -18,7 +18,7 @@ function( $scope, userData ){
      */
     $scope.loadUser = function(){
         userData.updateUser( $scope.newUser );
-    }
+    };
 
 
 }]);
