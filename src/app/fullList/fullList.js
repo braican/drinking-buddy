@@ -10,12 +10,12 @@ angular.module('drinkingBuddyApp.fullList', ['ngRoute'])
 
 .controller('FullListCtrl', [
     '$scope',
-    'beerData',
     'userData',
-function( $scope, beerData, userData ){
-
-    $scope.data = beerData;
+    'userBeers',
+function( $scope, userData, userBeers ){
 
     $scope.user = userData.data;
+
+    $scope.beers = userBeers.data;
 
 }]);
