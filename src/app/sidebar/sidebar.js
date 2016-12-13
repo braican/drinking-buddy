@@ -4,7 +4,8 @@ angular.module('drinkingBuddyApp.sidebar', ['ngRoute'])
 .controller('SidebarCtrl', [
     '$scope',
     'userData',
-function( $scope, userData ){
+    'userBeers',
+function( $scope, userData, userBeers ){
 
     $scope.user = userData.data;
     
@@ -19,6 +20,15 @@ function( $scope, userData ){
     $scope.loadUser = function(){
         userData.updateUser( $scope.newUser );
     };
+
+
+    /**
+     *
+     */
+    $scope.updateBeers = function( username ){
+        userBeers.update( username );
+    };
+
 
 
 }]);

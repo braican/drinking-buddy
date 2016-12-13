@@ -25,7 +25,8 @@
                 <li>Unique Beers: {{ user.untappd.userData.stats.total_beers }}</li>
                 <li>Total Beers: {{ user.untappd.userData.stats.total_checkins }}</li>
             </ul>
-
+    
+            <button ng-click="updateBeers( user.username )">Update {{user.username}}</button>
         </div>
     </div>
 
