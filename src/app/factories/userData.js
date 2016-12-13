@@ -38,8 +38,8 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
     /**
      * gets the user data from firebase, if it exists. If not, get
      *  the data from untappd and then save to firebase.
-     * @param user (string)
-     *   - the username of the user we're trying to get
+     *
+     * @param string user The username of the user we're trying to get
      */
     function getUserData(user){
         console.log( "get user " + user );
