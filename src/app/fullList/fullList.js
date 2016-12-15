@@ -14,8 +14,13 @@ angular.module('drinkingBuddyApp.fullList', ['ngRoute'])
     'userBeers',
 function( $scope, userData, userBeers ){
 
-    $scope.user = userData.data;
+    var vm = this;
 
-    $scope.beers = userBeers.data;
+    // vm.user = userData.data;
+
+    vm.beers = userBeers.getBeers();
+
+
+    // console.log( vm.beers );
 
 }]);

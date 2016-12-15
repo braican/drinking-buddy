@@ -7,12 +7,18 @@ angular.module('drinkingBuddyApp.sidebar', ['ngRoute'])
     'userBeers',
 function( $scope, userData, userBeers ){
 
-    $scope.user = userData.data;
-    
+    var vm = this;
 
-    /* ------------------------------------------
-     * --functions
-     * ------------------------------------------ */
+
+    vm.username = userData.getUsername();
+
+
+    vm.user = userData.getUserData( vm.username ).then( function( response ){
+
+        console.log( response );
+    });
+
+    
 
     /**
      * loads a new user

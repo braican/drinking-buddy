@@ -13,24 +13,37 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
     var
 
         // the API object to return
-        api  = {},
+        api  = {
+            getUsername : getUsername,
+            getUserData : getUserData,
+            updateUser  : updateUser
+        },
 
         // the data we want returned to the front end
         data = {},
 
         // the reference to firebase
-        ref  = firebase.database().ref().child('/drinking-buddy'),
-
-        // get the previous user from localstorage, and use that
-        //  person up as the current person.
-        user = localStorage.getItem('lastUser');
+        ref  = firebase.database().ref().child('/drinking-buddy');
 
 
-    data.username = user;
+    return api;
 
-    if( user ){
-        getUserData(user);
+
+
+
+    /**
+     * Gets the username of the current user
+     *
+     * @return string
+     */
+    function getUsername(){
+        if( localStorage.getItem('lastUser') ){
+            return localStorage.getItem('lastUser');
+        }
+        return '';
     }
+
+
 
 
 
@@ -40,9 +53,14 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
      *  the data from untappd and then save to firebase.
      *
      * @param string user The username of the user we're trying to get
+     * @return promise
      */
-    function getUserData(user){
+    function getUserData( user ){
         console.log( "get user " + user );
+
+        if( user === '' ){
+            return false;
+        }
 
         var
             // the reference to the user's data in firebase
@@ -53,7 +71,7 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
 
 
         // load up the user data from firebase
-        syncObject.$loaded(function( response ){
+        var promise = syncObject.$loaded().then( function( response ){
 
             // if the user doesn't exist in Firebase, we'll need to
             //  call the untappd api to get the data.
@@ -64,10 +82,14 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
             // otherwise the user does exist in firebase, so we have data.
             } else {
                 console.log( "user exists..." );
-                
-                writeUserData( response );
+                console.log( response );
+
+                return response.userData;
             }
         });
+
+        return promise;
+
     }
 
 
@@ -75,8 +97,9 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
 
     /**
      * retrieves the userdata from untappd
-     * @param user (string)
-     *   - the username of the user we want to get info for
+     *
+     * @param string user Username of the user we want to get info for
+     * @return promise
      */
     function getUserDataFromUntappd( user ){
 
@@ -92,7 +115,7 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
 
 
         // call the untappd API
-        $http.get( userEndpoint ).then(
+        return $http.get( userEndpoint ).then(
 
             // the untappd call was a success.
             function( resp ){
@@ -133,10 +156,20 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
 
 
 
+    /**
+     * updates the user data with the new data for the given user.
+     * @param string username New name of the user we're looking to get data for
+     */
+    function updateUser( username ){
+        data.username = username;
+        getUserData(username);
+    };
 
-    /* ------------------------------------------
-     * --util
-     * ------------------------------------------ */
+
+
+
+    /////////////
+
 
 
     /**
@@ -156,6 +189,7 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
             console.error( error );
         });
     }
+
 
 
     /**
@@ -183,36 +217,17 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
 
 
 
-
-    /* ------------------------------------------
-     * --api functions
-     * ------------------------------------------ */
-
-
     /**
-     * updates the user data with the new data for the given user.
-     * @param username (string)
-     *   - the new name of the user we're looking to get data for
+     * Error logging for errors
+     *
+     * @param error
      */
-    var updateUser = function( username ){
-        data.username = username;
-        getUserData(username);
-    };
-    api.updateUser = updateUser;
+    function untappdError( error ){
+        console.error( "Something went wrong while trying to get the user's beer data from the Untappd API." );
 
-
-
-    /* ------------------------------------------
-     * --return
-     * ------------------------------------------ */
-
-
-    // set the api data key to the data object we've set up
-    api.data = data;
-
-    // and then return the api
-    return api;
-
-
+        if( error && error.data && error.data.meta ){
+            console.error( error.data.meta.error_detail );
+        }
+    }
 
 }]);
