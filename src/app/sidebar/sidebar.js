@@ -2,36 +2,49 @@
 angular.module('drinkingBuddyApp.sidebar', ['ngRoute'])
 
 .controller('SidebarCtrl', [
-    '$scope',
     'userData',
-    'userBeers',
-function( $scope, userData, userBeers ){
+function( userData ){
 
+    // cache
     var vm = this;
 
 
-    vm.username = userData.getUsername();
+    vm.newUser = '';
+
+    vm.userInfo = {};
 
 
-    vm.user = userData.getUserData( vm.username ).then( function( response ){
-
-        console.log( response );
+    userData.getInfo().then(function( resp ){
+        vm.userInfo = resp;
     });
 
+
+
+
+    //
+    // ACTION
+    //
     
 
     /**
      * loads a new user
      */
-    $scope.loadUser = function(){
-        userData.updateUser( $scope.newUser );
+    vm.loadUser = function(){
+        if( vm.newUser === '' ){
+            console.error( "Please enter a valid username to look up." );
+        }
+
+        userData.updateUser( vm.newUser ).then( function( resp ){
+            vm.userInfo = resp;
+        });
+
     };
 
 
     /**
      *
      */
-    $scope.updateBeers = function( username ){
+    vm.updateBeers = function( username ){
         userBeers.update( username );
     };
 
