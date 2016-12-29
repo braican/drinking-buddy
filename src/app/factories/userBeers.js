@@ -35,9 +35,39 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
 
     /**
      * Gets the beer data
+     *
+     * @param string username The user we're getting beers for
      */
-    function getBeers(){
-        
+    function getBeers( username ){
+
+        if( !username ){
+            return false;
+        }
+
+
+        var
+            // the reference to the user's data in firebase
+            userRef    = ref.child( username ),
+
+            // the synchronized object from firebase
+            syncObject = $firebaseObject( userRef );
+
+
+        // load up the user data from firebase
+        return syncObject.$loaded().then( function( response ){
+
+            // if the user doesn't exist in Firebase, we'll need to
+            //  call the untappd api to get the data.
+            if( response.$value === null ){
+                console.error( "User doesn't exist in firebase" );
+
+            // otherwise the user does exist in firebase, so we have data.
+            } else {
+                console.log( "user exists, lets get beer..." );
+
+                return response.userBeers;
+            }
+        });
     }
 
 
@@ -91,91 +121,90 @@ function( $rootScope, $firebaseObject, $http, untappdKeys ){
             var beers = response.userBeers;
 
             if( beers === undefined ){
-                getBeersFromUntappd( userData, syncObject );
+                console.log( "No beers found" );
+                return false;
+            }
 
-            } else {
+            var
 
-                var
+                // the last beer we have stored
+                minId        = beers[0].checkin_id,
 
-                    // the last beer we have stored
-                    minId        = beers[0].checkin_id,
+                // the user's total beers
+                beersToGet   = response.userData.stats.total_checkins,
 
-                    // the user's total beers
-                    beersToGet   = response.userData.stats.total_checkins,
+                // the number of new beers we want to get
+                newBeerCount = beersToGet - response.userBeers.length,
 
-                    // the number of new beers we want to get
-                    newBeerCount = beersToGet - response.userBeers.length,
-
-                    // init an array to hold all the new beers
-                    newBeers     = [];
+                // init an array to hold all the new beers
+                newBeers     = [];
 
 
-                if( newBeerCount < 1 ){
-                    console.log( "No new beers" );
-                    return false;
+            if( newBeerCount < 1 ){
+                console.log( "No new beers" );
+                return false;
+            }
+
+            
+            /**
+             * Since the Untappd API only allows you to get 50 checkins
+             *  at a time, we'll need to call the endpoint a bunch of
+             *  times to get all of a user's checkins
+             *
+             * @param int remCheckins Number of checkins remaining to get
+             * @param int maxId       Checkin ID that determines which checkin we want to start with
+             */
+            var getNewBeers = function( remCheckins, maxId ){
+
+                // the untappd endpoint for the user feed
+                var endpoint = 'https://api.untappd.com/v4/user/checkins/' + username + '?client_id=' + untappdKeys.api_id + '&client_secret=' + untappdKeys.api_secret + '&limit=' + remCheckins;
+
+                if( maxId ){
+                    endpoint += '&max_id=' + maxId;
                 }
 
-                
-                /**
-                 * Since the Untappd API only allows you to get 50 checkins
-                 *  at a time, we'll need to call the endpoint a bunch of
-                 *  times to get all of a user's checkins
-                 *
-                 * @param int remCheckins Number of checkins remaining to get
-                 * @param int maxId       Checkin ID that determines which checkin we want to start with
-                 */
-                var getNewBeers = function( remCheckins, maxId ){
+                $http.get( endpoint ).then( function( resp ){
 
-                    // the untappd endpoint for the user feed
-                    var endpoint = 'https://api.untappd.com/v4/user/checkins/' + username + '?client_id=' + untappdKeys.api_id + '&client_secret=' + untappdKeys.api_secret + '&limit=' + remCheckins;
-
-                    if( maxId ){
-                        endpoint += '&max_id=' + maxId;
+                    // error
+                    if( resp.status !== 200 ){
+                        console.error( "The Untappd call to retrieve the checkins was successful, but returned a non-success status code." );
+                        return false;
                     }
 
-                    $http.get( endpoint ).then( function( resp ){
+                    // success
+                    var
 
-                        // error
-                        if( resp.status !== 200 ){
-                            console.error( "The Untappd call to retrieve the checkins was successful, but returned a non-success status code." );
-                            return false;
-                        }
+                        // the actual checkins
+                        checkins         = resp.data.response.checkins ? resp.data.response.checkins.items : resp.data.response.items,
 
-                        // success
-                        var
+                        // how many checkins we got in this request
+                        returnedCheckins = checkins.length,
 
-                            // the actual checkins
-                            checkins         = resp.data.response.checkins ? resp.data.response.checkins.items : resp.data.response.items,
+                        // the max_id from the return
+                        newMaxId          = checkins[returnedCheckins - 1].checkin_id;
+                    
+                    newBeerCount = newBeerCount - returnedCheckins;
 
-                            // how many checkins we got in this request
-                            returnedCheckins = checkins.length,
+                    // add the checkins to our local array
+                    newBeers = newBeers.concat( checkins );
 
-                            // the max_id from the return
-                            newMaxId          = checkins[returnedCheckins - 1].checkin_id;
-                        
-                        newBeerCount = newBeerCount - returnedCheckins;
+                    if( newBeerCount > 0 ){
+                        getNewBeers( newBeerCount, newMaxId );
+                    } else {
+                        beers = newBeers.concat( beers );
+                        syncObject.userBeers = beers;
+                        syncObject.$save().then(function(ref){
+                            return ref.key === syncObject.$id;
+                        }, function( error ){
+                            console.error( error );
+                        });
+                    }
 
-                        // add the checkins to our local array
-                        newBeers = newBeers.concat( checkins );
-
-                        if( newBeerCount > 0 ){
-                            getNewBeers( newBeerCount, newMaxId );
-                        } else {
-                            beers = newBeers.concat( beers );
-                            syncObject.userBeers = beers;
-                            syncObject.$save().then(function(ref){
-                                return ref.key === syncObject.$id;
-                            }, function( error ){
-                                console.error( error );
-                            });
-                        }
-
-                    }, untappdError );
-                }
-                
-                getNewBeers( newBeerCount );
-
+                }, untappdError );
             }
+            
+            getNewBeers( newBeerCount );
+
         } );
 
     }

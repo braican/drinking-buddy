@@ -1,32 +1,33 @@
 
 <div ng-controller="SidebarCtrl as sidebar">
     
-    <h6>user: {{sidebar.user.username}}</h6>
+    <h6>user: {{sidebar.userInfo.user_name}}</h6>
 
-    <form ng-submit="loadUser()">
-        <input type="text" ng-model="newUser">
+    <form ng-submit="sidebar.loadUser()">
+        <input type="text" ng-model="sidebar.newUser">
         <button type="submit">Go</button>
     </form>
 
 
+
     <div>
         <div>
-            {{sidebar.user.untappd.userData.first_name}} {{sidebar.user.untappd.userData.last_name}}
+            {{sidebar.userInfo.first_name}} {{sidebar.userInfo.last_name}}
         </div>
         <div>
-            <img ng-show="sidebar.user.untappd.userData.user_avatar" ng-src="{{sidebar.user.untappd.userData.user_avatar}}" alt="">
+            <img ng-show="sidebar.userInfo.user_avatar" ng-src="{{sidebar.userInfo.user_avatar}}" alt="">
         </div>
 
         <div>
             <h6>Stats</h6>
 
             <ul>
-                <li>Badges: {{ sidebar.user.untappd.userData.stats.total_badges }}</li>
-                <li>Unique Beers: {{ sidebar.user.untappd.userData.stats.total_beers }}</li>
-                <li>Total Beers: {{ sidebar.user.untappd.userData.stats.total_checkins }}</li>
+                <li>Badges: {{ sidebar.userInfo.stats.total_badges }}</li>
+                <li>Unique Beers: {{ sidebar.userInfo.stats.total_beers }}</li>
+                <li>Total Beers: {{ sidebar.userInfo.stats.total_checkins }}</li>
             </ul>
     
-            <button ng-click="updateBeers( sidebar.user.username )">Update {{ sidebar.user.username}}</button>
+            <button ng-click="updateBeers( sidebar.userInfo.user_name )">Update {{ sidebar.userInfo.user_name}}</button>
         </div>
     </div>
 
