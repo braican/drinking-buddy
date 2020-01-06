@@ -1,8 +1,7 @@
 {
   "name": "drinking-buddy",
-  "version": "1.0.0",
-  "description": "Take Untappd data and spit out some sweet stats",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "Your friend at the bar.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,35 +9,12 @@
     "type": "git",
     "url": "git+https://github.com/braican/drinking-buddy.git"
   },
-  "author": "braican",
-  "license": "ISC",
+  "author": "Nick Braica <nick.braica@gmail.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/braican/drinking-buddy/issues"
   },
   "homepage": "https://github.com/braican/drinking-buddy#readme",
   "devDependencies": {
-    "browser-sync": "^2.11.2",
-    "gulp": "^3.9.1",
-    "gulp-angular-templatecache": "^1.8.0",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-cache": "^0.4.5",
-    "gulp-clean-css": "^2.0.5",
-    "gulp-concat": "^2.6.0",
-    "gulp-flatten": "^0.2.0",
-    "gulp-help": "^1.6.1",
-    "gulp-imagemin": "^3.0.1",
-    "gulp-jshint": "^2.0.0",
-    "gulp-ng-annotate": "^2.0.0",
-    "gulp-notify": "^2.2.0",
-    "gulp-order": "^1.1.1",
-    "gulp-plumber": "^1.1.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.2.0",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "^1.5.3",
-    "gulp-util": "^3.0.7",
-    "jshint": "^2.9.2",
-    "jshint-stylish": "^2.1.0",
-    "through2": "^2.0.1"
   }
 }
