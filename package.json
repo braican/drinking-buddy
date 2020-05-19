@@ -22,6 +22,7 @@
   "dependencies": {
     "cli-progress": "^3.8.2",
     "core-js": "^2.6.5",
+    "dotenv": "^8.2.0",
     "faunadb": "^2.14.1",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
