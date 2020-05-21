@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+if [ -f .env ]; then
+  export $(cat .env | xargs)
+fi
+
+HOST=${1:-$SFTP_HOST}
+USER=${2:-$SFTP_USER}
+BASEDIR=$(dirname "$0")
+DEPLOYIGNORE=$BASEDIR/../.deployignore
+APIDIR=$BASEDIR/../api
+DESTINATION="/var/www/drinking-buddy-api"
+
+if [ -z $HOST ] || [ -z $USER ] ; then
+  echo "Please pass the SFTP host and user name for your server, or define them using \$SFTP_HOST and \$SFTP_USER env variables."
+  exit 1
+fi
+
+echo "Lets go"
+
+# Copy the API directory to the server.
+echo "Deploying API..."
+rsync \
+  -rlvz \
+  --exclude-from="$DEPLOYIGNORE" \
+  --exclude dhparam \
+  --exclude letsencrypt \
+  --ipv4 \
+  --delete-after \
+  -e "ssh -o StrictHostKeyChecking=no" \
+  --temp-dir=~/_tmp \
+  $APIDIR \
+  $USER@$HOST:$DESTINATION
+
+# Rebuild the docker container on the remote server
+echo "Rebuilding the docker container..."
+echo
+ssh $USER@$HOST 'cd /var/www/drinking-buddy-api/api && docker-compose up --build --no-deps -d'

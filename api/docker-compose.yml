@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: nodejs
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+      - "8443:443"
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./letsencrypt:/etc/letsencrypt
+      - dhparam:/etc/ssl/certs
+    depends_on:
+      - nodejs
+    networks:
+      - app-network
+
+volumes:
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/drinking-buddy-api/api/dhparam/
+      o: bind
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/drinking-buddy-api/api/
+      o: bind
+
+networks:
+  app-network:
+    driver: bridge

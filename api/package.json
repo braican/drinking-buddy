@@ -1,0 +1,21 @@
+{
+  "name": "drinking-buddy-api",
+  "version": "0.0.1",
+  "description": "API for Untappd stats.",
+  "main": "api.js",
+  "scripts": {
+    "build": "node server.js",
+    "start": "nodemon server.js"
+  },
+  "author": "braican <nick.braica@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@rama41222/node-logger": "^1.0.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
