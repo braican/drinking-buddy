@@ -1,8 +1,19 @@
 #!/usr/bin/env node
 
 require('dotenv').config();
-const UntappdGetter = require('../lib/UntappdGetter');
+const argv = require('yargs')
+  .usage('Usage: $0 --user [string]')
+  .alias('u', 'user')
+  .demandOption(['user']).argv;
+const UntappdClient = require('../lib/UntappdClient');
+const FaunaClient = require('../lib/FaunaClient');
 
-const getter = new UntappdGetter(process.env.UNTAPPD_TOKEN);
+const utClient = new UntappdClient(process.env.UNTAPPD_TOKEN);
+const fClient = new FaunaClient(process.env.FAUNA_SECRET);
 
-getter.run();
+const { user } = argv;
+
+utClient
+  .getAllCheckins(user)
+  .then(data => fClient.add(user, data).then(() => console.log('Added from Untappd.')))
+  .catch(error => console.error(error));

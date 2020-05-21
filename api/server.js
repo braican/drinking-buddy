@@ -17,7 +17,9 @@ app.use(cors());
 app.use(ExpressAPILogMiddleware(logger, { request: true }));
 
 app.get('/', (req, res) => {
-  res.status(200).send('hello world! Club ball.');
+  res.status(200).send({
+    one: 'hello world! Club ball.whhop',
+  });
 });
 
 app.listen(config.port, config.host, e => {

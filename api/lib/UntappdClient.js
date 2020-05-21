@@ -1,12 +1,10 @@
 const https = require('https');
 const queryString = require('querystring');
 const cliProgress = require('cli-progress');
-const fs = require('fs');
-const path = require('path');
 
 const API_BASE = 'https://api.untappd.com/v4/';
 
-class UntappdGetter {
+class UntappdClient {
   constructor(token, config = {}) {
     if (!token) {
       throw new Error('You must supply an authentication token.');
@@ -56,45 +54,55 @@ class UntappdGetter {
     }
 
     const totalCheckins = stats.total_checkins;
+    const shardCount = 200;
     const requestsNeeded = Math.ceil(totalCheckins / 50);
-    const shardsNeeded = Math.ceil(totalCheckins / 200);
-    let shardId = shardsNeeded;
     let requests = 0;
-    let lastCheckin = null;
+    let oldestCheckin = null;
     let checkins = [];
-    let shardCheckins = [];
+    let shardId = Math.ceil(totalCheckins / shardCount);
+    const shards = [];
 
     const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
     bar.start(requestsNeeded, requests);
 
     while (requests <= requestsNeeded) {
-      const resp = await this.getCheckins(user, lastCheckin);
+      const resp = await this.getCheckins(user, oldestCheckin);
 
-      if (resp.checkins.length === 0) {
+      if (resp.checkins.items.length < 1) {
         break;
       }
 
       if (resp.pagination.max_id) {
-        lastCheckin = resp.pagination.max_id;
+        oldestCheckin = resp.pagination.max_id;
       }
 
-      shardCheckins = shardCheckins.concat(resp.checkins.items);
-
-      if (shardCheckins.length >= 200) {
-        checkins = [{ shardId, checkins: shardCheckins }, ...checkins];
-        shardCheckins = [];
-        shardId -= 1;
-      }
-
+      checkins = checkins.concat(resp.checkins.items);
       requests += 1;
       bar.update(requests);
     }
 
+    const latestCheckin = checkins[0].checkin_id;
+    const checkinCount = checkins.length;
+
+    checkins.reverse();
+
+    while (checkins.length > 0) {
+      const shardCheckins = checkins.splice(0, shardCount);
+      shards.push({ shardId, checkins: shardCheckins });
+      shardId += 1;
+    }
+
     bar.stop();
 
-    console.log(`Last checkin was: ${lastCheckin}`);
-
-    return checkins;
+    return {
+      checkins: shards,
+      info: {
+        checkin_count: checkinCount,
+        latest_checkin: latestCheckin,
+        oldest_checkin: oldestCheckin,
+        complete: checkinCount === totalCheckins,
+      },
+    };
   }
 
   async getCheckins(user, startWith = null) {
@@ -117,7 +125,7 @@ class UntappdGetter {
         status: e.meta.code,
         error_type: e.meta.error_type,
         error_detail: e.meta.error_detail,
-        checkins: [],
+        checkins: { count: 0, items: [] },
       };
     }
   }
@@ -138,24 +146,6 @@ class UntappdGetter {
       };
     }
   }
-
-  saveData(data, user) {
-    try {
-      fs.writeFileSync(path.resolve(__dirname, `../data/${user}.json`), JSON.stringify(data));
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async run() {
-    try {
-      const resp = await this.getAllCheckins('oharak17');
-      this.saveData(resp, 'oharak17');
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  }
 }
 
-module.exports = UntappdGetter;
+module.exports = UntappdClient;

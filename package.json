@@ -13,8 +13,9 @@
   },
   "homepage": "https://github.com/braican/drinking-buddy#readme",
   "scripts": {
-    "start": "yarn serve",
+    "start": "npm run serve",
     "serve": "vue-cli-service serve",
+    "serve-node": "cd api && npm run start",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"

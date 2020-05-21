@@ -6,10 +6,10 @@ const argv = require('yargs')
   .alias('u', 'user')
   .alias('f', 'file')
   .demandOption(['file', 'user']).argv;
-const Fauna = require('../lib/Fauna');
+const FaunaClient = require('../lib/FaunaClient');
 
 const { user, file } = argv;
 
-const client = new Fauna(process.env.FAUNA_SECRET);
+const client = new FaunaClient(process.env.FAUNA_SECRET);
 
 client.import(user, file);
