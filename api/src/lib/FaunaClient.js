@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { ApiError } = require('../handlers');
 const faunadb = require('faunadb');
 const q = faunadb.query;
 
@@ -42,12 +43,16 @@ class Fauna {
     });
   }
 
+  dbExists(dbName) {
+    const parentClient = new faunadb.Client({ secret: this.secret });
+
+    return parentClient.query(q.Exists(q.Database(dbName)));
+  }
+
   add(user, data) {
     const { checkins, info } = data;
 
-    const parentClient = new faunadb.Client({ secret: this.secret });
-    return parentClient
-      .query(q.Exists(q.Database(user)))
+    return this.dbExists(user)
       .then(exists => {
         if (exists) {
           return new faunadb.Client({ secret: `${this.secret}:${user}:admin` });
@@ -86,6 +91,56 @@ class Fauna {
         console.error('Error in the `import` method.');
         console.error(error);
         throw new Error();
+      });
+  }
+
+  getCheckins(user) {
+    return this.dbExists(user)
+      .then(exists => {
+        if (!exists) {
+          throw new ApiError(404, `That user doesn't exist.`);
+        }
+        return new faunadb.Client({ secret: `${this.secret}:${user}:admin` });
+      })
+      .then(client => {
+        return client
+          .query(
+            q.Map(
+              q.Paginate(q.Match(q.Index('shards'))),
+              q.Lambda(['x', 'ref'], q.Get(q.Var('ref'))),
+            ),
+          )
+          .then(ret => {
+            const beers = {};
+
+            ret.data.forEach(shard => {
+              shard.data.checkins.forEach(({ beer, brewery, created_at }) => {
+                if (beers[beer.bid]) {
+                  beers[beer.bid].count += 1;
+                  beers[beer.bid].last_had = created_at;
+                } else {
+                  beers[beer.bid] = {
+                    count: 1,
+                    name: beer.beer_name,
+                    brewery: brewery.brewery_name,
+                    last_had: created_at,
+                  };
+                }
+              });
+            });
+
+            return Object.values(beers).sort((e1, e2) => {
+              if (e1.count < e2.count) {
+                return 1;
+              }
+
+              if (e1.count > e2.count) {
+                return -1;
+              }
+
+              return 0;
+            });
+          });
       });
   }
 }

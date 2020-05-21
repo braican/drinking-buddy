@@ -5,8 +5,8 @@ const argv = require('yargs')
   .usage('Usage: $0 --user [string]')
   .alias('u', 'user')
   .demandOption(['user']).argv;
-const UntappdClient = require('../lib/UntappdClient');
-const FaunaClient = require('../lib/FaunaClient');
+const UntappdClient = require('../src/lib/UntappdClient');
+const FaunaClient = require('../src/lib/FaunaClient');
 
 const utClient = new UntappdClient(process.env.UNTAPPD_TOKEN);
 const fClient = new FaunaClient(process.env.FAUNA_SECRET);

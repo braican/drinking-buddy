@@ -6,7 +6,7 @@ const argv = require('yargs')
   .alias('u', 'user')
   .alias('f', 'file')
   .demandOption(['file', 'user']).argv;
-const FaunaClient = require('../lib/FaunaClient');
+const FaunaClient = require('../src/lib/FaunaClient');
 
 const { user, file } = argv;
 
