@@ -1,10 +1,16 @@
+import { post } from '../../../util/req';
+
 class Fetcher {
   constructor(el) {
     el.addEventListener('click', this.fetch.bind(this));
   }
 
   fetch() {
-    console.log('go get em');
+    post('api/fetch')
+      .then(res => {
+        console.log(res);
+      })
+      .catch(console.error);
   }
 }
 

@@ -1,4 +1,4 @@
-
+.env
 .DS_Store
 
 # the untappd API keys
@@ -6,3 +6,4 @@ src/app/factories/untappdKeys.js
 
 node_modules/
 dist/
+data/
