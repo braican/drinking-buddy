@@ -21,6 +21,7 @@ const saveData = (data, file) => {
       JSON.stringify(data),
     );
   } catch (e) {
+    console.error('[ERROR] in api/fetch > saveData()');
     console.error(e);
     return false;
   }
@@ -29,14 +30,15 @@ const saveData = (data, file) => {
 /**
  * Gets the user data.
  *
- * @return void
+ * @return object of user data.
  */
 const fetchUserData = async () => {
   try {
-    const data = await untappd.userInfo();
-    await saveData(data, 'user');
+    const { user } = await untappd.userInfo();
+    await saveData(user, 'user');
+    return user;
   } catch (e) {
-    console.error(e);
+    console.error('[ERROR] in api/fetch > fetchUserData()');
     throw new Error(e);
   }
 };
@@ -44,63 +46,92 @@ const fetchUserData = async () => {
 /**
  * Get all the checkins for a user.
  *
- * @return void
+ * @param {int} latest The most recent checkin. Optional.
+ *
+ * @return int The number of checkins added.
  */
-const fetchUserCheckins = async () => {
-  let totalCheckins = [];
+const fetchUserCheckins = async (latest = null) => {
+  const newCheckins = [];
+  let untappdCalls = 0;
 
   const hitUntappd = async function(maxId = null) {
     const { checkins, pagination, error } = await untappd.checkins(maxId);
+    let latestFound = false;
+
+    untappdCalls += 1;
 
     if (error) {
       return;
     }
 
-    totalCheckins = totalCheckins.concat(checkins.items);
+    for (let index = 0; index < checkins.items.length; index++) {
+      if (checkins.items[index].checkin_id === latest) {
+        latestFound = true;
+        break;
+      }
 
-    /* eslint-disable */
-    console.log('hit untappd');
-    console.log(totalCheckins.length);
-    /* eslint-enable */
+      newCheckins.push(checkins.items[index]);
+    }
 
-    if (pagination.max_id) {
+    // eslint-disable-next-line
+    console.log(`[Untappd fetch successful] ${newCheckins.length} new checkins logged.`);
+
+    if (untappdCalls < 20 && latestFound === false && pagination.max_id) {
       await hitUntappd(pagination.max_id);
     }
   };
 
   try {
-    const existingCheckins = await FileLoader.load('checkins');
+    const { checkins, oldest } = await FileLoader.load('checkins');
 
-    if (existingCheckins.checkins && existingCheckins.oldest) {
-      totalCheckins = [...existingCheckins.checkins].reverse();
-      await hitUntappd(existingCheckins.oldest);
-    } else {
-      await hitUntappd();
+    await hitUntappd();
+
+    if (!newCheckins) {
+      return 0;
     }
 
-    const mostRecent = totalCheckins[0].checkin_id;
-    const reversedCheckins = totalCheckins.reverse();
-    const oldest = reversedCheckins[0].checkin_id;
+    // eslint-disable-next-line
+    console.log(`[Fetch successful] ${newCheckins.length} checkins added.`);
+
+    const newMostRecent = newCheckins[0].checkin_id;
+    const allCheckins = newCheckins.concat(checkins);
 
     await saveData(
       {
-        checkins: reversedCheckins,
-        mostRecent,
+        checkins: allCheckins,
+        mostRecent: newMostRecent,
         oldest,
       },
       'checkins',
     );
+
+    return newCheckins.length;
   } catch (e) {
-    console.log('[ERROR] in api/fetch > fetchUserCheckins()');
-    console.error(e);
-    throw new Error(e);
+    console.error('[ERROR] in api/fetch > fetchUserCheckins()');
+    return 0;
   }
 };
 
 export const post = async (req, res) => {
   try {
-    // await fetchUserData();
-    await fetchUserCheckins();
+    if (req.body.userOnly === 1) {
+      const userData = await fetchUserData();
+      return res.json({
+        success: true,
+        data: userData,
+      });
+    }
+
+    if (req.body.checkinsOnly === 1) {
+      const latestCheckin = req.body.latestCheckin || null;
+      const newCheckinsAdded = await fetchUserCheckins(latestCheckin);
+      return res.json({
+        success: true,
+        data: {
+          newCheckinsAdded,
+        },
+      });
+    }
 
     return res.json({
       success: true,

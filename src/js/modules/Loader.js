@@ -1,4 +1,5 @@
 import { get } from '../../../util/req';
+import Mustache from 'mustache';
 
 class Loader {
   constructor(id, el) {
@@ -16,18 +17,22 @@ class Loader {
       });
   }
 
-  handleSuccess(data) {
+  handleSuccess({ data }) {
     const loading = this.el.querySelector('.js-loading');
+    const template = this.el.querySelector('script[type="text/template"]');
 
     if (loading) {
       loading.remove();
     }
 
-    data = data?.data?.response?.user || data?.data?.response || data;
-
     console.log(data);
 
-    this.el.innerHTML = `<pre>${JSON.stringify(data)}</pre>`;
+    if (template) {
+      const rendered = Mustache.render(template.innerHTML, data);
+      this.el.innerHTML = rendered;
+    }
+
+    // this.el.innerHTML = `<ul>${this.get}</ul>`;
   }
 }
 

@@ -11,9 +11,23 @@
 <body>
   <p>What'll you have?</p>
 
-  <div data-loader="latestCheckins">
-    <p class="js-loading">Loading...</p>
-  </div>
+
+  <section>
+    <h2>Latest checkins</h2>
+    <div data-loader="latestCheckins">
+      <p class="js-loading">Loading...</p>
+
+      <script type="text/template">
+        <ul id="userList">
+          {{#latestCheckins}}
+            <li>
+              {{ brewery.brewery_name }} {{ beer.beer_name }}
+            </li>
+          {{/latestCheckins}}
+        </ul>
+      </script>
+    </div>
+  </section>
 
   <!-- <div data-loader="userData">
     <p class="js-loading">Loading...</p>

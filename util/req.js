@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import qs from 'qs';
 
 const handleFetchResponse = res => {
   if (res.ok) {
@@ -10,15 +11,19 @@ const handleFetchResponse = res => {
   });
 };
 
-export const get = url =>
+export const get = (url, data = null) =>
   new Promise((resolve, reject) => {
+    if (data) {
+      url = `${url}?${qs.stringify(data)}`;
+    }
+
     fetch(url)
       .then(handleFetchResponse)
       .then(data => resolve(data))
       .catch(error => reject(error));
   });
 
-export const post = (url, data) =>
+export const post = (url, data = {}) =>
   new Promise((resolve, reject) => {
     fetch(url, {
       method: 'POST',

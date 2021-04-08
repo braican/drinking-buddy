@@ -68,17 +68,18 @@ class UntappdClient {
   }
 
   /**
-   * Get checkins.
+   * Get checkins, in chronological order.
    *
-   * @param {*} maxId
-   * @param {int} minId The checkin to _start_ with. Defaults to 46419566, the first checkin ID.
+   * @param {int} maxId Checkin to start with. This grabs checkins that occurred
+   *                    _before_ this one. We can't really use the `min_id`
+   *                    parameter since the Untappd API will only allow you to use a
+   *                    `min_id` value that is less than 10 days from today.
    *
    * @returns object
    */
-  async checkins(maxId = null, minId = null) {
+  async checkins(maxId = null) {
     try {
       const data = await this.get(`user/checkins`, { limit: 50, max_id: maxId });
-      // return await this.get(`user/checkins`, { limit: 10, min_id: 46710992 });
 
       if (data === false) {
         return { checkins: [], pagination: {}, error: 'Error' };
