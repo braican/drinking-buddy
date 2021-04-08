@@ -2,7 +2,7 @@ import FileLoader from '../../lib/FileLoader';
 
 export const get = async (req, res) => {
   try {
-    const data = await FileLoader.load('checkins');
+    const data = await FileLoader.load('user');
 
     return res.json({
       success: true,

@@ -1,23 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import * as req from '../../../util/req';
-import { untappd } from '../../../index';
-
-/**
- * Get the data from Untappd.
- * @return object
- */
-const getData = async () => {
-  try {
-    console.log(process.env.UNTAPPD_CLIENT_ID);
-    return {
-      test: '2',
-    };
-    // return await req.get('https://jsonplaceholder.typicode.com/todos/20');
-  } catch (e) {
-    throw new Error('Error in `getData`.');
-  }
-};
+import untappd from '../../untappd';
 
 /**
  * Save the data to a flatfile. Returns true on success, false on failure.
@@ -26,10 +10,10 @@ const getData = async () => {
  *
  * @return boolean
  */
-const saveData = data => {
+const saveData = (data, file) => {
   try {
     return fs.writeFileSync(
-      path.join(`${__dirname}/../../data/checkins.json`),
+      path.join(`${__dirname}/../../../data/${file}.json`),
       JSON.stringify(data),
     );
   } catch (e) {
@@ -38,15 +22,46 @@ const saveData = data => {
   }
 };
 
+/**
+ * Gets the user data.
+ *
+ * @return void
+ */
+const fetchUserData = async () => {
+  try {
+    const data = await untappd.userInfo();
+    await saveData(data, 'user');
+  } catch (e) {
+    console.error(e);
+    throw new Error(e);
+  }
+};
+
+/**
+ * Get all the checkins for a user.
+ *
+ * @return void
+ */
+const fetchUserCheckins = async () => {
+  try {
+    const data = await req.get('https://jsonplaceholder.typicode.com/todos/20');
+    await saveData(data, 'checkins');
+  } catch (e) {
+    console.error(e);
+    throw new Error(e);
+  }
+};
+
 export const post = async (req, res) => {
   try {
-    const data = await getData();
-    const save = saveData(data);
+    await fetchUserData();
+    await fetchUserCheckins();
 
     return res.json({
-      success: save,
+      success: true,
     });
   } catch (e) {
+    console.error(e);
     return res.json({
       success: false,
     });

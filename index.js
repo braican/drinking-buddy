@@ -3,6 +3,10 @@ import express from 'express';
 import path from 'path';
 import apiRoutes from './server/api/routes';
 
+import untappd from './server/untappd';
+untappd.setClientId(process.env.UNTAPPD_CLIENT_ID);
+untappd.setClientSecret(process.env.UNTAPPD_SECRET);
+
 const app = express();
 
 app.use(express.static(path.join(`${__dirname}/dist`)));

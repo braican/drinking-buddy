@@ -8,6 +8,7 @@ class Fetcher {
   fetch() {
     post('api/fetch')
       .then(res => {
+        // eslint-disable-next-line
         console.log(res);
       })
       .catch(console.error);
