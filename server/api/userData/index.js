@@ -1,5 +1,9 @@
 import FileLoader from '../../lib/FileLoader';
 
+/**
+ * @return object
+ * @property
+ */
 export const get = async (req, res) => {
   try {
     const data = await FileLoader.load('user');

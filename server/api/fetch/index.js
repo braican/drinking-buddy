@@ -76,7 +76,8 @@ const fetchUserCheckins = async (latest = null) => {
     // eslint-disable-next-line
     console.log(`[Untappd fetch successful] ${newCheckins.length} new checkins logged.`);
 
-    if (untappdCalls < 20 && latestFound === false && pagination.max_id) {
+    // rate limit
+    if (untappdCalls < 2 && latestFound === false && pagination.max_id) {
       await hitUntappd(pagination.max_id);
     }
   };
@@ -96,6 +97,10 @@ const fetchUserCheckins = async (latest = null) => {
     const newMostRecent = newCheckins[0].checkin_id;
     const allCheckins = newCheckins.concat(checkins);
 
+    // DEBUG - you can modify the local checkin store by slicing the checkins here.
+    // const allCheckins = checkins.slice(34);
+    // const newMostRecent = allCheckins[0].checkin_id;
+
     await saveData(
       {
         checkins: allCheckins,
@@ -112,6 +117,9 @@ const fetchUserCheckins = async (latest = null) => {
   }
 };
 
+/**
+ * @return object
+ */
 export const post = async (req, res) => {
   try {
     if (req.body.userOnly === 1) {

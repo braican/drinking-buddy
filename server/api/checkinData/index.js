@@ -1,5 +1,11 @@
 import FileLoader from '../../lib/FileLoader';
 
+/**
+ * @return object
+ * @property {int}    checkinCount
+ * @property {object} latestCheckin
+ * @property {int}    missingCheckins (optional)
+ */
 export const get = async (req, res) => {
   try {
     const { checkins } = await FileLoader.load('checkins');
