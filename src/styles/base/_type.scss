@@ -1,0 +1,47 @@
+html {
+  color: $c-black;
+  font-size: $fs-base;
+  line-height: $lh-base;
+  font-family: $ff-body;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: 100%;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+  background: none;
+}
+
+strong {
+  font-weight: $fw-bold;
+}
+
+// Buttons
+// -----------
+
+.btn {
+  display: inline-block;
+  background-color: $c-yellow;
+  font-weight: $fw-bold;
+  padding: 0.8em 1.2em;
+  border-radius: 2em;
+}
+
+// Header
+// -----------
+
+h2 {
+  font-size: $fs-lg;
+  font-weight: $fw-bold;
+}

@@ -1,0 +1,40 @@
+.user {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.user__avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 80px;
+  height: 80px;
+  margin-left: $spacing;
+
+  img {
+    width: 100%;
+    display: block;
+  }
+}
+
+.user__menu {
+  display: block;
+  width: 56px;
+  height: 56px;
+  padding: 22px;
+  margin-right: -$spacing;
+
+  &:before {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    margin-left: auto;
+    border: 3px solid currentColor;
+    border-style: solid;
+    border-top-width: 0;
+    border-right-width: 0;
+    transform: rotate(-45deg);
+  }
+}

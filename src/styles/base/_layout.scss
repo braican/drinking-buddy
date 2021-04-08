@@ -1,0 +1,9 @@
+.app {
+  border-left: 4px solid $c-yellow;
+  min-height: 100vh;
+  padding: $spacing;
+}
+
+.block {
+  margin-bottom: $spacing * 2;
+}

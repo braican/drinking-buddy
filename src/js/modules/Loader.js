@@ -5,12 +5,16 @@ class Loader {
   constructor(id, el) {
     this.id = id;
     this.el = el;
+
+    this.loaded = new Promise(resolve => (this.resolve = resolve));
+
     this.load();
   }
 
   load() {
     get(`/api/${this.id}`)
       .then(this.handleSuccess.bind(this))
+      .finally(this.resolve)
       .catch(e => {
         console.error('[Something went wrong.]');
         console.error(e);

@@ -35,7 +35,14 @@ const saveData = (data, file) => {
 const fetchUserData = async () => {
   try {
     const { user } = await untappd.userInfo();
-    await saveData(user, 'user');
+    const date = new Date();
+
+    const data = {
+      user,
+      lastUpdated: date.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'medium' }),
+    };
+
+    await saveData(data, 'user');
     return user;
   } catch (e) {
     console.error('[ERROR] in api/fetch > fetchUserData()');

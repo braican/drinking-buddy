@@ -1,0 +1,21 @@
+// Font size
+// -----------
+
+$fs-base: 16px;
+$fs-sm: 0.8rem;
+$fs-lg: 1.33rem;
+
+// Line height
+// -----------
+
+$lh-base: 1.4;
+
+// Font family
+// -----------
+
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap');
+
+$ff-body: 'Inconsolata', monospace;
+
+$fw-regular: 400;
+$fw-bold: 700;

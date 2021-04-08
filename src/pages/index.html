@@ -9,31 +9,50 @@
   <link rel="stylesheet" href="/app.css">
 </head>
 <body>
-  <p>What'll you have?</p>
+  <div class="app">
 
 
-  <section>
-    <h2>Latest checkins</h2>
-    <div data-loader="latestCheckins">
-      <p class="js-loading">Loading...</p>
+    <div data-loader="userData">
+
+      <div class="user__avatar">&nbsp;</div>
 
       <script type="text/template">
-        <ul id="userList">
-          {{#latestCheckins}}
-            <li>
-              {{ brewery.brewery_name }} {{ beer.beer_name }}
-            </li>
-          {{/latestCheckins}}
-        </ul>
+        <header class="user block">
+          <p><strong>Welcome in, {{ user.first_name }}</strong></p>
+
+          <div class="user__avatar">
+            <img src="{{ user.user_avatar }}" alt="Profile avatar for {{ user.first_name }}" />
+          </div>
+
+          <button class="js-toggler user__menu" data-class="last-updated"><span class="visually-hidden">Options</span></button>
+        </header>
+
+        <div class="last-updated block">
+          <p>Last updated: <br>{{ lastUpdated }}</p><br>
+          <button class="btn js-fetch">Fetch data</button>
+        </div>
       </script>
     </div>
-  </section>
 
-  <!-- <div data-loader="userData">
-    <p class="js-loading">Loading...</p>
-  </div> -->
 
-  <button class="js-fetch">Fetch data</button>
+    <section class="block">
+      <h2>Latest checkins</h2>
+      <div data-loader="latestCheckins">
+        <p class="js-loading">Loading...</p>
+
+        <script type="text/template">
+          <ul>
+            {{#latestCheckins}}
+              <li>
+                {{ brewery.brewery_name }} {{ beer.beer_name }}
+              </li>
+            {{/latestCheckins}}
+          </ul>
+        </script>
+      </div>
+    </section>
+
+  </div>
 
   <script src="/app.js"></script>
 </body>
