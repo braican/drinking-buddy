@@ -50,7 +50,12 @@ const fetchUserCheckins = async () => {
   let totalCheckins = [];
 
   const hitUntappd = async function(maxId = null) {
-    const { checkins, pagination } = await untappd.checkins(maxId);
+    const { checkins, pagination, error } = await untappd.checkins(maxId);
+
+    if (error) {
+      return;
+    }
+
     totalCheckins = totalCheckins.concat(checkins.items);
 
     /* eslint-disable */
@@ -60,8 +65,6 @@ const fetchUserCheckins = async () => {
 
     if (pagination.max_id) {
       await hitUntappd(pagination.max_id);
-    } else {
-      return totalCheckins;
     }
   };
 
@@ -88,6 +91,7 @@ const fetchUserCheckins = async () => {
       'checkins',
     );
   } catch (e) {
+    console.log('[ERROR] in api/fetch > fetchUserCheckins()');
     console.error(e);
     throw new Error(e);
   }

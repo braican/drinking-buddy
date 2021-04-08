@@ -23,7 +23,7 @@ class Loader {
       loading.remove();
     }
 
-    data = data?.data?.response?.user || data?.data?.response || data.data;
+    data = data?.data?.response?.user || data?.data?.response || data;
 
     console.log(data);
 
