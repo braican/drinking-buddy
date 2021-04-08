@@ -1,5 +1,3 @@
-import UntappdClient from './lib/UntappdClient';
+const UntappdClient = require('./lib/UntappdClient');
 
-const untappd = new UntappdClient();
-
-export default untappd;
+module.exports = new UntappdClient();

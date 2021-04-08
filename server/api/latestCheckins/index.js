@@ -1,11 +1,11 @@
-import FileLoader from '../../lib/FileLoader';
+const FileLoader = require('../../lib/FileLoader');
 
 /**
  * @return object
  * @property {int}   checkins
  * @property {array} latestCheckins
  */
-export const get = async (req, res) => {
+exports.get = async (req, res) => {
   try {
     const { checkins } = await FileLoader.load('checkins');
 

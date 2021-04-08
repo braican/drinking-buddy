@@ -1,9 +1,10 @@
 require('dotenv').config();
-import express from 'express';
-import path from 'path';
-import apiRoutes from './server/api/routes';
 
-import untappd from './server/untappd';
+const express = require('express');
+const path = require('path');
+const apiRoutes = require('./server/api/routes');
+const untappd = require('./server/untappd');
+
 untappd.setAccessToken(process.env.UNTAPPD_ACCESS_TOKEN);
 
 const app = express();

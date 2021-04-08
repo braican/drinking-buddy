@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import untappd from '../../untappd';
-import FileLoader from '../../lib/FileLoader';
+const fs = require('fs');
+const path = require('path');
+const untappd = require('../../untappd');
+const FileLoader = require('../../lib/FileLoader');
 
 /**
  * Save the data to a flatfile. Returns true on success, false on failure.
@@ -120,7 +120,7 @@ const fetchUserCheckins = async (latest = null) => {
 /**
  * @return object
  */
-export const post = async (req, res) => {
+exports.post = async (req, res) => {
   try {
     if (req.body.userOnly === 1) {
       const userData = await fetchUserData();

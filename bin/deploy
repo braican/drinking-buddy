@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+# Pull in .env variables
+export $(egrep -v '^#' .env | xargs)
+
+HOST=${1:-$SFTP_HOST}
+USER=${2:-$SFTP_USER}
+BASEDIR=$(dirname "$0")
+DEPLOYIGNORE=$BASEDIR/../.deployignore
+DESTINATION="/var/www/beer"
+
+if [ -z $HOST ] || [ -z $USER ]; then
+  echo "Please pass the SFTP host and user name port for the server, or define them using \$SFTP_HOST and \$SFTP_USER env variables."
+  exit 1
+fi
+
+echo "Building assets..."
+npm run build
+echo
+
+echo "Deploying..."
+rsync \
+  --update \
+  -rlvz \
+  --exclude-from="$DEPLOYIGNORE" \
+  --ipv4 \
+  --delete-after \
+  . \
+  $USER@$HOST:$DESTINATION

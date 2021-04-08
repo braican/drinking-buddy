@@ -1,10 +1,10 @@
-import FileLoader from '../../lib/FileLoader';
+const FileLoader = require('../../lib/FileLoader');
 
 /**
  * @return object
  * @property
  */
-export const get = async (req, res) => {
+exports.get = async (req, res) => {
   try {
     const data = await FileLoader.load('user');
 

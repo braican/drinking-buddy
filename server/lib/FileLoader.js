@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 class FileLoader {
   static async load(id) {
@@ -12,4 +12,4 @@ class FileLoader {
   }
 }
 
-export default FileLoader;
+module.exports = FileLoader;

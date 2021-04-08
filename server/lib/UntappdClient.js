@@ -1,5 +1,5 @@
-import * as req from '../../util/req';
-import qs from 'qs';
+const qs = require('qs');
+const Req = require('../lib/Req');
 
 const API_BASE = 'https://api.untappd.com/v4';
 
@@ -14,10 +14,6 @@ class UntappdClient {
 
   setAccessToken(token) {
     this.token = token;
-  }
-
-  getClientId() {
-    return this.clientId;
   }
 
   /**
@@ -35,7 +31,7 @@ class UntappdClient {
         ...args,
       };
 
-      const data = await req.get(`${API_BASE}/${route}?${qs.stringify(params)}`);
+      const data = await Req.get(`${API_BASE}/${route}?${qs.stringify(params)}`);
       return data.response;
     } catch (e) {
       // Handle API limit error.
@@ -92,4 +88,4 @@ class UntappdClient {
   }
 }
 
-export default UntappdClient;
+module.exports = UntappdClient;

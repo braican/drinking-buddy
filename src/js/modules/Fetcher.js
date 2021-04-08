@@ -1,4 +1,4 @@
-import { post, get } from '../../../util/req';
+import { post, get } from '../util/req';
 
 class Fetcher {
   constructor(el) {

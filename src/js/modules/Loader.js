@@ -1,4 +1,4 @@
-import { get } from '../../../util/req';
+import { get } from '../util/req';
 import Mustache from 'mustache';
 
 class Loader {
@@ -25,6 +25,7 @@ class Loader {
       loading.remove();
     }
 
+    // eslint-disable-next-line
     console.log(data);
 
     if (template) {

@@ -1,8 +1,8 @@
-import express from 'express';
-import * as fetch from './fetch';
-import * as latestCheckins from './latestCheckins';
-import * as userData from './userData';
-import * as checkinData from './checkinData';
+const express = require('express');
+const fetch = require('./fetch');
+const latestCheckins = require('./latestCheckins');
+const userData = require('./userData');
+const checkinData = require('./checkinData');
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router.route('/api/latestCheckins').get(latestCheckins.get);
 router.route('/api/userData').get(userData.get);
 router.route('/api/checkinData').get(checkinData.get);
 
-export default router;
+module.exports = router;
