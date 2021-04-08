@@ -28,29 +28,50 @@
         </header>
 
         <div class="last-updated block">
-          <p>Last updated: <br>{{ lastUpdated }}</p><br>
+          <p>Last updated: <br/>{{ lastUpdated }}</p><br/>
           <button class="btn js-fetch">Fetch data</button>
         </div>
       </script>
     </div>
 
+    <div id="search" class="search__wrapper">
+      <input type="text" class="search__input">
 
-    <section class="block">
-      <h2>Latest checkins</h2>
-      <div data-loader="latestCheckins">
-        <p class="js-loading">Loading...</p>
+      <button class="js-toggle-search icon-btn search__close">
+        <span>Close Search</span>
+        <svg viewBox="0 0 20 20">
+          <path d="M10 8.586l-7.071-7.071-1.414 1.414 7.071 7.071-7.071 7.071 1.414 1.414 7.071-7.071 7.071 7.071 1.414-1.414-7.071-7.071 7.071-7.071-1.414-1.414-7.071 7.071z"></path>
+        </svg>
+      </button>
+    </div>
 
-        <script type="text/template">
-          <ul>
-            {{#latestCheckins}}
-              <li>
-                {{ brewery.brewery_name }} {{ beer.beer_name }}
-              </li>
-            {{/latestCheckins}}
-          </ul>
-        </script>
-      </div>
-    </section>
+    <main class="app-main">
+
+      <section class="block">
+        <h2>Latest checkins</h2>
+        <div data-loader="latestCheckins">
+          <p class="js-loading">Loading...</p>
+
+          <script type="text/template">
+            <ul>
+              {{#latestCheckins}}
+                <li>
+                  {{ brewery.brewery_name }} {{ beer.beer_name }}
+                </li>
+              {{/latestCheckins}}
+            </ul>
+          </script>
+        </div>
+      </section>
+    </main>
+
+
+    <button class="search-btn js-toggle-search icon-btn">
+      <span class="visually-hidden">Search</span>
+      <svg viewBox="0 0 20 20">
+        <path fill="currentColor" d="M12.9 14.32c-1.34 1.049-3.050 1.682-4.908 1.682-4.418 0-8-3.582-8-8s3.582-8 8-8c4.418 0 8 3.582 8 8 0 1.858-0.633 3.567-1.695 4.925l0.013-0.018 5.35 5.33-1.42 1.42-5.33-5.34zM8 14c3.314 0 6-2.686 6-6s-2.686-6-6-6v0c-3.314 0-6 2.686-6 6s2.686 6 6 6v0z"></path>
+      </svg>
+    </button>
 
   </div>
 

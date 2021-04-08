@@ -2,7 +2,11 @@ import Loader from './modules/Loader';
 import Fetcher from './modules/Fetcher';
 import Toggler from './modules/Toggler';
 
+import Search from './modules/Search';
+
 const onDataLoad = () => {
+  new Search();
+
   // Event listeners.
   document.querySelectorAll('.js-fetch').forEach(el => new Fetcher(el));
 

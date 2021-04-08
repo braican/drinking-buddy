@@ -7,3 +7,7 @@
 .block {
   margin-bottom: $spacing * 2;
 }
+
+.app-main {
+  @include transition-out();
+}

@@ -1,0 +1,40 @@
+.search__wrapper {
+  transition: opacity 0.3s, padding-top 0.3s;
+  opacity: 0;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  position: relative;
+
+  .search--visible & {
+    transition-delay: 0.3s;
+    opacity: 1;
+    height: auto;
+    width: auto;
+    padding-top: 2rem;
+  }
+}
+
+.search__input {
+  width: 100%;
+  display: block;
+  font-size: 2rem;
+  font-weight: $fw-bold;
+}
+
+.search__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+
+  span {
+    margin-right: 0.5em;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
