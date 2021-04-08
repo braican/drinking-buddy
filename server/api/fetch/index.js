@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import * as req from '../../../util/req';
 import untappd from '../../untappd';
+import FileLoader from '../../lib/FileLoader';
 
 /**
  * Save the data to a flatfile. Returns true on success, false on failure.
@@ -11,6 +11,10 @@ import untappd from '../../untappd';
  * @return boolean
  */
 const saveData = (data, file) => {
+  if (!data) {
+    return false;
+  }
+
   try {
     return fs.writeFileSync(
       path.join(`${__dirname}/../../../data/${file}.json`),
@@ -43,9 +47,46 @@ const fetchUserData = async () => {
  * @return void
  */
 const fetchUserCheckins = async () => {
+  let totalCheckins = [];
+
+  const hitUntappd = async function(maxId = null) {
+    const { checkins, pagination } = await untappd.checkins(maxId);
+    totalCheckins = totalCheckins.concat(checkins.items);
+
+    /* eslint-disable */
+    console.log('hit untappd');
+    console.log(totalCheckins.length);
+    /* eslint-enable */
+
+    if (pagination.max_id) {
+      await hitUntappd(pagination.max_id);
+    } else {
+      return totalCheckins;
+    }
+  };
+
   try {
-    const data = await req.get('https://jsonplaceholder.typicode.com/todos/20');
-    await saveData(data, 'checkins');
+    const existingCheckins = await FileLoader.load('checkins');
+
+    if (existingCheckins.checkins && existingCheckins.oldest) {
+      totalCheckins = [...existingCheckins.checkins].reverse();
+      await hitUntappd(existingCheckins.oldest);
+    } else {
+      await hitUntappd();
+    }
+
+    const mostRecent = totalCheckins[0].checkin_id;
+    const reversedCheckins = totalCheckins.reverse();
+    const oldest = reversedCheckins[0].checkin_id;
+
+    await saveData(
+      {
+        checkins: reversedCheckins,
+        mostRecent,
+        oldest,
+      },
+      'checkins',
+    );
   } catch (e) {
     console.error(e);
     throw new Error(e);
@@ -54,7 +95,7 @@ const fetchUserCheckins = async () => {
 
 export const post = async (req, res) => {
   try {
-    await fetchUserData();
+    // await fetchUserData();
     await fetchUserCheckins();
 
     return res.json({

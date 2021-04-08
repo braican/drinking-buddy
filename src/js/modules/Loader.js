@@ -23,7 +23,9 @@ class Loader {
       loading.remove();
     }
 
-    data = data?.data?.response?.user || data.data;
+    data = data?.data?.response?.user || data?.data?.response || data.data;
+
+    console.log(data);
 
     this.el.innerHTML = `<pre>${JSON.stringify(data)}</pre>`;
   }

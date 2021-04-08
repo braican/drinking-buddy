@@ -4,8 +4,7 @@ import path from 'path';
 import apiRoutes from './server/api/routes';
 
 import untappd from './server/untappd';
-untappd.setClientId(process.env.UNTAPPD_CLIENT_ID);
-untappd.setClientSecret(process.env.UNTAPPD_SECRET);
+untappd.setAccessToken(process.env.UNTAPPD_ACCESS_TOKEN);
 
 const app = express();
 
