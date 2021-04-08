@@ -7,8 +7,8 @@ class Fetcher {
 
   fetchUser() {
     return new Promise((resolve, reject) => {
-      // post('api/fetch', { userOnly: 1 })
-      get('api/userData')
+      // get('api/userData') // DEBUG ONLY for local ref.
+      post('api/fetch', { userOnly: 1 })
         .then(({ success, data }) => {
           if (!success) {
             throw new Error('Error');
