@@ -1,3 +1,5 @@
+import { regexify } from '../util';
+
 /**
  * A simple router.
  */
@@ -42,7 +44,7 @@ class Router {
    *
    * @return void
    */
-  setupListeners() {
+  setupLinkListeners() {
     this.appFrame.querySelectorAll('a[data-href]').forEach(el => {
       el.href = '#';
       el.addEventListener('click', this.handleClick.bind(this));
@@ -56,13 +58,13 @@ class Router {
    */
   updatePage() {
     const route = window.location.pathname;
-    const config = this.routes[route] || this.routes['*'] || null;
+    const match = Object.keys(this.routes).find(str => route.match(regexify(str)) !== null);
 
     this.route = route;
-    this.config = config;
+    this.config = this.routes[match] || null;
 
     this.appFrame.innerHTML = this.config?.page || '';
-    this.setupListeners();
+    this.setupLinkListeners();
     (this.events.load || []).forEach(fn => fn());
   }
 

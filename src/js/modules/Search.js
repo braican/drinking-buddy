@@ -1,4 +1,4 @@
-import { get } from '../util/req';
+import { get, slugify } from '../util';
 import Mustache from 'mustache';
 
 import { appRouter } from '../app';
@@ -7,6 +7,11 @@ class Search {
   constructor() {
     this.body = document.body;
     this.searchEl = document.querySelector('#search');
+
+    this.transitionTiming =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--default-trs-timing') || 0.3,
+      ) * 1000;
 
     if (!this.searchEl) {
       console.warn('No search element found.');
@@ -36,21 +41,40 @@ class Search {
     this.results.addEventListener('click', this.handleResultClick.bind(this));
   }
 
+  /**
+   * Show the search interface.
+   *
+   * @return void
+   */
+  show() {
+    this.body.classList.add('search--visible');
+    this.searchVisible = true;
+
+    setTimeout(() => this.input.focus(), this.transitionTiming);
+
+    if (!this.breweriesLoaded) {
+      get('/api/allBreweries').then(res => {
+        this.breweriesLoaded = true;
+        this.breweries = Object.values(res.data);
+      });
+    }
+  }
+
+  /**
+   * Hide the search interface.
+   *
+   * @return void
+   */
+  hide() {
+    this.body.classList.remove('search--visible');
+    this.searchVisible = false;
+  }
+
   handleToggleSearch() {
     if (this.searchVisible) {
-      this.body.classList.remove('search--visible');
-      this.searchVisible = false;
+      this.hide();
     } else {
-      this.body.classList.add('search--visible');
-      this.searchVisible = true;
-      this.input.focus();
-
-      if (!this.breweriesLoaded) {
-        get('api/allBreweries').then(res => {
-          this.breweriesLoaded = true;
-          this.breweries = Object.values(res.data);
-        });
-      }
+      this.show();
     }
   }
 
@@ -61,7 +85,9 @@ class Search {
       return;
     }
 
-    const results = this.breweries.filter(b => b.toLowerCase().indexOf(search) > -1);
+    const results = this.breweries
+      .filter(b => b.toLowerCase().indexOf(search) > -1)
+      .map(b => ({ name: b, slug: slugify(b) }));
 
     if (this.resultsTemplate) {
       const rendered = Mustache.render(this.resultsTemplate.innerHTML, { results });
@@ -75,7 +101,8 @@ class Search {
     }
 
     event.preventDefault();
-    appRouter.push(event.target.dataset.href || '/');
+    this.hide();
+    appRouter.push(event.target.dataset.href || '/', event.target.dataset);
   }
 }
 

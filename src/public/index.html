@@ -50,11 +50,12 @@
 
       <script type="text/template">
         <ul>
-          {{ #results }}<li><a href="#" data-href="/test">{{ . }}</a></li>{{ /results }}
+          {{ #results }}<li><a href="#" data-href="/brewery/{{ slug }}">{{ name }}</a></li>{{ /results }}
         </ul>
       </script>
     </div>
 
+    <!-- MAIN -->
     <main class="app-main" id="app-frame"></main>
 
 

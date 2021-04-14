@@ -36,8 +36,6 @@ class Loader {
       const rendered = Mustache.render(template.innerHTML, data);
       this.el.innerHTML = rendered;
     }
-
-    // this.el.innerHTML = `<ul>${this.get}</ul>`;
   }
 }
 
