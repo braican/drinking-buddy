@@ -21,20 +21,24 @@
   display: block;
   width: 56px;
   height: 56px;
-  padding: 22px;
+  padding: 24px;
   margin-right: -$spacing;
 
   &:before {
+    transition: transform 0.2s;
     content: '';
     display: block;
     height: 100%;
     width: 100%;
     background-color: transparent;
     margin-left: auto;
-    border: 3px solid currentColor;
+    border: 2px solid currentColor;
     border-style: solid;
     border-top-width: 0;
     border-right-width: 0;
     transform: rotate(-45deg);
+  }
+  &.toggled:before {
+    transform: rotate(135deg);
   }
 }

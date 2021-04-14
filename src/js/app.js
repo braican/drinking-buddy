@@ -1,8 +1,12 @@
+import Router from './modules/Router';
 import Loader from './modules/Loader';
 import Fetcher from './modules/Fetcher';
 import Toggler from './modules/Toggler';
-
 import Search from './modules/Search';
+
+import routes from './routes';
+
+export const appRouter = new Router(routes);
 
 const onDataLoad = () => {
   new Search();
@@ -14,7 +18,8 @@ const onDataLoad = () => {
   document.querySelectorAll('.js-toggler').forEach(el => new Toggler(el));
 };
 
-(() => {
+// Fire whenever a new page is loaded via the router.
+appRouter.on('load', () => {
   const loaders = [];
 
   // Loaders.
@@ -23,4 +28,14 @@ const onDataLoad = () => {
   });
 
   Promise.all(loaders.map(l => l.loaded)).then(onDataLoad);
+});
+
+// Initial page load.
+(() => {
+  const userDataEl = document.querySelector('#app-user-data');
+  if (userDataEl) {
+    new Loader('userData', userDataEl);
+  }
+
+  appRouter.init();
 })();

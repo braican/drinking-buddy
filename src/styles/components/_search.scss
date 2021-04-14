@@ -1,17 +1,19 @@
 .search__wrapper {
-  transition: opacity 0.3s, padding-top 0.3s;
+  transition: opacity var(--default-trs-timing), visibility var(--default-trs-timing);
   opacity: 0;
-  height: 0;
-  width: 0;
-  overflow: hidden;
-  position: relative;
+  visibility: hidden;
+  overflow: auto;
+  position: fixed;
+  top: calc(80px + 3rem);
+  left: 4px;
+  right: 0;
+  bottom: 0;
+  background-color: $c-white;
+  padding: #{$spacing * 2} $spacing $spacing $spacing;
 
   .search--visible & {
-    transition-delay: 0.3s;
     opacity: 1;
-    height: auto;
-    width: auto;
-    padding-top: 2rem;
+    visibility: visible;
   }
 }
 
@@ -24,8 +26,8 @@
 
 .search__close {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2px;
+  right: $spacing;
   display: flex;
   align-items: center;
 

@@ -1,0 +1,18 @@
+<section class="block">
+  <h2>Latest checkins</h2>
+  <div data-loader="latestCheckins">
+    <p class="js-loading">Loading...</p>
+
+    <script type="text/template">
+      <ul>
+        {{#latestCheckins}}
+          <li>
+            {{ brewery.brewery_name }} {{ beer.beer_name }}
+          </li>
+        {{/latestCheckins}}
+      </ul>
+    </script>
+  </div>
+
+  <a data-href="/test">Hello</a>
+</section>

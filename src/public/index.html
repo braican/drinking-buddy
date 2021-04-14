@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drinking Buddy</title>
 
-  <link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" type="text/css" href="/app.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app">
 
-
-    <div data-loader="userData">
-
+    <div id="app-user-data">
       <div class="user__avatar">&nbsp;</div>
 
       <script type="text/template">
@@ -35,35 +34,28 @@
     </div>
 
     <div id="search" class="search__wrapper">
-      <input type="text" class="search__input">
+      <div class="search__controls">
+        <input type="text" class="search__input">
 
-      <button class="js-toggle-search icon-btn search__close">
-        <span>Close Search</span>
-        <svg viewBox="0 0 20 20">
-          <path d="M10 8.586l-7.071-7.071-1.414 1.414 7.071 7.071-7.071 7.071 1.414 1.414 7.071-7.071 7.071 7.071 1.414-1.414-7.071-7.071 7.071-7.071-1.414-1.414-7.071 7.071z"></path>
-        </svg>
-      </button>
+        <button class="js-toggle-search icon-btn search__close">
+          <span>Close Search</span>
+          <svg viewBox="0 0 20 20">
+            <path d="M10 8.586l-7.071-7.071-1.414 1.414 7.071 7.071-7.071 7.071 1.414 1.414 7.071-7.071 7.071 7.071 1.414-1.414-7.071-7.071 7.071-7.071-1.414-1.414-7.071 7.071z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="search__results" data-results>
+      </div>
+
+      <script type="text/template">
+        <ul>
+          {{ #results }}<li><a href="#" data-href="/test">{{ . }}</a></li>{{ /results }}
+        </ul>
+      </script>
     </div>
 
-    <main class="app-main">
-
-      <section class="block">
-        <h2>Latest checkins</h2>
-        <div data-loader="latestCheckins">
-          <p class="js-loading">Loading...</p>
-
-          <script type="text/template">
-            <ul>
-              {{#latestCheckins}}
-                <li>
-                  {{ brewery.brewery_name }} {{ beer.beer_name }}
-                </li>
-              {{/latestCheckins}}
-            </ul>
-          </script>
-        </div>
-      </section>
-    </main>
+    <main class="app-main" id="app-frame"></main>
 
 
     <button class="search-btn js-toggle-search icon-btn">
