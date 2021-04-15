@@ -6,8 +6,11 @@ const routes = {
   '/': {
     page: home,
   },
-  '/brewery/*': {
+  '/brewery/:brewery': {
     page: brewery,
+    data(params) {
+      return { brewery: params.brewery };
+    },
   },
   '*': {
     page: notfound,

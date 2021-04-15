@@ -59,12 +59,17 @@ class Router {
    */
   updatePage() {
     const route = window.location.pathname;
-    const data = {};
+    let data = {
+      params: {},
+    };
 
     const match = Object.keys(this.routes).find(str => {
       const find = route.match(regexify(str));
       if (find !== null) {
-        data.match = find[1] || null;
+        const keys = str.match(/(:.+\/?)/);
+        for (let index = 1; index < find.length; index++) {
+          data.params[keys[index].replace(':', '')] = find[index];
+        }
         return true;
       }
       return false;
@@ -72,6 +77,15 @@ class Router {
 
     this.route = route;
     this.config = this.routes[match] || null;
+
+    if (this.config?.data && typeof this.config?.data === 'function') {
+      const routeData = this.config.data(data.params);
+      if (typeof routeData === 'object') {
+        data = { ...data, ...routeData };
+      } else {
+        data.data = routeData;
+      }
+    }
 
     const markup = Mustache.render(this.config?.page || '', data, {}, ['<%', '%>']);
 

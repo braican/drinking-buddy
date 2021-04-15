@@ -9,13 +9,16 @@ const state = {
   breweries: [],
 };
 
+/**
+ * Fetcher functions for state objects. Each function should return an promise.
+ */
 const fetchers = {
-  /**
-   * Get user data from the API.
-   * @returns promise
-   */
   userData() {
     return get('/api/userData');
+  },
+
+  breweries() {
+    return get('/api/allBreweries');
   },
 };
 

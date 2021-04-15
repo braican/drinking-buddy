@@ -23,7 +23,6 @@ class Store {
    * @visibility public
    *
    * @param {string} key State object to get.
-   * @param {object} params Additional parameters.
    *
    * @return promise
    */

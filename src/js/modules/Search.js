@@ -1,7 +1,7 @@
-import { get, slugify } from '../util';
 import Mustache from 'mustache';
 
 import { appRouter } from '../app';
+import store from '../store';
 
 class Search {
   constructor() {
@@ -24,7 +24,6 @@ class Search {
 
     // State
     this.searchVisible = false;
-    this.breweriesLoaded = false;
     this.breweries = [];
 
     // Go.
@@ -52,9 +51,8 @@ class Search {
 
     setTimeout(() => this.input.focus(), this.transitionTiming);
 
-    if (!this.breweriesLoaded) {
-      get('/api/allBreweries').then(breweries => {
-        this.breweriesLoaded = true;
+    if (this.breweries.length === 0) {
+      store.get('breweries').then(breweries => {
         this.breweries = Object.values(breweries);
       });
     }
@@ -81,13 +79,11 @@ class Search {
   handleType(event) {
     const search = event.target.value.toLowerCase();
 
-    if (search.length < 3 || !this.breweriesLoaded) {
+    if (search.length < 3 || !this.breweries.length > 0) {
       return;
     }
 
-    const results = this.breweries
-      .filter(b => b.toLowerCase().indexOf(search) > -1)
-      .map(b => ({ name: b, slug: slugify(b) }));
+    const results = this.breweries.filter(({ name }) => name.toLowerCase().indexOf(search) > -1);
 
     if (this.resultsTemplate) {
       const rendered = Mustache.render(this.resultsTemplate.innerHTML, { results });

@@ -37,7 +37,7 @@ class Loader {
     }
 
     // eslint-disable-next-line
-    console.log(data);
+    // console.log(data);
 
     if (template) {
       const rendered = Mustache.render(template.innerHTML, data);
