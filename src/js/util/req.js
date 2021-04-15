@@ -11,6 +11,14 @@ const handleFetchResponse = res => {
   });
 };
 
+/**
+ * Perform a GET request.
+ *
+ * @param {string} url Url to get from.
+ * @param {object} data Data object.
+ *
+ * @returns Promise
+ */
 export const get = (url, data = null) =>
   new Promise((resolve, reject) => {
     if (data) {
@@ -19,10 +27,23 @@ export const get = (url, data = null) =>
 
     fetch(url)
       .then(handleFetchResponse)
-      .then(data => resolve(data))
+      .then(({ success, data }) => {
+        if (!success) {
+          return reject('Error in GET');
+        }
+        return resolve(data);
+      })
       .catch(error => reject(error));
   });
 
+/**
+ * Perform a POST request.
+ *
+ * @param {string} url Url to get from.
+ * @param {object} data Data object.
+ *
+ * @returns Promise
+ */
 export const post = (url, data = {}) =>
   new Promise((resolve, reject) => {
     fetch(url, {
@@ -33,6 +54,11 @@ export const post = (url, data = {}) =>
       },
     })
       .then(handleFetchResponse)
-      .then(data => resolve(data))
+      .then(({ success, data }) => {
+        if (!success) {
+          return reject('Error in POST');
+        }
+        return resolve(data);
+      })
       .catch(error => reject(error));
   });

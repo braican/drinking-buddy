@@ -4,13 +4,14 @@ import Fetcher from './modules/Fetcher';
 import Toggler from './modules/Toggler';
 import Search from './modules/Search';
 
-import routes from './routes';
+import './store';
 
+import routes from './routes';
 export const appRouter = new Router(routes);
 
 const onDataLoad = () => {
   // eslint-disable-next-line
-  console.log('data loaded');
+  // console.log('data loaded');
 };
 
 // Fire whenever a new page is loaded via the router.
@@ -25,21 +26,24 @@ appRouter.on('load', () => {
   Promise.all(loaders.map(l => l.loaded)).then(onDataLoad);
 });
 
-const loadUserData = () => {
-  const userDataEl = document.querySelector('#app-user-data');
-  if (userDataEl) {
-    new Loader('userData', userDataEl);
-  }
-};
-
 // Initial page load.
 (() => {
+  // Start search.
   new Search();
-  loadUserData();
 
-  // One time listeners.
-  document.querySelectorAll('.js-fetch').forEach(el => new Fetcher(el));
-  document.querySelectorAll('.js-toggler').forEach(el => new Toggler(el));
+  const loaders = [];
+
+  // Load user data.
+  const userDataEl = document.querySelector('#app-user-data');
+  if (userDataEl) {
+    loaders.push(new Loader('userData', userDataEl));
+  }
+
+  Promise.all(loaders.map(l => l.loaded)).then(() => {
+    // One time listeners.
+    document.querySelectorAll('.js-fetch').forEach(el => new Fetcher(el));
+    document.querySelectorAll('.js-toggler').forEach(el => new Toggler(el));
+  });
 
   appRouter.init();
 })();

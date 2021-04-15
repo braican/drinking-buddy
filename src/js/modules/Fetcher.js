@@ -9,16 +9,12 @@ class Fetcher {
     return new Promise((resolve, reject) => {
       // get('/api/userData') // DEBUG ONLY for local ref.
       post('/api/fetch', { userOnly: 1 })
-        .then(({ success, data }) => {
-          if (!success) {
-            throw new Error('Error');
-          }
-
+        .then(data => {
           console.warn(`[Fetcher] You've checked in ${data.stats.total_checkins} beers`);
           return data.stats.total_checkins;
         })
         .then(userCheckinCount => get('/api/checkinData', { userCheckinCount }))
-        .then(({ data }) => resolve(data))
+        .then(data => resolve(data))
         .catch(reject);
     });
   }
@@ -27,7 +23,7 @@ class Fetcher {
     return post('api/fetch', {
       checkinsOnly: 1,
       latestCheckin,
-    }).then(({ data }) => {
+    }).then(data => {
       console.warn(`[Fetcher] ${data.newCheckinsAdded} checkins added!`);
     });
   }

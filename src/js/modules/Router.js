@@ -1,3 +1,4 @@
+import Mustache from 'mustache';
 import { regexify } from '../util';
 
 /**
@@ -58,12 +59,23 @@ class Router {
    */
   updatePage() {
     const route = window.location.pathname;
-    const match = Object.keys(this.routes).find(str => route.match(regexify(str)) !== null);
+    const data = {};
+
+    const match = Object.keys(this.routes).find(str => {
+      const find = route.match(regexify(str));
+      if (find !== null) {
+        data.match = find[1] || null;
+        return true;
+      }
+      return false;
+    });
 
     this.route = route;
     this.config = this.routes[match] || null;
 
-    this.appFrame.innerHTML = this.config?.page || '';
+    const markup = Mustache.render(this.config?.page || '', data, {}, ['<%', '%>']);
+
+    this.appFrame.innerHTML = markup;
     this.setupLinkListeners();
     (this.events.load || []).forEach(fn => fn());
   }

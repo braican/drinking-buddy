@@ -53,9 +53,9 @@ class Search {
     setTimeout(() => this.input.focus(), this.transitionTiming);
 
     if (!this.breweriesLoaded) {
-      get('/api/allBreweries').then(res => {
+      get('/api/allBreweries').then(breweries => {
         this.breweriesLoaded = true;
-        this.breweries = Object.values(res.data);
+        this.breweries = Object.values(breweries);
       });
     }
   }
