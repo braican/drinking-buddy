@@ -17,7 +17,7 @@ class Loader {
 
   load() {
     store
-      .get(this.id, this.params)
+      .get(this.id)
       // Check that the store has the data. If it doesn't, fetch it from the API.
       .then(res => (res !== null ? Promise.resolve(res) : get(`/api/${this.id}`, this.params)))
       .then(this.handleSuccess.bind(this))
@@ -37,7 +37,13 @@ class Loader {
     }
 
     // eslint-disable-next-line
-    // console.log(data);
+    console.log(data);
+
+    data.formatRating = () => (rating, render) => {
+      const r = parseFloat(render(rating));
+      const pct = (r * 100) / 5;
+      return `<div class="checkin__rating-bar"><span style="width: ${pct}%"></span></div>`;
+    };
 
     if (template) {
       const rendered = Mustache.render(template.innerHTML, data);

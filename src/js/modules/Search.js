@@ -49,7 +49,10 @@ class Search {
     this.body.classList.add('search--visible');
     this.searchVisible = true;
 
-    setTimeout(() => this.input.focus(), this.transitionTiming);
+    setTimeout(() => {
+      this.input.focus();
+      window.scrollTo(0, 0);
+    }, this.transitionTiming);
 
     if (this.breweries.length === 0) {
       store.get('breweries').then(breweries => {
@@ -66,6 +69,8 @@ class Search {
   hide() {
     this.body.classList.remove('search--visible');
     this.searchVisible = false;
+    this.input.value = '';
+    this.results.innerHTML = '';
   }
 
   handleToggleSearch() {

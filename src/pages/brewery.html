@@ -3,7 +3,21 @@
     <p class="js-loading">Loading...</p>
 
     <script type="text/template">
-      <h2>test</h2>
+      <h2>{{ brewery_name }}</h2>
+
+      <p>Overall rating: {{ overallRating }}</p>
+
+      <p>{{ checkinCount }} checkins</p>
+
+      <ul>
+        {{#checkins}}
+          <li class="checkin">
+            <p>{{ beer.beer_name }}</p>
+            <p>{{ created_at }}</p>
+            {{ #formatRating }}{{ rating_score }}{{ /formatRating }}
+          </li>
+        {{/checkins}}
+      </ul>
     </script>
   </div>
 </section>

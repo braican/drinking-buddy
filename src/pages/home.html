@@ -8,6 +8,8 @@
         {{#latestCheckins}}
           <li>
             {{ brewery.brewery_name }} {{ beer.beer_name }}
+
+            {{ #formatRating }}{{ rating_score }}{{ /formatRating }}
           </li>
         {{/latestCheckins}}
       </ul>

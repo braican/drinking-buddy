@@ -1,5 +1,4 @@
 const FileLoader = require('../../lib/FileLoader');
-const slugify = require('../../util/slugify');
 
 /**
  * @return object
@@ -12,8 +11,7 @@ exports.get = async (req, res) => {
     const breweries = new Map();
 
     checkins.forEach(ch => {
-      const { brewery_name: name, brewery_id: id } = ch.brewery;
-      const slug = slugify(name);
+      const { brewery_name: name, brewery_id: id, brewery_slug: slug } = ch.brewery;
 
       if (!breweries.has(slug)) {
         breweries.set(slug, { name, id, slug });

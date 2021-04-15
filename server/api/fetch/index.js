@@ -140,6 +140,7 @@ exports.post = async (req, res) => {
     if (req.body.checkinsOnly === 1) {
       const latestCheckin = req.body.latestCheckin || null;
       const newCheckinsAdded = await fetchUserCheckins(latestCheckin);
+
       return res.json({
         success: true,
         data: {

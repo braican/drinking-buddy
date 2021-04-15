@@ -4,12 +4,12 @@
   visibility: hidden;
   overflow: auto;
   position: fixed;
-  top: calc(80px + 3rem);
+  top: 0;
   left: 4px;
   right: 0;
   bottom: 0;
   background-color: $c-white;
-  padding: #{$spacing * 2} $spacing $spacing $spacing;
+  padding: #{$spacing * 4} $spacing $spacing $spacing;
 
   .search--visible & {
     opacity: 1;
@@ -26,7 +26,7 @@
 
 .search__close {
   position: absolute;
-  top: 2px;
+  top: 2rem;
   right: $spacing;
   display: flex;
   align-items: center;

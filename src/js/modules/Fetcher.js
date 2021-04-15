@@ -20,7 +20,7 @@ class Fetcher {
   }
 
   fetchCheckins(latestCheckin) {
-    return post('api/fetch', {
+    return post('/api/fetch', {
       checkinsOnly: 1,
       latestCheckin,
     }).then(data => {
