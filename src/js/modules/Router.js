@@ -36,6 +36,7 @@ class Router {
     this.appFrame = appFrame;
 
     this.updatePage();
+    this.setupLinkListeners(document);
 
     window.addEventListener('popstate', this.updatePage.bind(this));
   }
@@ -43,10 +44,12 @@ class Router {
   /**
    * Set up listeners inside the app frame.
    *
+   * @param {element} container The DOM element to link up.
+   *
    * @return void
    */
-  setupLinkListeners() {
-    this.appFrame.querySelectorAll('a[data-href]').forEach(el => {
+  setupLinkListeners(container) {
+    container.querySelectorAll('a[data-href]').forEach(el => {
       el.href = '#';
       el.addEventListener('click', this.handleClick.bind(this));
     });
@@ -90,7 +93,7 @@ class Router {
     const markup = Mustache.render(this.config?.page || '', data, {}, ['<%', '%>']);
 
     this.appFrame.innerHTML = markup;
-    this.setupLinkListeners();
+    this.setupLinkListeners(this.appFrame);
     (this.events.load || []).forEach(fn => fn());
   }
 
@@ -104,6 +107,11 @@ class Router {
   handleClick(event) {
     const { href } = event.currentTarget.dataset;
     event.preventDefault();
+
+    if (href === window.location.pathname) {
+      return;
+    }
+
     this.push(href);
   }
 

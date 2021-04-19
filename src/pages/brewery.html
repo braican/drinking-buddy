@@ -3,21 +3,60 @@
     <p class="js-loading">Loading...</p>
 
     <script type="text/template">
-      <h2>{{ brewery_name }}</h2>
+      <div class="js-brewery">
+        <header class="brewery__header">
+          <h2 class="brewery__name">{{ brewery_name }}</h2>
+          <p>Overall rating: <strong>{{ overallRating }}</strong></p>
+        </header>
 
-      <p>Overall rating: {{ overallRating }}</p>
+        <div class="brewery-tabs">
+          <nav class="brewery-tabs__nav">
+            <ul>
+              <li><button data-tab="beers" class="brewery-tabs__nav-button">Beers</button></li>
+              <li><button data-tab="stats" class="brewery-tabs__nav-button">Stats</button></li>
+              <li><button data-tab="checkins" class="brewery-tabs__nav-button">Checkins</button></li>
+            </ul>
+          </nav>
 
-      <p>{{ checkinCount }} checkins</p>
+          <div class="brewery-tabs__content">
 
-      <ul>
-        {{#checkins}}
-          <li class="checkin">
-            <p>{{ beer.beer_name }}</p>
-            <p>{{ created_at }}</p>
-            {{ #formatRating }}{{ rating_score }}{{ /formatRating }}
-          </li>
-        {{/checkins}}
-      </ul>
+            <div class="brewery-tab" data-tab="beers">
+              <p>{{ checkinCount }} checkins</p>
+              <p>{{ beerCount }} beers had</p>
+
+              <ul class="brewery__beers">
+                {{ #beers }}
+                <li class="beer">
+                  <p class="beer__name"><strong>{{ beer }}</strong></p>
+                  <p>{{ style }}</p>
+                  <p>{{ checkinCount  }} hads</p>
+                  <p>Rating: {{ rating }}</p>
+                </li>
+                {{ /beers }}
+              </ul>
+            </div>
+
+            <div class="brewery-tab" data-tab="stats">
+              <p>Stats here</p>
+              <p>{{ checkinCount }} checkins</p>
+            </div>
+
+            <div class="brewery-tab" data-tab="checkins">
+              <p>{{ checkinCount }} checkins</p>
+
+              <ul>
+                {{#checkins}}
+                  <li class="checkin">
+                    <p><strong>{{ beer.beer_name }}</strong></p>
+                    <p>{{ #formatDate }}{{ created_at }}{{ /formatDate }}</p>
+                    <div>{{ #formatRating }}{{ rating_score }}{{ /formatRating }}</div>
+                  </li>
+                {{/checkins}}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </script>
   </div>
 </section>

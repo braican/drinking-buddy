@@ -1,4 +1,5 @@
-$c-black: #000;
+$c-black: rgb(24, 24, 30);
 $c-gray-c: #ccc;
 $c-yellow: rgb(219, 163, 35);
+$c-yellow-dark: darken($c-yellow, 10%);
 $c-white: #fff;

@@ -1,0 +1,43 @@
+.brewery__header {
+  margin-bottom: $spacing;
+}
+
+// tabs
+// -----------
+
+.brewery-tabs__nav {
+  margin-bottom: $spacing;
+  ul {
+    display: flex;
+
+    li + li {
+      margin-left: $spacing;
+    }
+  }
+}
+
+.brewery-tabs__nav-button {
+  &.active {
+    font-weight: $fw-bold;
+  }
+}
+
+.brewery-tab {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+// beers
+// -----------
+.brewery__beers .beer {
+  margin-top: $spacing;
+  padding: $spacing;
+  border: 1px solid rgba($c-gray-c, 0.5);
+}
+
+.beer__name {
+  font-size: $fs-md;
+}

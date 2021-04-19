@@ -1,7 +1,9 @@
 .app {
-  border-left: 4px solid $c-yellow;
+  border-right: 4px solid $c-yellow-dark;
   min-height: 100vh;
   padding: $spacing;
+  background-color: $c-black;
+  color: $c-white;
 }
 
 .block {
@@ -9,4 +11,5 @@
 }
 
 .app-main {
+  margin-top: $spacing * 2;
 }

@@ -39,10 +39,34 @@ class Loader {
     // eslint-disable-next-line
     console.log(data);
 
+    data.formatDate = () => (data, render) => {
+      const date = new Date(render(data));
+      return date.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'medium' });
+    };
+
     data.formatRating = () => (rating, render) => {
       const r = parseFloat(render(rating));
-      const pct = (r * 100) / 5;
-      return `<div class="checkin__rating-bar"><span style="width: ${pct}%"></span></div>`;
+      let markup = '<div class="checkin__rating">';
+
+      for (let i = 0; i < 5; i++) {
+        let cl = '';
+        const diff = r - i;
+
+        if (diff >= 1) {
+          cl = 'fill';
+        } else if (diff === 0.75) {
+          cl = 'three-quarter';
+        } else if (diff === 0.5) {
+          cl = 'half';
+        } else if (diff === 0.25) {
+          cl = 'quarter';
+        }
+        markup += `<span class="${cl}"></span>`;
+      }
+
+      markup += `</div>`;
+
+      return markup;
     };
 
     if (template) {

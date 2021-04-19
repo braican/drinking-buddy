@@ -6,10 +6,10 @@
     <script type="text/template">
       <ul>
         {{#latestCheckins}}
-          <li>
-            {{ brewery.brewery_name }} {{ beer.beer_name }}
-
-            {{ #formatRating }}{{ rating_score }}{{ /formatRating }}
+          <li class="checkin">
+            <p><strong>{{ brewery.brewery_name }} {{ beer.beer_name }}</strong></p>
+            <p>{{ #formatDate }}{{ created_at }}{{ /formatDate }}</p>
+            <div>{{ #formatRating }}{{ rating_score }}{{ /formatRating }}</div>
           </li>
         {{/latestCheckins}}
       </ul>

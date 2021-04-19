@@ -8,8 +8,8 @@
   left: 4px;
   right: 0;
   bottom: 0;
-  background-color: $c-white;
-  padding: #{$spacing * 4} $spacing $spacing $spacing;
+  background-color: $c-black;
+  padding: #{$spacing * 6} $spacing $spacing $spacing;
 
   .search--visible & {
     opacity: 1;
@@ -20,8 +20,18 @@
 .search__input {
   width: 100%;
   display: block;
-  font-size: 2rem;
+  font-size: $fs-lg;
   font-weight: $fw-bold;
+  background-color: $c-black;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid $c-gray-c;
+  padding-left: 0;
+  padding-right: 0;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .search__close {
@@ -38,5 +48,29 @@
   svg {
     width: 16px;
     height: 16px;
+  }
+}
+
+// Results
+// -----------
+
+.search__results {
+  margin-top: $spacing * 2;
+
+  li {
+    margin-top: $spacing * 2;
+  }
+}
+
+.search__result {
+  margin-top: $spacing * 2;
+}
+
+.search__item {
+  font-size: $fs-lg;
+  color: $c-white;
+
+  &:hover {
+    color: $c-gray-c;
   }
 }

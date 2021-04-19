@@ -1,0 +1,19 @@
+.utility-menu {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  background-color: $c-yellow-dark;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  width: 56px;
+
+  .util-menu__button {
+    width: 100%;
+    padding: 18px;
+    color: $c-white;
+  }
+}

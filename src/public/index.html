@@ -16,14 +16,22 @@
       <div class="user__avatar">&nbsp;</div>
 
       <script type="text/template">
-        <header class="user block">
-          <p><strong>Welcome in, {{ user.first_name }}</strong></p>
+        <header class="user">
+          <div class="user__stats">
+            <p>Welcome in, {{ user.first_name }}</p>
+            <p>Beers <strong>{{ user.stats.total_beers }}</strong></p>
+            <p>Checkins <strong>{{ user.stats.total_checkins }}</strong></p>
+          </div>
+
+          <button class="js-toggler user__menu icon-btn" data-class="last-updated">
+            <svg viewBox="0 0 24 28">
+              <path fill="currentColor" d="M23.609 16.5c0 0.031 0 0.078-0.016 0.109-1.328 5.531-5.891 9.391-11.656 9.391-3.047 0-6-1.203-8.219-3.313l-2.016 2.016c-0.187 0.187-0.438 0.297-0.703 0.297-0.547 0-1-0.453-1-1v-7c0-0.547 0.453-1 1-1h7c0.547 0 1 0.453 1 1 0 0.266-0.109 0.516-0.297 0.703l-2.141 2.141c1.469 1.375 3.422 2.156 5.437 2.156 2.781 0 5.359-1.437 6.813-3.813 0.375-0.609 0.562-1.203 0.828-1.828 0.078-0.219 0.234-0.359 0.469-0.359h3c0.281 0 0.5 0.234 0.5 0.5zM24 4v7c0 0.547-0.453 1-1 1h-7c-0.547 0-1-0.453-1-1 0-0.266 0.109-0.516 0.297-0.703l2.156-2.156c-1.484-1.375-3.437-2.141-5.453-2.141-2.781 0-5.359 1.437-6.813 3.813-0.375 0.609-0.562 1.203-0.828 1.828-0.078 0.219-0.234 0.359-0.469 0.359h-3.109c-0.281 0-0.5-0.234-0.5-0.5v-0.109c1.344-5.547 5.953-9.391 11.719-9.391 3.063 0 6.047 1.219 8.266 3.313l2.031-2.016c0.187-0.187 0.438-0.297 0.703-0.297 0.547 0 1 0.453 1 1z"></path>
+            </svg>
+          </button>
 
           <div class="user__avatar">
             <img src="{{ user.user_avatar }}" alt="Profile avatar for {{ user.first_name }}" />
           </div>
-
-          <button class="js-toggler user__menu" data-class="last-updated"><span class="visually-hidden">Options</span></button>
         </header>
 
         <div class="last-updated block">
@@ -35,12 +43,12 @@
 
     <div id="search" class="search__wrapper">
       <div class="search__controls">
-        <input type="text" class="search__input">
+        <input type="text" class="search__input" placeholder="Search for a brewery">
 
         <button class="js-toggle-search icon-btn search__close">
           <span>Close Search</span>
           <svg viewBox="0 0 20 20">
-            <path d="M10 8.586l-7.071-7.071-1.414 1.414 7.071 7.071-7.071 7.071 1.414 1.414 7.071-7.071 7.071 7.071 1.414-1.414-7.071-7.071 7.071-7.071-1.414-1.414-7.071 7.071z"></path>
+            <path fill="currentColor" d="M10 8.586l-7.071-7.071-1.414 1.414 7.071 7.071-7.071 7.071 1.414 1.414 7.071-7.071 7.071 7.071 1.414-1.414-7.071-7.071 7.071-7.071-1.414-1.414-7.071 7.071z"></path>
           </svg>
         </button>
       </div>
@@ -50,7 +58,7 @@
 
       <script type="text/template">
         <ul>
-          {{ #results }}<li><a href="#" data-href="/brewery/{{ slug }}">{{ name }}</a></li>{{ /results }}
+          {{ #results }}<li class="search__result"><a href="#" data-href="/brewery/{{ slug }}" class="search__item">{{ name }}</a></li>{{ /results }}
         </ul>
       </script>
     </div>
@@ -58,13 +66,24 @@
     <!-- MAIN -->
     <main class="app-main" id="app-frame"></main>
 
+    <!-- Utility menu -->
+    <nav class="utility-menu">
 
-    <button class="search-btn js-toggle-search icon-btn">
-      <span class="visually-hidden">Search</span>
-      <svg viewBox="0 0 20 20">
-        <path fill="currentColor" d="M12.9 14.32c-1.34 1.049-3.050 1.682-4.908 1.682-4.418 0-8-3.582-8-8s3.582-8 8-8c4.418 0 8 3.582 8 8 0 1.858-0.633 3.567-1.695 4.925l0.013-0.018 5.35 5.33-1.42 1.42-5.33-5.34zM8 14c3.314 0 6-2.686 6-6s-2.686-6-6-6v0c-3.314 0-6 2.686-6 6s2.686 6 6 6v0z"></path>
-      </svg>
-    </button>
+      <a class="home-btn icon-btn util-menu__button" data-href="/">
+        <span class="visually-hidden">Home</span>
+        <svg viewBox="0 0 32 32">
+          <path fill="currentColor" d="M32 19l-6-6v-9h-4v5l-6-6-16 16v1h4v10h10v-6h4v6h10v-10h4z"></path>
+        </svg>
+      </a>
+
+      <button class="search-btn js-toggle-search icon-btn util-menu__button">
+        <span class="visually-hidden">Search</span>
+        <svg viewBox="0 0 20 20">
+          <path fill="currentColor" d="M12.9 14.32c-1.34 1.049-3.050 1.682-4.908 1.682-4.418 0-8-3.582-8-8s3.582-8 8-8c4.418 0 8 3.582 8 8 0 1.858-0.633 3.567-1.695 4.925l0.013-0.018 5.35 5.33-1.42 1.42-5.33-5.34zM8 14c3.314 0 6-2.686 6-6s-2.686-6-6-6v0c-3.314 0-6 2.686-6 6s2.686 6 6 6v0z"></path>
+        </svg>
+      </button>
+    </nav>
+
 
   </div>
 

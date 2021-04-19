@@ -1,18 +1,46 @@
 .checkin {
-  border: 1px solid $c-gray-c;
+  border: 1px solid rgba($c-gray-c, 0.5);
   padding: $spacing;
   margin-bottom: $spacing;
 }
 
-.checkin__rating-bar {
-  display: block;
-  width: 100%;
-  height: 10px;
-  border: 1px solid $c-gray-c;
+.checkin__rating {
+  margin-top: $spacing;
 
   span {
-    display: block;
-    background-color: $c-yellow;
-    height: 100%;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: rgba($c-gray-c, 0.5);
+    overflow: hidden;
+
+    &:before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    &.fill:before,
+    &.three-quarter:before,
+    &.half:before,
+    &.quarter:before {
+      background-color: $c-yellow;
+    }
+
+    &.three-quarter:before {
+      width: 75%;
+    }
+    &.half:before {
+      width: 50%;
+    }
+    &.quarter:before {
+      width: 25%;
+    }
+
+    + span {
+      margin-left: 6px;
+    }
   }
 }
