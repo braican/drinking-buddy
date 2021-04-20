@@ -17,11 +17,12 @@ app.use(
 
 app.use(express.json());
 app.use(express.static(path.join(`${__dirname}/dist`)));
+app.use(express.static(path.join(`${__dirname}/src/public`)));
 app.use(apiRoutes);
 
 // Route everything through the index file.
-app.use((req, res, next) => {
-  res.sendFile(path.join(`${__dirname}/src/public/index.html`));
+app.use((req, res) => {
+  res.sendFile(path.join(`${__dirname}/src/index.html`));
 });
 
 // Listen.
