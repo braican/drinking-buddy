@@ -70,9 +70,13 @@ class Router {
       const find = route.match(regexify(str));
       if (find !== null) {
         const keys = str.match(/(:.+\/?)/);
-        for (let index = 1; index < find.length; index++) {
-          data.params[keys[index].replace(':', '')] = find[index];
+
+        if (keys) {
+          for (let index = 1; index < find.length; index++) {
+            data.params[keys[index].replace(':', '')] = find[index];
+          }
         }
+
         return true;
       }
       return false;
