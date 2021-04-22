@@ -1,0 +1,17 @@
+.brewery-list__brewery {
+  margin-bottom: $spacing;
+  padding-bottom: $spacing;
+  border-bottom: 1px solid rgba($c-gray-c, 0.5);
+  display: flex;
+}
+
+.brewery-list__name {
+  font-size: $fs-md;
+}
+
+.brewery-list__rating {
+  width: 60px;
+  margin-left: auto;
+  text-align: right;
+  font-size: $fs-md;
+}

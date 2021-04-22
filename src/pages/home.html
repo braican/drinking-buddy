@@ -1,25 +1,56 @@
 <section class="block">
 
-  <div data-loader="latestCheckins">
-    <p class="js-loading">Loading...</p>
+  <div class="tabs js-tabs">
+    <nav class="tab__nav">
+      <ul>
+        <li><button data-tab="stats" class="tab__button">Stats</button></li>
+        <li><button data-tab="checkins" class="tab__button">Latest Checkins</button></li>
+      </ul>
+    </nav>
 
-    <script type="text/template">
-      <div class="tabs js-tabs">
-        <nav class="tab__nav">
-          <ul>
-            <li><button data-tab="stats" class="tab__button">Stats</button></li>
-            <li><button data-tab="checkins" class="tab__button">Latest Checkins</button></li>
-          </ul>
-        </nav>
+    <div class="tabs__content">
+      <div class="tab" data-tab="stats">
 
-        <div class="tabs__content">
-          <div class="tab" data-tab="stats">
-            <p>Stats here</p>
-          </div>
+        <div data-loader="globalStats">
+          <script type="text/template">
+            <div class="block">
+              <h2>Top Rated Breweries</h2>
+              <ul class="brewery-list">
+                {{#bestRatedBreweries}}
+                  <li class="brewery-list__brewery">
+                    <div>
+                      <p class="brewery-list__name"><a data-href="/brewery/{{ slug }}"><strong>{{ name }}</strong></a></p>
+                      <p>Total beers: {{ checkinCount }}</p>
+                    </div>
+                    <p class="brewery-list__rating">{{ avg }}</p>
+                  </li>
+                {{/bestRatedBreweries}}
+              </ul>
+            </div>
 
-          <div class="tab" data-tab="checkins">
-            <h2 class="page-headline">Latest checkins</h2>
+            <div class="block">
+              <h2>Most Popular Breweries</h2>
+              <ul class="brewery-list">
+                {{#mostConsumedBreweries}}
+                  <li class="brewery-list__brewery">
+                    <div>
+                      <p class="brewery-list__name"><strong>{{ name }}</strong></p>
+                      <p>Total beers: {{ checkinCount }}</p>
+                    </div>
+                    <p class="brewery-list__rating">{{ avg }}</p>
+                  </li>
+                {{/mostConsumedBreweries}}
+              </ul>
+            </div>
+          </script>
+        </div>
+      </div>
 
+      <div class="tab" data-tab="checkins">
+        <h2>Latest checkins</h2>
+
+        <div data-loader="latestCheckins">
+          <script type="text/template">
             <ul>
               {{#latestCheckins}}
                 <li class="checkin">
@@ -29,9 +60,12 @@
                 </li>
               {{/latestCheckins}}
             </ul>
-          </div>
+          </script>
         </div>
+
       </div>
-    </script>
+    </div>
   </div>
+
+
 </section>

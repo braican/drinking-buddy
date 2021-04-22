@@ -11,9 +11,11 @@ import './store';
 import routes from './routes';
 export const appRouter = new Router(routes);
 
-const onDataLoad = () => {
+const onDataLoad = loaders => {
   document.querySelectorAll('.js-brewery').forEach(el => new Brewery(el));
   document.querySelectorAll('.js-tabs').forEach(el => new Tabs(el));
+
+  loaders.forEach(loader => appRouter.setupLinkListeners(loader));
 };
 
 // Fire whenever a new page is loaded via the router.

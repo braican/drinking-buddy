@@ -21,7 +21,7 @@ class Loader {
       // Check that the store has the data. If it doesn't, fetch it from the API.
       .then(res => (res !== null ? Promise.resolve(res) : get(`/api/${this.id}`, this.params)))
       .then(this.handleSuccess.bind(this))
-      .finally(this.resolve)
+      .finally(() => this.resolve(this.el))
       .catch(e => {
         console.error('[Something went wrong in the loader]');
         console.error(e);
