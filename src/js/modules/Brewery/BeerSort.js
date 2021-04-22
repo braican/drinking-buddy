@@ -56,7 +56,13 @@ class BeerSort {
       this.sortDisplay.innerText = label;
       this.hideSortOptions();
 
-      this.beerlist.innerHTML = Mustache.render(beerlist, { beers: sorted });
+      this.beerlist.innerHTML = Mustache.render(beerlist, {
+        beers: sorted,
+        formatDateShort: () => (data, render) => {
+          const date = new Date(render(data));
+          return date.toLocaleString('en-US', { dateStyle: 'medium' });
+        },
+      });
     });
   }
 }

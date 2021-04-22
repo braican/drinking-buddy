@@ -8,7 +8,7 @@
 
 .beer__name {
   font-size: $fs-md;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.1rem;
 }
 
 .beer__stats {
@@ -19,5 +19,9 @@
 
 .beer__rating {
   font-size: $fs-md;
+  margin-bottom: 0.25rem;
+}
+
+.beer__style {
   margin-bottom: 0.5em;
 }

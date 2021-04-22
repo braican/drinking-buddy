@@ -39,6 +39,7 @@ exports.get = async (req, res) => {
           label: ch.beer.beer_label,
           style: ch.beer.beer_style,
           abv: ch.beer.beer_abv,
+          lastHad: ch.created_at,
           checkins: [
             {
               date: ch.created_at,

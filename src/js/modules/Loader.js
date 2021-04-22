@@ -48,6 +48,11 @@ class Loader {
       return date.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'medium' });
     };
 
+    data.formatDateShort = () => (data, render) => {
+      const date = new Date(render(data));
+      return date.toLocaleString('en-US', { dateStyle: 'medium' });
+    };
+
     data.formatRating = () => (rating, render) => {
       const r = parseFloat(render(rating));
       let markup = '<div class="checkin__rating">';
