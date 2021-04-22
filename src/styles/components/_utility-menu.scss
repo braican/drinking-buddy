@@ -5,15 +5,16 @@
   background-color: $c-yellow-dark;
   text-align: center;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
   align-items: center;
-  width: 56px;
 
   .util-menu__button {
-    width: 100%;
+    width: 56px;
     padding: 18px;
     color: $c-white;
+    position: relative;
+
+    + .util-menu__button {
+      border-left: 1px solid rgba($c-white, 0.2);
+    }
   }
 }

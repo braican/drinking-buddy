@@ -1,8 +1,12 @@
 {{ #beers }}
 <li class="beer">
-  <p class="beer__name"><strong>{{ beer }}</strong></p>
-  <p>{{ style }}</p>
-  <p>{{ checkinCount  }} hads</p>
-  <p>Rating: {{ rating }}</p>
+  <div>
+    <p class="beer__name"><strong>{{ beer }}</strong></p>
+    <p>{{ style }}</p>
+  </div>
+  <div class="beer__stats">
+    <p class="beer__rating">{{ rating }}</p>
+    <p>{{ checkinCount  }} hads</p>
+  </div>
 </li>
 {{ /beers }}

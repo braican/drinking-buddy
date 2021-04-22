@@ -34,7 +34,7 @@
                 {{#mostConsumedBreweries}}
                   <li class="brewery-list__brewery">
                     <div>
-                      <p class="brewery-list__name"><strong>{{ name }}</strong></p>
+                      <p class="brewery-list__name"><a data-href="/brewery/{{ slug }}"><strong>{{ name }}</strong></a></p>
                       <p>Total beers: {{ checkinCount }}</p>
                     </div>
                     <p class="brewery-list__rating">{{ avg }}</p>

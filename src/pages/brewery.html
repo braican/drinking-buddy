@@ -13,7 +13,6 @@
           <nav class="tab__nav">
             <ul>
               <li><button data-tab="beers" class="tab__button">Beers</button></li>
-              <li><button data-tab="stats" class="tab__button">Stats</button></li>
               <li><button data-tab="checkins" class="tab__button">Checkins</button></li>
             </ul>
           </nav>
@@ -43,24 +42,23 @@
               <ul class="brewery__beers js-beerlist">
                 {{ #beers }}
                 <li class="beer">
-                  <p class="beer__name"><strong>{{ beer }}</strong></p>
-                  <p>{{ style }}</p>
-                  <p>{{ checkinCount  }} hads</p>
-                  <p>Rating: {{ rating }}</p>
+                  <div>
+                    <p class="beer__name"><strong>{{ beer }}</strong></p>
+                    <p>{{ style }}</p>
+                  </div>
+                  <div class="beer__stats">
+                    <p class="beer__rating">{{ rating }}</p>
+                    <p>{{ checkinCount  }} hads</p>
+                  </div>
                 </li>
                 {{ /beers }}
               </ul>
             </div>
 
-            <div class="tab" data-tab="stats">
-              <p>Stats here</p>
-              <p>{{ checkinCount }} checkins</p>
-            </div>
-
             <div class="tab" data-tab="checkins">
               <p>{{ checkinCount }} checkins</p>
 
-              <ul>
+              <ul class="brewery__checkin-list">
                 {{#checkins}}
                   <li class="checkin">
                     <p><strong>{{ beer.beer_name }}</strong></p>

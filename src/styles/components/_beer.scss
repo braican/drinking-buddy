@@ -1,0 +1,23 @@
+.beer {
+  margin-top: $spacing;
+  padding: $spacing;
+  border: 1px solid rgba($c-gray-c, 0.5);
+  display: flex;
+  justify-content: space-between;
+}
+
+.beer__name {
+  font-size: $fs-md;
+  margin-bottom: 0.5em;
+}
+
+.beer__stats {
+  flex: 0 0 72px;
+  margin-left: $spacing;
+  text-align: right;
+}
+
+.beer__rating {
+  font-size: $fs-md;
+  margin-bottom: 0.5em;
+}

@@ -3,10 +3,16 @@
   padding-bottom: $spacing;
   border-bottom: 1px solid rgba($c-gray-c, 0.5);
   display: flex;
+  align-items: center;
 }
 
 .brewery-list__name {
   font-size: $fs-md;
+  margin-bottom: 0.5em;
+
+  a {
+    color: inherit;
+  }
 }
 
 .brewery-list__rating {
