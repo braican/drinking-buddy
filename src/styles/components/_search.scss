@@ -10,6 +10,7 @@
   bottom: 0;
   background-color: $c-black;
   padding: #{$spacing * 6} $spacing $spacing $spacing;
+  z-index: 10;
 
   .search--visible & {
     opacity: 1;

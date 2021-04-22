@@ -1,18 +1,37 @@
 <section class="block">
-  <h2>Latest checkins</h2>
+
   <div data-loader="latestCheckins">
     <p class="js-loading">Loading...</p>
 
     <script type="text/template">
-      <ul>
-        {{#latestCheckins}}
-          <li class="checkin">
-            <p><strong>{{ brewery.brewery_name }} {{ beer.beer_name }}</strong></p>
-            <p>{{ #formatDate }}{{ created_at }}{{ /formatDate }}</p>
-            <div>{{ #formatRating }}{{ rating_score }}{{ /formatRating }}</div>
-          </li>
-        {{/latestCheckins}}
-      </ul>
+      <div class="tabs js-tabs">
+        <nav class="tab__nav">
+          <ul>
+            <li><button data-tab="stats" class="tab__button">Stats</button></li>
+            <li><button data-tab="checkins" class="tab__button">Latest Checkins</button></li>
+          </ul>
+        </nav>
+
+        <div class="tabs__content">
+          <div class="tab" data-tab="stats">
+            <p>Stats here</p>
+          </div>
+
+          <div class="tab" data-tab="checkins">
+            <h2 class="page-headline">Latest checkins</h2>
+
+            <ul>
+              {{#latestCheckins}}
+                <li class="checkin">
+                  <p><strong>{{ brewery.brewery_name }} {{ beer.beer_name }}</strong></p>
+                  <p>{{ #formatDate }}{{ created_at }}{{ /formatDate }}</p>
+                  <div>{{ #formatRating }}{{ rating_score }}{{ /formatRating }}</div>
+                </li>
+              {{/latestCheckins}}
+            </ul>
+          </div>
+        </div>
+      </div>
     </script>
   </div>
 </section>

@@ -1,0 +1,31 @@
+// tabs
+// -----------
+
+.tab__nav {
+  margin-bottom: $spacing;
+  ul {
+    display: flex;
+
+    li + li {
+      margin-left: $spacing;
+    }
+  }
+}
+
+.tab__button {
+  background-color: $c-gray-2;
+  padding: 0.5em;
+
+  &.active {
+    background-color: rgba($c-gray-c, 0.25);
+    font-weight: $fw-bold;
+  }
+}
+
+.tab {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}

@@ -1,11 +1,12 @@
-class BreweryTabs {
+const ACTIVE_TAB_CLASS = 'active';
+
+class Tabs {
   constructor(el) {
-    this.el = el;
     this.tablinks = el.querySelectorAll('nav [data-tab]');
-    this.tabs = el.querySelectorAll('.brewery-tab[data-tab]');
+    this.tabs = el.querySelectorAll('.tab[data-tab]');
 
     if (this.tablinks.length < 1 || this.tabs.length < 1) {
-      console.warn('[BreweryTabs] No tabs found.');
+      console.warn('[Tabs] No tabs found.');
       return;
     }
 
@@ -28,20 +29,20 @@ class BreweryTabs {
 
     this.tablinks.forEach(el => {
       if (el === clicked) {
-        el.classList.add('active');
+        el.classList.add(ACTIVE_TAB_CLASS);
       } else {
-        el.classList.remove('active');
+        el.classList.remove(ACTIVE_TAB_CLASS);
       }
     });
 
     this.tabs.forEach(el => {
       if (el.dataset.tab === tab) {
-        el.classList.add('active');
+        el.classList.add(ACTIVE_TAB_CLASS);
       } else {
-        el.classList.remove('active');
+        el.classList.remove(ACTIVE_TAB_CLASS);
       }
     });
   }
 }
 
-export default BreweryTabs;
+export default Tabs;

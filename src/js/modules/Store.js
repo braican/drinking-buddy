@@ -35,6 +35,20 @@ class Store {
   }
 
   /**
+   * Set a value in the store.
+   *
+   * @visibility public
+   *
+   * @param {string} key Store key.
+   * @param {mixed} data Dat to store.
+   *
+   * @return void
+   */
+  set(key, data) {
+    this.state[key] = data;
+  }
+
+  /**
    * Get data with the assigned fetcher.
    *
    * @returns promise
@@ -55,7 +69,7 @@ class Store {
     }
 
     return fetcher.then(data => {
-      this.state[key] = data;
+      this.set(key, data);
       return data;
     });
   }

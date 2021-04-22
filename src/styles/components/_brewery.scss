@@ -2,36 +2,14 @@
   margin-bottom: $spacing;
 }
 
-// tabs
-// -----------
-
-.brewery-tabs__nav {
-  margin-bottom: $spacing;
-  ul {
-    display: flex;
-
-    li + li {
-      margin-left: $spacing;
-    }
-  }
-}
-
-.brewery-tabs__nav-button {
-  &.active {
-    font-weight: $fw-bold;
-  }
-}
-
-.brewery-tab {
-  display: none;
-
-  &.active {
-    display: block;
-  }
-}
-
 // beers
 // -----------
+
+.brewery-beers__header {
+  display: flex;
+  justify-content: space-between;
+}
+
 .brewery__beers .beer {
   margin-top: $spacing;
   padding: $spacing;
@@ -40,4 +18,62 @@
 
 .beer__name {
   font-size: $fs-md;
+}
+
+.brewery-beers__sort {
+  min-height: 2rem;
+  text-align: right;
+  position: relative;
+}
+
+.brewrey-beers__sort-display {
+  text-align: right;
+
+  span {
+    display: block;
+  }
+
+  .selecting & {
+    visibility: hidden;
+  }
+}
+
+.brewery-beers__sort-display-label {
+  font-size: $fs-sm;
+  margin-bottom: 0.5em;
+
+  &:after {
+    content: '';
+    display: inline-block;
+    margin: 0 0 0.25em 0.5em;
+
+    vertical-align: middle;
+    width: 6px;
+    height: 6px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+}
+
+.brewery-beers__sort-options {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  background-color: $c-gray-2;
+
+  button {
+    white-space: nowrap;
+    padding: 0.5em;
+    display: block;
+    width: 100%;
+    text-align: right;
+  }
+
+  .selecting & {
+    display: block;
+  }
 }

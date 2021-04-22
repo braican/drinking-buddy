@@ -3,7 +3,8 @@ import Loader from './modules/Loader';
 import Fetcher from './modules/Fetcher';
 import Toggler from './modules/Toggler';
 import Search from './modules/Search';
-import BreweryTabs from './modules/BreweryTabs';
+import Brewery from './modules/Brewery';
+import Tabs from './modules/Tabs';
 
 import './store';
 
@@ -11,8 +12,8 @@ import routes from './routes';
 export const appRouter = new Router(routes);
 
 const onDataLoad = () => {
-  // eslint-disable-next-line
-  document.querySelectorAll('.js-brewery').forEach(el => new BreweryTabs(el));
+  document.querySelectorAll('.js-brewery').forEach(el => new Brewery(el));
+  document.querySelectorAll('.js-tabs').forEach(el => new Tabs(el));
 };
 
 // Fire whenever a new page is loaded via the router.

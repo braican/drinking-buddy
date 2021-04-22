@@ -1,5 +1,5 @@
 <section class="block">
-  <div data-loader="brewery" data-brewery="<% brewery %>">
+  <div data-loader="brewery" data-brewery="<% brewery %>" data-store="true">
     <p class="js-loading">Loading...</p>
 
     <script type="text/template">
@@ -9,22 +9,38 @@
           <p>Overall rating: <strong>{{ overallRating }}</strong></p>
         </header>
 
-        <div class="brewery-tabs">
-          <nav class="brewery-tabs__nav">
+        <div class="tabs js-tabs">
+          <nav class="tab__nav">
             <ul>
-              <li><button data-tab="beers" class="brewery-tabs__nav-button">Beers</button></li>
-              <li><button data-tab="stats" class="brewery-tabs__nav-button">Stats</button></li>
-              <li><button data-tab="checkins" class="brewery-tabs__nav-button">Checkins</button></li>
+              <li><button data-tab="beers" class="tab__button">Beers</button></li>
+              <li><button data-tab="stats" class="tab__button">Stats</button></li>
+              <li><button data-tab="checkins" class="tab__button">Checkins</button></li>
             </ul>
           </nav>
 
-          <div class="brewery-tabs__content">
+          <div class="tabs__content">
 
-            <div class="brewery-tab" data-tab="beers">
-              <p>{{ checkinCount }} checkins</p>
-              <p>{{ beerCount }} beers had</p>
+            <div class="tab" data-tab="beers">
+              <header class="brewery-beers__header">
+                <div class="brewery-beers__stats">
+                  <p>{{ checkinCount }} checkins</p>
+                  <p>{{ beerCount }} unique beers</p>
+                </div>
+                <div class="brewery-beers__sort">
+                  <button class="brewrey-beers__sort-display js-beer-sort-control">
+                    <span class="brewery-beers__sort-display-label">Sort by</span>
+                    <span class="js-beer-sort-display">Alphabetical</span>
+                  </button>
 
-              <ul class="brewery__beers">
+                  <ul class="brewery-beers__sort-options js-beer-sort-options">
+                    <li class="brewery-beers__sort-option active"><button data-sort="alphabetical">Alphabetical</button></li>
+                    <li class="brewery-beers__sort-option"><button data-sort="hads">Most hads</button></>
+                    <li class="brewery-beers__sort-option"><button data-sort="rating">Highest rated</button></li>
+                  </ul>
+                </div>
+              </header>
+
+              <ul class="brewery__beers js-beerlist">
                 {{ #beers }}
                 <li class="beer">
                   <p class="beer__name"><strong>{{ beer }}</strong></p>
@@ -36,12 +52,12 @@
               </ul>
             </div>
 
-            <div class="brewery-tab" data-tab="stats">
+            <div class="tab" data-tab="stats">
               <p>Stats here</p>
               <p>{{ checkinCount }} checkins</p>
             </div>
 
-            <div class="brewery-tab" data-tab="checkins">
+            <div class="tab" data-tab="checkins">
               <p>{{ checkinCount }} checkins</p>
 
               <ul>

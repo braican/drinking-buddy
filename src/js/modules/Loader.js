@@ -39,6 +39,10 @@ class Loader {
     // eslint-disable-next-line
     console.log(data);
 
+    if (this.params.store) {
+      store.set(`${this.id}_data`, data);
+    }
+
     data.formatDate = () => (data, render) => {
       const date = new Date(render(data));
       return date.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'medium' });
