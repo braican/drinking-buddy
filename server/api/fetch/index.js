@@ -39,7 +39,7 @@ const fetchUserData = async () => {
 
     const data = {
       user,
-      lastUpdated: date.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'medium' }),
+      lastUpdated: date.toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }),
     };
 
     await saveData(data, 'user');

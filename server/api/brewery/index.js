@@ -72,6 +72,14 @@ exports.get = async (req, res) => {
         ...beer,
       }));
 
+    const loc = [
+      breweryData.location.brewery_city,
+      breweryData.location.brewery_state,
+      breweryData.country_name,
+    ]
+      .filter(x => x)
+      .join(', ');
+
     return res.json({
       success: true,
       data: {
@@ -80,6 +88,7 @@ exports.get = async (req, res) => {
         overallRating: (cumulativeRating / rated).toFixed(2),
         beerCount: sortedBeers.length,
         beers: sortedBeers,
+        loc,
         ...breweryData,
       },
     });

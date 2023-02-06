@@ -3,6 +3,8 @@ import { post, get } from '../util/req';
 class Fetcher {
   constructor(el) {
     el.addEventListener('click', this.fetch.bind(this));
+
+    this.loadingMessage = null;
   }
 
   fetchUser() {
@@ -28,8 +30,17 @@ class Fetcher {
     });
   }
 
-  fetch() {
+  fetch(event) {
     console.warn(`[Fetcher] Fetching beers from Untappd, if necessary...`);
+
+    if (!this.loadingMessage) {
+      const loadingMessage = document.createElement('p');
+      loadingMessage.innerText = 'Loading...';
+      loadingMessage.classList.add('user__loading-msg');
+      this.loadingMessage = loadingMessage;
+    }
+
+    event.target.parentElement.appendChild(this.loadingMessage);
 
     this.fetchUser()
       .then(({ missingCheckins, latestCheckin }) => {
@@ -41,6 +52,11 @@ class Fetcher {
         }
 
         console.warn(`[Fetcher] All checkins accounted for - nothing new to fetch from Untappd.`);
+      })
+      .then(() => {
+        if (this.loadingMessage) {
+          this.loadingMessage.remove();
+        }
       })
       .catch(console.error);
   }

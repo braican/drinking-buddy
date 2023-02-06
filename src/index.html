@@ -24,27 +24,18 @@
 
       <script type="text/template">
         <header class="user">
-          <button class="js-toggler user__menu icon-btn" data-class="last-updated">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
           <div class="user__stats">
             <p>Welcome in, {{ user.first_name }}</p>
             <p>Beers <strong>{{ user.stats.total_beers }}</strong></p>
-            <p>Checkins <strong>{{ user.stats.total_checkins }}</strong></p>
+            <p>Checkins <strong>{{ user.stats.total_checkins }}</strong></p><br>
+            <p>Last updated: <br/>{{ lastUpdated }}</p>
+            <button class="btn js-fetch">Fetch data</button>
           </div>
 
           <div class="user__avatar">
             <img src="{{ user.user_avatar }}" alt="Profile avatar for {{ user.first_name }}" />
           </div>
         </header>
-
-        <div class="last-updated block">
-          <p>Last updated: <br/>{{ lastUpdated }}</p><br/>
-          <button class="btn js-fetch">Fetch data</button>
-        </div>
       </script>
     </div>
 
