@@ -13,7 +13,7 @@ const routes = {
       return { brewery: params.brewery };
     },
   },
-  '/state/:state:': {
+  '/state/:state': {
     page: state,
     data(params) {
       return { state: params.state };
