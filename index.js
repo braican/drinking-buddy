@@ -1,9 +1,12 @@
+#!/usr/bin/env node
+
 require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
 const apiRoutes = require('./server/api/routes');
 const untappd = require('./server/untappd');
+const port = process.env.PORT || 3000;
 
 untappd.setAccessToken(process.env.UNTAPPD_ACCESS_TOKEN);
 
@@ -26,7 +29,7 @@ app.use((req, res) => {
 });
 
 // Listen.
-app.listen(3000, () => {
+app.listen(port, () => {
   // eslint-disable-next-line
-  console.log('Example app listening on port 3000!');
+  console.log(`Server listening on port ${port}.`);
 });
