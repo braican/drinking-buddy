@@ -4,6 +4,11 @@
 # the untappd API keys
 src/app/factories/untappdKeys.js
 
-node_modules/
-dist/
-data/
+node_modules
+/dist
+/build
+data
+
+/.svelte-kit
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

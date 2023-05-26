@@ -3,6 +3,11 @@
   "version": "4.0.0",
   "description": "Your friend at the bar.",
   "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
   },
   "repository": {
     "type": "git",
@@ -15,6 +20,20 @@
   },
   "homepage": "https://github.com/braican/drinking-buddy#readme",
   "main": "index.js",
-  "devDependencies": {},
-  "dependencies": {}
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/eslint-parser": "^7.21.8",
+    "@sveltejs/adapter-auto": "^2.1.0",
+    "@sveltejs/kit": "^1.19.0",
+    "@upstatement/eslint-config": "^2.0.0",
+    "@upstatement/prettier-config": "^1.1.0",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.8",
+    "svelte": "^3.59.1",
+    "svelte-check": "^3.3.2",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9"
+  },
+  "type": "module"
 }
