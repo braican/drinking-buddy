@@ -105,4 +105,7 @@ export class Checkin implements TigrisCollectionType {
 
   @Field()
   venue: Venue;
+
+  @Field()
+  raw: string;
 }
