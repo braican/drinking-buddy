@@ -3,12 +3,13 @@ import {
   PrimaryKey,
   SearchField,
   TigrisCollection,
-  TigrisCollectionType,
   TigrisDataTypes
 } from '@tigrisdata/core';
 
-@TigrisCollection('todoItems')
-export class TodoItem implements TigrisCollectionType {
+import type { TigrisCollectionType } from '@tigrisdata/core';
+
+@TigrisCollection('checkins')
+export class Checkin implements TigrisCollectionType {
   @PrimaryKey(TigrisDataTypes.INT32, { order: 1, autoGenerate: true })
   id!: number;
 

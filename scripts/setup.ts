@@ -1,12 +1,11 @@
 import { Tigris } from '@tigrisdata/core';
-import { TodoItem } from '../db/models/checkin';
+import { Checkin } from '../db/models/checkin';
 
 
 async function main() {
   const tigrisClient = new Tigris();
   await tigrisClient.getDatabase().initializeBranch();
-  await tigrisClient.registerSchemas([TodoItem]);
-
+  await tigrisClient.registerSchemas([Checkin]);
 }
 
 main()
@@ -19,3 +18,4 @@ main()
     console.error(e);
     process.exit(1);
   });
+

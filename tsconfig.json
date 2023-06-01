@@ -12,6 +12,11 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true
 	},
+	"ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "scripts/setup.js"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias and https://kit.svelte.dev/docs/configuration#files
 	//
