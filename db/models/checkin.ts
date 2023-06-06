@@ -82,11 +82,8 @@ class Venue {
 
 @TigrisCollection('checkins')
 export class Checkin implements TigrisCollectionType {
-  @PrimaryKey(TigrisDataTypes.INT32, { order: 1, autoGenerate: true })
+  @PrimaryKey(TigrisDataTypes.INT64)
   id!: number;
-
-  @Field()
-  checkinId!: string;
 
   @Field()
   createdAt!: Date;
