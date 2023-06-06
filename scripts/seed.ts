@@ -1,3 +1,10 @@
+/**
+ * This seed script will seed the Tigris database with the data from the
+ * `checkins-backup-2023.05.31.json` data file, which has all checkins up until
+ *  that point in time (it should be 5570 checkins total).
+ */
+
+
 import { Tigris } from '@tigrisdata/core';
 import fs from 'fs';
 
