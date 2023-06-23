@@ -1,9 +1,11 @@
+#!/usr/bin/env ts-node
+
 /**
  * This script can be used to update the database with the latest checkins.
  */
 
 /* eslint-disable no-console */
-import { TigrisClient } from '../util';
+import { TigrisClient } from '../util/index.ts';
 
 (async () => {
   try {

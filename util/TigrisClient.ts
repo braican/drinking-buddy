@@ -1,6 +1,6 @@
 import { Tigris, FindQueryOptions } from '@tigrisdata/core';
 import type { DB, Collection } from '@tigrisdata/core';
-import type { Checkin, User } from '../db/models';
+import type { Checkin, User } from '../db/models/index.ts';
 
 export default class TigrisClient {
   private db: DB;

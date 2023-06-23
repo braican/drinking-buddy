@@ -19,14 +19,14 @@ This app is hosted on [hosting option here], with data stored in Tigris.
 
 ## Scripts
 
-You can run the scripts in the `/scripts` directory with `npx ts-node`:
+You can run the scripts in the `/scripts` directory with `ts-node`. Note that you'll need to add the an options flag to ensure that the script runs with the right compiler options: `-O '{"module":"es2022"}'`
 
 ### Setup
 
 Sets up the database with the `checkins` and `users` schemas:
 
 ```sh
-npx ts-node scripts/setup.ts
+npx ts-node -O '{"module":"es2022"}' scripts/setup.ts
 ```
 
 ### Seed
@@ -34,7 +34,7 @@ npx ts-node scripts/setup.ts
 Seeds the database with the latest user data from Untappd and checkin data from the `data/checkins-backup-2023.05.31.json` file, which contains 5570 checkins, accurate up until May 31, 2023.
 
 ```sh
-npx ts-node scripts/seed.ts
+npx ts-node -O '{"module":"es2022"}' scripts/seed.ts
 ```
 
 ### Update
@@ -42,7 +42,7 @@ npx ts-node scripts/seed.ts
 Updates the database with the latest data from Untappd.
 
 ```sh
-npx ts-node scripts/update.ts
+npx ts-node -O '{"module":"es2022"}' scripts/update.ts
 ```
 
 ### Tigris info
@@ -50,5 +50,5 @@ npx ts-node scripts/update.ts
 Gets stats about the Tigris database.
 
 ```sh
-npx ts-node scripts/tigris-info.ts
+npx ts-node -O '{"module":"es2022"}' scripts/tigris-info.ts
 ```

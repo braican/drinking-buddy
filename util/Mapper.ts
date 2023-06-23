@@ -1,5 +1,5 @@
-import type { Checkin } from '../db/models';
-import type { UntappdCheckinData } from './UntappdClient';
+import type { Checkin } from '../db/models/index.ts';
+import type { UntappdCheckinData } from './UntappdClient.ts';
 
 export default class Mapper {
   static checkin(ch: UntappdCheckinData): Checkin {

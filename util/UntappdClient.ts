@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import qs from 'qs';
 import 'isomorphic-fetch';
-import Request from './Request';
-import { Mapper } from '../util';
-import type { Checkin } from '../db/models';
+import Request from './Request.ts';
+import { Mapper } from '../util/index.ts';
+import type { Checkin } from '../db/models/index.ts';
 
 dotenv.config();
 

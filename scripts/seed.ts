@@ -7,8 +7,8 @@
 /* eslint-disable no-console */
 
 import fs from 'fs';
-import { TigrisClient, UntappdClient, Mapper } from '../util';
-import type { User } from '../db/models';
+import { TigrisClient, UntappdClient, Mapper } from '../util/index.ts';
+import type { User } from '../db/models/index.ts';
 
 const seedUser = async (tigris: TigrisClient) => {
   const client = new UntappdClient();

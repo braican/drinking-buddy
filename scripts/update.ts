@@ -3,7 +3,7 @@
  */
 
 /* eslint-disable no-console */
-import { UntappdClient, TigrisClient } from '../util';
+import { UntappdClient, TigrisClient } from '../util/index.ts';
 
 (async () => {
   try {

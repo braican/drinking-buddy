@@ -1,2 +1,2 @@
-export { User } from './users';
-export { Checkin } from './checkin';
+export { User } from './users.ts';
+export { Checkin } from './checkin.ts';
