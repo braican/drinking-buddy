@@ -5,10 +5,10 @@ import Request from './Request';
 
 dotenv.config();
 
-interface UntappdResponse<D> {
+interface UntappdResponse<T> {
   meta: object;
   notifications: object;
-  response: D;
+  response: T;
 }
 
 interface UntappdUserInfoResponse {

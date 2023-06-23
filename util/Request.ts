@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 
 export default class Request {
-  static get<R>(url): Promise<R> {
+  static get<T>(url): Promise<T> {
     return new Promise((resolve, reject) => {
       fetch(url)
         .then(response => {
