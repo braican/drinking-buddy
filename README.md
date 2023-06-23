@@ -1,12 +1,18 @@
-Drinking Buddy
-==============
+# Drinking Buddy
 
-## Deployment
+## Installation
 
-This app is deployed to a Linode that uses an apache proxy to access the beer.braican.com domain. The app can be started on the server by running the following command in the app's directory:
+1. Run `nvm install`.
+2. Run `npm install`.
+
+## Architecture
+
+This app is hosted on [hosting option here], with data stored in Tigris.
+
+## Scripts
+
+You can run the scripts in the `/scripts` directory with `npx ts-node`:
 
 ```sh
-nohup node index.js &
+npx ts-node scripts/seed.ts
 ```
-
-See https://coderwall.com/p/hqamtg/run-node-and-apache-sites-from-one-ip for more info.

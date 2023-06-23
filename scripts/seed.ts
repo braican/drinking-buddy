@@ -8,28 +8,46 @@
 
 import { Tigris } from '@tigrisdata/core';
 import fs from 'fs';
-
+import UntappdClient from '../util/UntappdClient.ts';
 
 const seedUser = async () => {
-  const path = './data/user-backup-2023.05.31.json';
+  const client = new UntappdClient();
 
-  await fs.readFile(path, async (err, data) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    const json = JSON.parse(data.toString());
-    const user = json?.user;
-
-    if (!user) {
-      console.log('No user.');
-      return;
-    }
-
+  try {
+    const user = await client.getUser();
     console.log(user);
+  } catch (e) {
+    console.error('[Error]:', e);
+  }
 
-  });
+  // fetch(url)
+  //   .then(response => {
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     console.log(data);
+  //   })
+  //   .catch(error => {
+  //     console.error(error);
+  //   });
+
+  // const path = './data/user-backup-2023.05.31.json';
+  // await fs.readFile(path, async (err, data) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return;
+  //   }
+  //   const json = JSON.parse(data.toString());
+  //   const user = json?.user;
+  //   if (!user) {
+  //     console.log('No user.');
+  //     return;
+  //   }
+  //   console.log(user);
+  // });
 };
 
 const seedCheckins = async () => {
@@ -72,16 +90,18 @@ const seedCheckins = async () => {
         lat: ch.brewery.location.lat,
         lng: ch.brewery.location.lng,
       },
-      venue: Array.isArray(ch.venue) ? null : {
-        id: ch.venue.venue_id,
-        name: ch.venue.venue_name,
-        address: ch.venue.location.venue_address,
-        city: ch.venue.location.venue_city,
-        state: ch.venue.location.venue_state,
-        country: ch.venue.location.venue_country,
-        lat: ch.venue.location.lat,
-        lng: ch.venue.location.lng,
-      },
+      venue: Array.isArray(ch.venue)
+        ? null
+        : {
+            id: ch.venue.venue_id,
+            name: ch.venue.venue_name,
+            address: ch.venue.location.venue_address,
+            city: ch.venue.location.venue_city,
+            state: ch.venue.location.venue_state,
+            country: ch.venue.location.venue_country,
+            lat: ch.venue.location.lat,
+            lng: ch.venue.location.lng,
+          },
       raw: JSON.stringify(ch),
     }));
 
@@ -105,5 +125,5 @@ const seedCheckins = async () => {
 
 (async () => {
   await seedUser();
-  await seedCheckins();
+  // await seedCheckins();
 })();

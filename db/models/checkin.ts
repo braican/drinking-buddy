@@ -1,9 +1,4 @@
-import {
-  Field,
-  PrimaryKey,
-  TigrisCollection,
-  TigrisDataTypes
-} from '@tigrisdata/core';
+import { Field, PrimaryKey, TigrisCollection, TigrisDataTypes } from '@tigrisdata/core';
 
 import type { TigrisCollectionType } from '@tigrisdata/core';
 
@@ -84,7 +79,7 @@ export class Checkin implements TigrisCollectionType {
   @PrimaryKey(TigrisDataTypes.INT64)
   id!: number;
 
-  @Field()
+  @Field({ index: true })
   createdAt!: Date;
 
   @Field()
