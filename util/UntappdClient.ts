@@ -1,22 +1,45 @@
 import dotenv from 'dotenv';
+import qs from 'qs';
 import 'isomorphic-fetch';
+import Request from './Request';
 
 dotenv.config();
 
-export default class UntappdClient {
-  static BASE = 'https://api.untappd.com/v4';
+interface UntappdResponse<D> {
+  meta: object;
+  notifications: object;
+  response: D;
+}
 
-  getUser() {
-    return new Promise((resolve, reject) => {
-      fetch(`${UntappdClient.BASE}/user/info/braican?access_token=${process.env.UNTAPPD_CODE}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error. Status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => resolve(data))
-        .catch(error => reject(error));
-    });
+interface UntappdUserInfoResponse {
+  user: UntappdUserData;
+}
+
+interface UntappdUserData {
+  id: number;
+  user_name: string;
+  first_name: string;
+  last_name: string;
+  user_avatar_hd: string;
+  stats: {
+    total_badges: number;
+    total_friends: number;
+    total_checkins: number;
+    total_beers: number;
+  };
+}
+
+export default class UntappdClient {
+  BASE = 'https://api.untappd.com/v4';
+  TOKEN = process.env.UNTAPPD_ACCESS_TOKEN;
+
+  async getUser(): Promise<UntappdUserData> {
+    const params = {
+      access_token: this.TOKEN,
+    };
+    const data: UntappdResponse<UntappdUserInfoResponse> = await Request.get(
+      `${this.BASE}/user/info/braican?${qs.stringify(params)}`,
+    );
+    return data.response.user;
   }
 }

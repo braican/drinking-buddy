@@ -9,45 +9,31 @@
 import { Tigris } from '@tigrisdata/core';
 import fs from 'fs';
 import UntappdClient from '../util/UntappdClient.ts';
+import type { User } from '../db/models/users.ts';
 
 const seedUser = async () => {
   const client = new UntappdClient();
 
   try {
     const user = await client.getUser();
-    console.log(user);
+    const payload: User = {
+      id: user.id,
+      username: user.user_name,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      avatar: user.user_avatar_hd,
+      badges: user.stats.total_badges,
+      checkins: user.stats.total_checkins,
+      beers: user.stats.total_beers,
+    };
+
+    const tigrisClient = new Tigris();
+    const db = await tigrisClient.getDatabase();
+    const usersCollection = db.getCollection('users');
+    await usersCollection.insertOrReplaceOne(payload);
   } catch (e) {
-    console.error('[Error]:', e);
+    console.error('[Error]', e);
   }
-
-  // fetch(url)
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! Status: ${response.status}`);
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     console.log(data);
-  //   })
-  //   .catch(error => {
-  //     console.error(error);
-  //   });
-
-  // const path = './data/user-backup-2023.05.31.json';
-  // await fs.readFile(path, async (err, data) => {
-  //   if (err) {
-  //     console.log(err);
-  //     return;
-  //   }
-  //   const json = JSON.parse(data.toString());
-  //   const user = json?.user;
-  //   if (!user) {
-  //     console.log('No user.');
-  //     return;
-  //   }
-  //   console.log(user);
-  // });
 };
 
 const seedCheckins = async () => {
@@ -125,5 +111,5 @@ const seedCheckins = async () => {
 
 (async () => {
   await seedUser();
-  // await seedCheckins();
+  await seedCheckins();
 })();
