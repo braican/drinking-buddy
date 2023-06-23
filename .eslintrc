@@ -4,5 +4,8 @@
     "browser": true,
     "node": true
   },
-  "plugins": ["@typescript-eslint"]
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-constant-condition": ["error", { "checkLoops": false }]
+  }
 }

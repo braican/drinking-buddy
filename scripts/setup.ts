@@ -1,6 +1,5 @@
 import { Tigris } from '@tigrisdata/core';
-import { Checkin } from '../db/models/checkin';
-import { User } from '../db/models/users';
+import { Checkin, User } from '../db/models';
 
 async function main() {
   const tigrisClient = new Tigris();
@@ -15,6 +14,6 @@ main()
     process.exit(0);
   })
   .catch(async e => {
-    console.error(e);
+    console.error('[Error in scripts/setup.ts]', e);
     process.exit(1);
   });
