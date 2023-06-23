@@ -3,9 +3,6 @@
   "version": "4.0.0",
   "description": "Your friend at the bar.",
   "scripts": {
-    "predev": "npm run setup",
-    "postbuild": "npm run setup",
-    "setup": "npx ts-node ./scripts/setup.ts",
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
