@@ -1,9 +1,4 @@
-import {
-  Field,
-  PrimaryKey,
-  TigrisCollection,
-  TigrisDataTypes,
-} from '@tigrisdata/core';
+import { Field, PrimaryKey, TigrisCollection, TigrisDataTypes } from '@tigrisdata/core';
 
 import type { TigrisCollectionType } from '@tigrisdata/core';
 
@@ -16,20 +11,20 @@ export class User implements TigrisCollectionType {
   username!: string;
 
   @Field()
-  firstName: string;
+  firstName?: string;
 
   @Field()
-  lastName: string;
+  lastName?: string;
 
   @Field()
-  avatar: string;
+  avatar?: string;
 
   @Field()
-  badges: number;
+  badges?: number;
 
   @Field()
-  checkins: number;
+  checkins?: number;
 
   @Field()
-  beers: number;
+  beers?: number;
 }
