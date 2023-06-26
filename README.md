@@ -26,7 +26,7 @@ You can run the scripts in the `/scripts` directory with `ts-node`. Note that yo
 Sets up the database with the `checkins` and `users` schemas:
 
 ```sh
-npx ts-node -O '{"module":"es2022"}' scripts/setup.ts
+node --loader ts-node/esm scripts/setup.ts
 ```
 
 ### Seed
@@ -34,7 +34,7 @@ npx ts-node -O '{"module":"es2022"}' scripts/setup.ts
 Seeds the database with the latest user data from Untappd and checkin data from the `data/checkins-backup-2023.05.31.json` file, which contains 5570 checkins, accurate up until May 31, 2023.
 
 ```sh
-npx ts-node -O '{"module":"es2022"}' scripts/seed.ts
+node --loader ts-node/esm scripts/seed.ts
 ```
 
 ### Update
@@ -42,7 +42,7 @@ npx ts-node -O '{"module":"es2022"}' scripts/seed.ts
 Updates the database with the latest data from Untappd.
 
 ```sh
-npx ts-node -O '{"module":"es2022"}' scripts/update.ts
+node --loader ts-node/esm scripts/update.ts
 ```
 
 ### Tigris info
@@ -50,5 +50,5 @@ npx ts-node -O '{"module":"es2022"}' scripts/update.ts
 Gets stats about the Tigris database.
 
 ```sh
-npx ts-node -O '{"module":"es2022"}' scripts/tigris-info.ts
+node --loader ts-node/esm scripts/tigris-info.ts
 ```
