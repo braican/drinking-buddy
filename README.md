@@ -52,3 +52,7 @@ Gets stats about the Tigris database.
 ```sh
 node --loader ts-node/esm scripts/tigris-info.ts
 ```
+
+## Credits
+
+- Icons by HeroIcons v1 Solid (https://icones.js.org/collection/heroicons-solid)

@@ -27,4 +27,7 @@ export class User implements TigrisCollectionType {
 
   @Field()
   beers?: number;
+
+  @Field()
+  lastUpdated?: Date;
 }
