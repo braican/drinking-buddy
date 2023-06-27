@@ -1,4 +1,4 @@
-export async function load({ fetch, url, setHeaders }) {
+export async function load({ fetch }) {
   try {
     const resp = await fetch('/api/user');
     const { success, user, error } = await resp.json();

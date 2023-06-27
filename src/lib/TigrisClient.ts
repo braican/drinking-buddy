@@ -1,6 +1,6 @@
 import { Tigris, FindQueryOptions } from '@tigrisdata/core';
 import type { DB, Collection } from '@tigrisdata/core';
-import type { Checkin, User } from '../../db/models/index.ts';
+import type { Checkin, User } from '../../db/models/index.js';
 
 export default class TigrisClient {
   private db: DB;
@@ -46,6 +46,18 @@ export default class TigrisClient {
         username: 'braican',
       },
     });
+  }
+
+  public async getLatestCheckins(): Promise<Checkin[]> {
+    const checkins = this.checkinCollection.findMany({
+      sort: {
+        field: 'createdAt',
+        order: '$desc',
+      },
+      options: new FindQueryOptions(10, 0),
+    });
+
+    return await checkins.toArray();
   }
 
   // ----- Add

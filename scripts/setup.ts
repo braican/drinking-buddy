@@ -1,5 +1,5 @@
 import { Tigris } from '@tigrisdata/core';
-import { Checkin, User } from '../db/models/index.ts';
+import { Checkin, User } from '../db/models/index.js';
 
 async function main() {
   const tigrisClient = new Tigris();

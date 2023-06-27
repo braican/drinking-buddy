@@ -1,4 +1,4 @@
-import type { Checkin, User } from '../../db/models/index.ts';
+import type { Checkin, User } from '../../db/models/index.js';
 import type { UntappdCheckinData, UntappdUserData } from '../lib/UntappdClient.ts';
 
 export default class Mapper {

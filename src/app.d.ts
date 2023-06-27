@@ -1,7 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
 import type { UntappdUserData } from '@lib/UntappdClient';
-import type { Checkin } from '@models';
+import type { User, Checkin } from '@models';
 
 // for information about these interfaces
 declare global {
@@ -30,6 +30,10 @@ export interface UntappdRefreshResponse {
 
 export interface TigrisAddCheckinsResponse {
   totalAdded: number;
+}
+
+export interface TigrisUpdateUserResponse {
+  user: User;
 }
 
 export {};

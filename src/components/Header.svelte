@@ -1,18 +1,15 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
-  import type { Readable } from 'svelte/store';
   import { RefreshIcon } from '@icons';
-  import { Request } from '@utils';
-  import type { User } from '@models';
+  import { Request, formatDate } from '@utils';
+  import { userStore as user, checkinStore } from '@stores';
 
   import type {
     ApiResponse,
     TigrisAddCheckinsResponse,
     UntappdPrefetchResponse,
     UntappdRefreshResponse,
+    TigrisUpdateUserResponse,
   } from '../app';
-
-  const user = getContext<Readable<User>>('user');
 
   const refresh = async () => {
     console.log('Refreshing database with the latest from Untappd...');
@@ -44,12 +41,20 @@
         {
           data: { totalAdded },
         },
+        {
+          data: { user: newUserData },
+        },
       ] = await Promise.all([
         Request.post<ApiResponse<TigrisAddCheckinsResponse>>('/api/tigris/add-checkins', {
           newCheckins,
         }),
-        Request.post('/api/tigris/update-user', { untappdUser }),
+        Request.post<ApiResponse<TigrisUpdateUserResponse>>('/api/tigris/update-user', {
+          untappdUser,
+        }),
       ]);
+
+      user.set(newUserData);
+      checkinStore.refreshLatest();
 
       console.log(`Added ${totalAdded} checkins to database.`);
     } catch (error) {
@@ -65,7 +70,7 @@
     </figure>
 
     <p>Checkins: {$user.checkins?.toLocaleString()} / Beers: {$user.beers?.toLocaleString()}</p>
-    <p>Last Updated: {$user.lastUpdated || 'n/a'}</p>
+    <p>Last Updated: {formatDate($user.lastUpdated.toString())}</p>
     <button aria-label="Refresh checkins" on:click={refresh}>
       <RefreshIcon />
       <span>Refresh</span>

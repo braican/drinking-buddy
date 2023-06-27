@@ -1,6 +1,6 @@
 import qs from 'qs';
 import { Mapper, Request } from '../utils/index.js';
-import type { Checkin } from '../../db/models/index.ts';
+import type { Checkin } from '../../db/models/index.js';
 
 interface UntappdResponse<T> {
   meta: {

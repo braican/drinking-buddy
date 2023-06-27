@@ -8,10 +8,16 @@ export async function POST({ request }) {
     const { untappdUser } = await request.json();
     const tigris = await TigrisClient.create();
     const newDbUser = Mapper.user(untappdUser);
+
+    newDbUser.lastUpdated = new Date();
+
     await tigris.addUser(newDbUser);
 
     return json({
       success: true,
+      data: {
+        user: newDbUser,
+      },
     });
   } catch (error) {
     console.error('[Error in api/untappd/refresh/+server.ts]', error);

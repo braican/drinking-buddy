@@ -17,7 +17,8 @@ const config = {
       '@utils': './src/utils/index.js',
       '@lib': './src/lib/index.js',
       '@lib/*': './src/lib/*',
-      '@models': './db/models/index.ts',
+      '@models': './db/models/index.js',
+      '@stores': './src/stores/index.js',
     },
   },
 };
