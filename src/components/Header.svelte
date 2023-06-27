@@ -1,9 +1,9 @@
 <script lang="ts">
   import { getContext } from 'svelte';
+  import type { Readable } from 'svelte/store';
   import { RefreshIcon } from '@icons';
   import { Request } from '@utils';
   import type { User } from '@models';
-  import type { Stores } from 'svelte/store';
 
   import type {
     ApiResponse,
@@ -12,7 +12,7 @@
     UntappdRefreshResponse,
   } from '../app';
 
-  const user = getContext('user');
+  const user = getContext<Readable<User>>('user');
 
   const refresh = async () => {
     console.log('Refreshing database with the latest from Untappd...');
@@ -59,16 +59,18 @@
 </script>
 
 <header class="header padding-default">
-  <figure class="user-photo">
-    <img src={$user.avatar} alt="Nick Braica's Untappd profile." />
-  </figure>
+  {#if $user}
+    <figure class="user-photo">
+      <img src={$user.avatar} alt="Nick Braica's Untappd profile." />
+    </figure>
 
-  <p>Checkins: {$user.checkins?.toLocaleString()} / Beers: {$user.beers?.toLocaleString()}</p>
-  <p>Last Updated: {$user.lastUpdated || 'n/a'}</p>
-  <button aria-label="Refresh checkins" on:click={refresh}>
-    <RefreshIcon />
-    <span>Refresh</span>
-  </button>
+    <p>Checkins: {$user.checkins?.toLocaleString()} / Beers: {$user.beers?.toLocaleString()}</p>
+    <p>Last Updated: {$user.lastUpdated || 'n/a'}</p>
+    <button aria-label="Refresh checkins" on:click={refresh}>
+      <RefreshIcon />
+      <span>Refresh</span>
+    </button>
+  {/if}
 </header>
 
 <style lang="scss">
