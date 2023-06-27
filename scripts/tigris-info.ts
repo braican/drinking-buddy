@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable no-console */
-import { TigrisClient } from '../util/index.ts';
+import { TigrisClient } from '../src/lib/index.js';
 
 (async () => {
   try {

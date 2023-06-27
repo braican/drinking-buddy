@@ -1,14 +1,12 @@
-import dotenv from 'dotenv';
 import qs from 'qs';
-import 'isomorphic-fetch';
-import Request from './Request.ts';
-import { Mapper } from '../util/index.ts';
-import type { Checkin } from '../db/models/index.ts';
-
-dotenv.config();
+import { Mapper, Request } from '../utils/index.js';
+import type { Checkin } from '../../db/models/index.ts';
 
 interface UntappdResponse<T> {
-  meta: object;
+  meta: {
+    code?: number;
+    error_detail?: string;
+  };
   notifications: object;
   response: T;
 }
@@ -23,7 +21,7 @@ interface UntappdUserCheckinsResponse {
   };
 }
 
-interface UntappdUserData {
+export interface UntappdUserData {
   id: number;
   user_name: string;
   first_name: string;
@@ -78,19 +76,36 @@ export interface UntappdCheckinData {
 
 export default class UntappdClient {
   BASE = 'https://api.untappd.com/v4';
-  TOKEN = process.env.UNTAPPD_ACCESS_TOKEN;
+  TOKEN = null;
+
+  setToken(token: string): void {
+    this.TOKEN = token;
+  }
 
   /**
    * Helper method to send a request with the base and token.
    */
-  async req<T>(endpoint: string, args: object = {}): Promise<T> {
+  async req<T>(endpoint: string, args: object = {}): Promise<UntappdResponse<T>> {
+    if (!this.TOKEN) {
+      throw new Error('No Untappd token found.');
+    }
+
     const params = {
       access_token: this.TOKEN,
       ...args,
     };
 
     const url = `${this.BASE}${endpoint}?${qs.stringify(params)}`;
-    return await Request.get(url);
+    const data = await Request.get<UntappdResponse<T>>(url);
+    const status = (data?.meta?.code as number) || 500;
+
+    if (status !== 200) {
+      throw new Error(
+        `Untappd request error: ${data?.meta?.error_detail || 'Something went wrong.'}`,
+      );
+    }
+
+    return data;
   }
 
   async getUser(): Promise<UntappdUserData> {

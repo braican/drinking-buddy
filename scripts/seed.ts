@@ -7,25 +7,17 @@
 /* eslint-disable no-console */
 
 import fs from 'fs';
-import { TigrisClient, UntappdClient, Mapper } from '../util/index.ts';
-import type { User } from '../db/models/index.ts';
+import { TigrisClient, UntappdClient } from '../src/lib/index.js';
+import { Mapper } from '../src/utils/index.js';
 
 const seedUser = async (tigris: TigrisClient) => {
   const client = new UntappdClient();
 
+  client.setToken(process.env.UNTAPPD_ACCESS_TOKEN);
+
   try {
     const user = await client.getUser();
-    const payload: User = {
-      id: user.id,
-      username: user.user_name,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      avatar: user.user_avatar_hd,
-      badges: user.stats.total_badges,
-      checkins: user.stats.total_checkins,
-      beers: user.stats.total_beers,
-    };
-
+    const payload = Mapper.user(user);
     await tigris.addUser(payload);
     console.log('User added.');
   } catch (e) {

@@ -14,7 +14,11 @@ const config = {
     alias: {
       '@components': './src/components/index.js',
       '@icons': './src/icons/index.js',
-    }
+      '@utils': './src/utils/index.js',
+      '@lib': './src/lib/index.js',
+      '@lib/*': './src/lib/*',
+      '@models': './db/models/index.ts',
+    },
   },
 };
 

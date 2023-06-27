@@ -3,12 +3,15 @@
  */
 
 /* eslint-disable no-console */
-import { UntappdClient, TigrisClient } from '../util/index.ts';
+import { TigrisClient, UntappdClient } from '../src/lib/index.js';
 
 (async () => {
   try {
     const tigris = await TigrisClient.create();
     const untappd = new UntappdClient();
+
+    untappd.setToken(process.env.UNTAPPD_ACCESS_TOKEN);
+
     const user = await untappd.getUser();
     const lastDbCheckin = await tigris.getLastCheckin();
     const dbCheckinCount = await tigris.getCheckinCount();

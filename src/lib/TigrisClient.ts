@@ -1,6 +1,6 @@
 import { Tigris, FindQueryOptions } from '@tigrisdata/core';
 import type { DB, Collection } from '@tigrisdata/core';
-import type { Checkin, User } from '../db/models/index.ts';
+import type { Checkin, User } from '../../db/models/index.ts';
 
 export default class TigrisClient {
   private db: DB;
@@ -24,6 +24,8 @@ export default class TigrisClient {
     this.userCollection = this.db.getCollection<User>('users');
   }
 
+  // ----- Get
+
   public async getLastCheckin(): Promise<Checkin> {
     return await this.checkinCollection.findOne({
       sort: {
@@ -37,6 +39,16 @@ export default class TigrisClient {
   public async getCheckinCount(): Promise<number> {
     return await this.checkinCollection.count();
   }
+
+  public async getUser(): Promise<User> {
+    return await this.userCollection.findOne({
+      filter: {
+        username: 'braican',
+      },
+    });
+  }
+
+  // ----- Add
 
   public async addCheckins(newCheckins: Checkin[]): Promise<number> {
     let totalAdded = 0;
