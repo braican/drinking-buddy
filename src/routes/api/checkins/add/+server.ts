@@ -7,6 +7,7 @@ export async function POST({ request }) {
     const { newCheckins } = await request.json();
     const tigris = await TigrisClient.create();
     const totalAdded = await tigris.addCheckins(newCheckins);
+    await tigris.updateBreweries(newCheckins);
 
     return json({
       success: true,

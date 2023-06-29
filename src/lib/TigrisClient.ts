@@ -66,6 +66,11 @@ export default class TigrisClient {
   public async getBreweryStats() {
     const [bestBreweriesCursor, popularBreweriesCursor] = await Promise.all([
       this.breweryCollection.findMany({
+        filter: {
+          checkinCount: {
+            $gt: '5',
+          },
+        },
         sort: {
           field: 'average',
           order: '$desc',
@@ -115,9 +120,14 @@ export default class TigrisClient {
 
   // ----- Update
 
-  public async updateBreweries(): Promise<number> {
-    const checkins = await this.checkinCollection.findMany();
+  public async updateBreweries(newCheckins: Checkin[] = null): Promise<number> {
     const breweryMap = {};
+    let totalAdded = 0;
+    const checkins = newCheckins || (await this.checkinCollection.findMany());
+
+    if (!checkins) {
+      return 0;
+    }
 
     for await (const ch of checkins) {
       const { slug } = ch.brewery;
@@ -129,11 +139,25 @@ export default class TigrisClient {
       }
     }
 
+    if (newCheckins) {
+      const breweriesWithUpdates = await this.breweryCollection.findMany({
+        filter: {
+          $or: Object.keys(breweryMap).map(brewerySlug => ({ slug: brewerySlug })),
+        },
+      });
+
+      for await (const brewery of breweriesWithUpdates) {
+        if (breweryMap[brewery.slug]) {
+          breweryMap[brewery.slug].checkinCount += brewery.checkinCount;
+          breweryMap[brewery.slug].cumulative += brewery.cumulative;
+        }
+      }
+    }
+
     const breweryObjects: Brewery[] = Object.values<Brewery>(breweryMap).map(brewery => ({
       ...brewery,
       average: brewery.cumulative / brewery.checkinCount,
     }));
-    let totalAdded = 0;
 
     for (let i = 0; i < breweryObjects.length; i += this.BATCH_SIZE) {
       const batch = breweryObjects.slice(i, i + this.BATCH_SIZE);
