@@ -1,12 +1,11 @@
 import { checkinStore } from '@stores';
+import { Request } from '@utils';
+import type { LatestCheckins } from '../app.js';
 
 export async function load({ fetch }) {
   try {
-    const resp = await fetch('/api/checkins/latest');
-    const { checkins } = await resp.json();
-
+    const { checkins } = await Request.get<LatestCheckins>('/api/checkins/latest', fetch);
     checkinStore.latestCheckins.set(checkins);
-
     return {};
   } catch (error) {
     return {

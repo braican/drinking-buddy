@@ -1,5 +1,5 @@
-import type { Checkin, User } from '../../db/models/index.js';
-import type { UntappdCheckinData, UntappdUserData } from '../lib/UntappdClient.ts';
+import type { Checkin, User } from '@models';
+import type { UntappdCheckinData, UntappdUser } from '@lib/UntappdClient';
 
 export default class Mapper {
   static checkin(ch: UntappdCheckinData): Checkin {
@@ -42,7 +42,7 @@ export default class Mapper {
     };
   }
 
-  static user(user: UntappdUserData): User {
+  static user(user: UntappdUser): User {
     return {
       id: user.id,
       username: user.user_name,

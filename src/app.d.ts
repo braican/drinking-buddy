@@ -1,7 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { UntappdUserData } from '@lib/UntappdClient';
-import type { User, Checkin } from '@models';
+import type { Checkin } from '@models';
 
 // for information about these interfaces
 declare global {
@@ -15,25 +14,12 @@ declare global {
 
 export interface ApiResponse<T> {
   success: boolean;
-  data: T;
+  message?: string;
+  data?: T;
 }
 
-export interface UntappdPrefetchResponse {
-  untappdUser: UntappdUserData;
-  dbCheckins: number;
-  lastDbCheckin: number;
-}
-
-export interface UntappdRefreshResponse {
-  newCheckins: Checkin[];
-}
-
-export interface TigrisAddCheckinsResponse {
-  totalAdded: number;
-}
-
-export interface TigrisUpdateUserResponse {
-  user: User;
+export interface LatestCheckins {
+  checkins: Checkin[];
 }
 
 export {};

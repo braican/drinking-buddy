@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { UntappdClient, TigrisClient } from '@lib';
 import { UNTAPPD_ACCESS_TOKEN } from '$env/static/private';
 
+/** @type {import('./$types').RequestHandler} */
 export async function GET() {
   try {
     const tigris = await TigrisClient.create();
@@ -24,7 +25,11 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('[Error in api/untappd/refresh/+server.ts]', error);
-    throw new Error(error.message);
+    console.error('[Error in GET api/checkins/pre-refresh]', error);
+
+    return json({
+      success: false,
+      message: error.message,
+    });
   }
 }

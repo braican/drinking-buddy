@@ -1,6 +1,6 @@
 import qs from 'qs';
-import { Mapper, Request } from '../utils/index.js';
-import type { Checkin } from '../../db/models/index.js';
+import { Mapper, Request } from '@utils';
+import type { Checkin } from '@models';
 
 interface UntappdResponse<T> {
   meta: {
@@ -12,7 +12,7 @@ interface UntappdResponse<T> {
 }
 
 interface UntappdUserInfoResponse {
-  user: UntappdUserData;
+  user: UntappdUser;
 }
 interface UntappdUserCheckinsResponse {
   checkins: {
@@ -21,7 +21,7 @@ interface UntappdUserCheckinsResponse {
   };
 }
 
-export interface UntappdUserData {
+export interface UntappdUser {
   id: number;
   user_name: string;
   first_name: string;
@@ -96,7 +96,7 @@ export default class UntappdClient {
     };
 
     const url = `${this.BASE}${endpoint}?${qs.stringify(params)}`;
-    const data = await Request.get<UntappdResponse<T>>(url);
+    const data = await Request.getExternal<UntappdResponse<T>>(url);
     const status = (data?.meta?.code as number) || 500;
 
     if (status !== 200) {
@@ -108,7 +108,7 @@ export default class UntappdClient {
     return data;
   }
 
-  async getUser(): Promise<UntappdUserData> {
+  async getUser(): Promise<UntappdUser> {
     const data: UntappdResponse<UntappdUserInfoResponse> = await this.req('/user/info/braican');
     return data.response.user;
   }

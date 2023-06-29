@@ -13,7 +13,10 @@ export async function POST({ request }) {
       data: { totalAdded },
     });
   } catch (error) {
-    console.error('[Error in api/untappd/refresh/+server.ts]', error);
-    throw new Error(error.message);
+    console.error('[Error in POST api/checkins/add]', error);
+    return json({
+      success: false,
+      message: error.message,
+    });
   }
 }

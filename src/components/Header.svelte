@@ -2,24 +2,20 @@
   import { RefreshIcon } from '@icons';
   import { Request, formatDate } from '@utils';
   import { userStore as user, checkinStore } from '@stores';
-
-  import type {
-    ApiResponse,
-    TigrisAddCheckinsResponse,
-    UntappdPrefetchResponse,
-    UntappdRefreshResponse,
-    TigrisUpdateUserResponse,
-  } from '../app';
+  import type { Checkin, User } from '@models';
+  import type { UntappdUser } from '@lib/UntappdClient';
 
   const refresh = async () => {
     console.log('Refreshing database with the latest from Untappd...');
 
     try {
-      const {
-        data: { untappdUser, dbCheckins, lastDbCheckin },
-      } = await Request.get<ApiResponse<UntappdPrefetchResponse>>('/api/untappd/prefetch');
+      const { untappdUser, dbCheckins, lastDbCheckin } = await Request.get<{
+        untappdUser: UntappdUser;
+        dbCheckins: number;
+        lastDbCheckin: Checkin;
+      }>('/api/checkins/pre-refresh');
 
-      console.log('Realtime user checkins (from Untappd):', untappdUser.stats.total_checkins);
+      console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
       console.log('Checkins in database:', dbCheckins);
 
       if (untappdUser.stats.total_checkins === dbCheckins) {
@@ -29,33 +25,20 @@
 
       console.log(`Fetching ${untappdUser.stats.total_checkins - dbCheckins} checkins...`);
 
-      const {
-        data: { newCheckins },
-      } = await Request.post<ApiResponse<UntappdRefreshResponse>>('/api/untappd/refresh', {
-        lastDbCheckin,
-      });
+      const { newCheckins } = await Request.post<{ newCheckins: Checkin[] }>(
+        '/api/checkins/refresh',
+        { lastDbCheckin },
+      );
 
       console.log(`Fetched ${newCheckins.length} checkins from Untappd...`);
 
-      const [
-        {
-          data: { totalAdded },
-        },
-        {
-          data: { user: newUserData },
-        },
-      ] = await Promise.all([
-        Request.post<ApiResponse<TigrisAddCheckinsResponse>>('/api/tigris/add-checkins', {
-          newCheckins,
-        }),
-        Request.post<ApiResponse<TigrisUpdateUserResponse>>('/api/tigris/update-user', {
-          untappdUser,
-        }),
+      const [{ totalAdded }, { user: newUser }] = await Promise.all([
+        Request.post<{ totalAdded: number }>('/api/checkins/add', { newCheckins }),
+        Request.post<{ user: User }>('/api/user', { untappdUser }),
       ]);
 
-      user.set(newUserData);
+      user.set(newUser);
       checkinStore.refreshLatest();
-
       console.log(`Added ${totalAdded} checkins to database.`);
     } catch (error) {
       console.error('There was a problem fetching the data.', error);
