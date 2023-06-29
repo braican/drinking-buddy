@@ -13,7 +13,13 @@
 
   <Nav />
 
-  <main class="padding-base padding-bottom-lg">
+  <main class="padding-base">
     <slot />
   </main>
 </div>
+
+<style lang="scss">
+  .app {
+    padding-bottom: var(--spacing-xl);
+  }
+</style>
