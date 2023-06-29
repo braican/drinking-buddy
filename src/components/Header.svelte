@@ -49,22 +49,37 @@
   };
 </script>
 
-<header class="header padding-base">
+<header class="header spacing-base">
   {#if $user}
     <figure class="user-photo">
       <img src={$user.avatar} alt="Nick Braica's Untappd profile." />
     </figure>
 
-    <p>Checkins: {$user.checkins?.toLocaleString()} / Beers: {$user.beers?.toLocaleString()}</p>
-    <p>Last Updated: {formatDate($user.lastUpdated?.toString())}</p>
-    <button aria-label="Refresh checkins" on:click={refresh}>
-      <RefreshIcon />
-      <span>Refresh</span>
-    </button>
+    <div class="stats">
+      <p class="fs-sm">Checkins: <strong>{$user.checkins?.toLocaleString()}</strong></p>
+      <p class="fs-sm">Beers: <strong>{$user.beers?.toLocaleString()}</strong></p>
+
+      <button aria-label="Refresh checkins" on:click={refresh} class="refresh-button spacing-sm">
+        <RefreshIcon />
+        <span class="fs-sm">Refresh</span>
+      </button>
+      <p class="fs-xs">Last Updated: {formatDate($user.lastUpdated?.toString())}</p>
+    </div>
   {/if}
 </header>
 
 <style lang="scss">
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-base);
+  }
+
+  .stats {
+    text-align: right;
+  }
+
   .user-photo {
     width: 60px;
     border-radius: 50%;
@@ -73,6 +88,20 @@
     img {
       display: block;
       width: 100%;
+    }
+  }
+
+  .refresh-button {
+    display: flex;
+    gap: 0.33em;
+    align-items: center;
+    line-height: 1;
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius);
+    margin: var(--spacing-sm) 0 var(--spacing-sm) auto;
+
+    :global(svg) {
+      width: 20px;
     }
   }
 </style>

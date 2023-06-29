@@ -7,6 +7,7 @@
   --fw-base: 400;
   --fw-bold: 700;
 
+  --step--2: clamp(0.69rem, calc(0.66rem + 0.18vw), 0.8rem);
   --step--1: clamp(0.83rem, calc(0.78rem + 0.29vw), 1rem);
   --step-0: clamp(1rem, calc(0.91rem + 0.43vw), 1.25rem);
   --step-1: clamp(1.2rem, calc(1.07rem + 0.63vw), 1.56rem);
@@ -14,5 +15,14 @@
   --step-3: clamp(1.73rem, calc(1.48rem + 1.24vw), 2.44rem);
   --step-4: clamp(2.07rem, calc(1.73rem + 1.7vw), 3.05rem);
 
-  --padding-base: 10px;
+  --spacing-base: 1rem;
+  --spacing-sm: 0.5rem;
+  --spacing-lg: 2rem;
+
+  --color-black: #1b1812;
+  --color-white: #fff;
+  --color-primary: #f19d0a;
+  --color-accent: #fa2d02;
+
+  --border-radius: 2px;
 }

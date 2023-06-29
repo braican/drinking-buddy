@@ -8,10 +8,12 @@
   $: user.set(data?.user);
 </script>
 
-<Header />
+<div class="app">
+  <Header />
 
-<Nav />
+  <Nav />
 
-<main class="padding-base">
-  <slot />
-</main>
+  <main class="spacing-base">
+    <slot />
+  </main>
+</div>
