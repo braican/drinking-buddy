@@ -9,6 +9,8 @@ strong {
   font-weight: var(--fw-bold);
 }
 
+// Headers
+
 h1 {
   font-size: var(--step-4);
   font-weight: var(--fw-bold);
@@ -18,6 +20,8 @@ h2 {
   font-weight: var(--fw-bold);
 }
 
+// Utility font sizes
+
 .fs-sm {
   font-size: var(--step--1);
 }
@@ -25,6 +29,46 @@ h2 {
 .fs-xs {
   font-size: var(--step--2);
 }
+
+// Buttons
+
+button {
+  cursor: pointer;
+}
+.button {
+  line-height: 1;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm);
+  font-size: var(--fs-sm);
+
+  :global(svg) {
+    width: 20px;
+  }
+}
+
+.button-orange {
+  background-color: var(--color-primary);
+
+  &:hover {
+    background-color: var(--color-primary-hover);
+  }
+}
+
+.button-translucent {
+  background-color: color-mix(in srgb, var(--color-white) 8%, transparent);
+  border-top: 1px solid transparent;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--color-white) 14%, transparent);
+  }
+
+  &--active {
+    border-color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-white) 14%, transparent);
+  }
+}
+
+// Headers
 
 .list-header {
   display: flex;

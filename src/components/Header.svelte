@@ -59,7 +59,10 @@
       <p class="fs-sm">Checkins: <strong>{$user.checkins?.toLocaleString()}</strong></p>
       <p class="fs-sm">Beers: <strong>{$user.beers?.toLocaleString()}</strong></p>
 
-      <button aria-label="Refresh checkins" on:click={refresh} class="refresh-button spacing-sm">
+      <button
+        aria-label="Refresh checkins"
+        on:click={refresh}
+        class="button refresh-button button-orange">
         <RefreshIcon />
         <span class="fs-sm">Refresh</span>
       </button>
@@ -70,6 +73,7 @@
 
 <style lang="scss">
   .header {
+    border-top: 2px solid var(--color-primary);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -95,9 +99,6 @@
     display: flex;
     gap: 0.33em;
     align-items: center;
-    line-height: 1;
-    background-color: var(--color-primary);
-    border-radius: var(--border-radius);
     margin: var(--spacing-sm) 0 var(--spacing-sm) auto;
 
     :global(svg) {

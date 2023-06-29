@@ -22,6 +22,7 @@
   --color-black: #1b1812;
   --color-white: #fff;
   --color-primary: #f19d0a;
+  --color-primary-hover: color-mix(in srgb, var(--color-primary), var(--color-black) 10%);
   --color-accent: #fa2d02;
 
   --border-radius: 2px;
