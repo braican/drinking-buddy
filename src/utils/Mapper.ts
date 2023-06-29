@@ -1,5 +1,5 @@
-import type { Checkin, User } from '@models';
-import type { UntappdCheckinData, UntappdUser } from '@lib/UntappdClient';
+import type { Checkin, User } from '../../db/models/index.js';
+import type { UntappdCheckinData, UntappdUser } from '../lib/UntappdClient.ts';
 
 export default class Mapper {
   static checkin(ch: UntappdCheckinData): Checkin {
@@ -10,6 +10,7 @@ export default class Mapper {
       rating: ch.rating_score,
       beer: {
         id: ch.beer.bid,
+        slug: ch.beer.beer_slug,
         name: ch.beer.beer_name,
         label: ch.beer.beer_label,
         style: ch.beer.beer_style,
@@ -18,6 +19,7 @@ export default class Mapper {
       brewery: {
         id: ch.brewery.brewery_id,
         name: ch.brewery.brewery_name,
+        slug: ch.brewery.brewery_slug,
         type: ch.brewery.brewery_type,
         label: ch.brewery.brewery_label,
         city: ch.brewery.location.brewery_city,

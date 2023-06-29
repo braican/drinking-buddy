@@ -10,6 +10,9 @@ class Beer {
   name: string;
 
   @Field()
+  slug: string;
+
+  @Field()
   label: string;
 
   @Field()
@@ -25,6 +28,9 @@ class Brewery {
 
   @Field()
   name: string;
+
+  @Field()
+  slug: string;
 
   @Field()
   type: string;

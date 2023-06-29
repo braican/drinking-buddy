@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { Request } from '@utils';
 import type { Checkin } from '@models';
-import type { LatestCheckins } from '../app.js';
+import type { LatestCheckins } from '@app';
 
 const latestCheckinStore = writable<Checkin[]>();
 

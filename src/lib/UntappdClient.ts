@@ -1,6 +1,6 @@
 import qs from 'qs';
-import { Mapper, Request } from '@utils';
-import type { Checkin } from '@models';
+import { Mapper, Request } from '../utils/index.js';
+import type { Checkin } from '../../db/models/index.js';
 
 interface UntappdResponse<T> {
   meta: {
@@ -43,6 +43,7 @@ export interface UntappdCheckinData {
   beer: {
     bid: number;
     beer_name: string;
+    beer_slug: string;
     beer_label: string;
     beer_style: string;
     beer_abv: number;
@@ -50,6 +51,7 @@ export interface UntappdCheckinData {
   brewery: {
     brewery_id: number;
     brewery_name: string;
+    brewery_slug: string;
     brewery_type: string;
     brewery_label: string;
     country_name: string;

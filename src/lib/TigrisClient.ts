@@ -60,6 +60,23 @@ export default class TigrisClient {
     return await checkins.toArray();
   }
 
+  public async getBreweryStats() {
+    const checkins = this.checkinCollection.findMany();
+
+    const breweryMap = {};
+
+    for await (const ch of checkins) {
+      // const { brewery_slug: slug, brewery_name: name } = ch.brewery;
+      // const brewery = byBrewery[slug];
+      // if (brewery) {
+      //   byBrewery[slug].checkinCount += 1;
+      //   byBrewery[slug].cumulative += ch.rating_score;
+      // } else {
+      //   byBrewery[slug] = { name, slug, checkinCount: 1, cumulative: ch.rating_score };
+      // }
+    }
+  }
+
   // ----- Add
 
   public async addCheckins(newCheckins: Checkin[]): Promise<number> {
