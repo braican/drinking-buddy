@@ -15,13 +15,17 @@
   --step-3: clamp(1.73rem, calc(1.48rem + 1.24vw), 2.44rem);
   --step-4: clamp(2.07rem, calc(1.73rem + 1.7vw), 3.05rem);
 
+  --spacing-xl: 4rem;
+  --spacing-lg: 2rem;
   --spacing-base: 1rem;
   --spacing-sm: 0.5rem;
-  --spacing-lg: 2rem;
-  --spacing-xl: 4rem;
+  --spacing-xs: 4px;
 
   --color-black: #1b1812;
   --color-white: #fff;
+  --color-white-8: color-mix(in srgb, var(--color-white) 8%, transparent);
+  --color-white-15: color-mix(in srgb, var(--color-white) 15%, transparent);
+  --color-white-25: color-mix(in srgb, var(--color-white) 25%, transparent);
   --color-primary: #f19d0a;
   --color-primary-hover: color-mix(in srgb, var(--color-primary), var(--color-black) 10%);
   --color-accent: #fa2d02;

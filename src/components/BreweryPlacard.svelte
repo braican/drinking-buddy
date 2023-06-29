@@ -18,7 +18,7 @@
       'count average' /
       auto 80px;
     gap: var(--spacing-sm);
-    border-top: 1px solid color-mix(in srgb, var(--color-white) 14%, transparent);
+    border-top: 1px solid var(--color-white-15);
   }
 
   .brewery-name {

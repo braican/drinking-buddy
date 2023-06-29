@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { checkinStore, breweryStore } from '@stores';
-  import { BreweryPlacard } from '@components';
+  import { BreweryPlacard, CheckinPlacard } from '@components';
 
   const views = ['Stats', 'Checkins'];
 
@@ -39,12 +39,9 @@
       <section class="list-section">
         <h2 class="list-header">Latest checkins</h2>
         {#if $latestCheckins}
-          <ul>
+          <ul class="margin-top-lg">
             {#each $latestCheckins as checkin}
-              <li data-checkin-id={checkin.id}>
-                <span class="brewery-name">{checkin.brewery.name}</span>
-                <span class="brewery-name">{checkin.beer.name}</span>
-              </li>
+              <li><CheckinPlacard {checkin} /></li>
             {/each}
           </ul>
         {:else}

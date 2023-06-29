@@ -67,16 +67,16 @@ button {
 }
 
 .button-translucent {
-  background-color: color-mix(in srgb, var(--color-white) 8%, transparent);
+  background-color: var(--color-white-8);
   border-top: 1px solid transparent;
 
   &:hover {
-    background-color: color-mix(in srgb, var(--color-white) 14%, transparent);
+    background-color: var(--color-white-15);
   }
 
   &--active {
     border-color: var(--color-primary);
-    background-color: color-mix(in srgb, var(--color-white) 14%, transparent);
+    background-color: var(--color-white-15);
   }
 }
 
