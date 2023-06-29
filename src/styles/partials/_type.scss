@@ -22,12 +22,24 @@ h2 {
 
 // Utility font sizes
 
+.fs-lg {
+  font-size: var(--step-1);
+}
+
 .fs-sm {
   font-size: var(--step--1);
 }
 
 .fs-xs {
   font-size: var(--step--2);
+}
+
+.ff-mono {
+  font-family: monospace;
+}
+
+.color-opacity-50 {
+  opacity: 0.5;
 }
 
 // Buttons
@@ -68,19 +80,20 @@ button {
   }
 }
 
-// Headers
+// Special components
 
 .list-header {
   display: flex;
-  align-items: center;
-  font-size: var(--step-2);
+  align-items: flex-start;
+  font-size: var(--step-4);
+  line-height: 1.1;
 
   &:before {
     content: '';
     display: block;
-    width: 1.5em;
+    width: 1em;
     height: 1px;
-    margin-bottom: 0.25em;
+    margin-top: 0.5em;
     margin-right: 10px;
     background-color: var(--color-primary);
   }
@@ -88,6 +101,6 @@ button {
 
 .list-section {
   + .list-section {
-    margin-top: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
   }
 }

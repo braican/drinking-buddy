@@ -1,7 +1,24 @@
-.spacing-base {
+.padding-base {
   padding: var(--spacing-base);
 }
 
-.spacing-sm {
+.padding-sm {
   padding: var(--spacing-sm);
+}
+
+.padding-bottom-lg {
+  padding-bottom: var(--spacing-lg);
+}
+
+.margin-top-lg {
+  margin-top: var(--spacing-lg);
+}
+.margin-top-sm {
+  margin-top: var(--spacing-sm);
+}
+.margin-bottom-lg {
+  margin-bottom: var(--spacing-lg);
+}
+.margin-bottom-xl {
+  margin-bottom: var(--spacing-xl);
 }

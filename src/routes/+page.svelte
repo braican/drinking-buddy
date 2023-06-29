@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { checkinStore, breweryStore } from '@stores';
+  import { BreweryPlacard } from '@components';
 
   const views = ['Stats', 'Checkins'];
 
@@ -20,7 +21,7 @@
   {#if !storesLoaded}
     <p>Loading...</p>
   {:else}
-    <nav>
+    <nav class="margin-bottom-xl">
       <ul class="home-tabs">
         {#each views as view}
           <li>
@@ -54,13 +55,9 @@
       <section class="list-section">
         <h2 class="list-header">Best Breweries</h2>
         {#if $bestBreweries}
-          <ul>
+          <ul class="margin-top-lg">
             {#each $bestBreweries as brewery}
-              <li data-brewery-id={brewery.id}>
-                <span class="brewery-name">{brewery.name}</span>
-                <span class="brewery-name">{brewery.average.toFixed(2)}</span>
-                <span class="brewery-name">{brewery.checkinCount}</span>
-              </li>
+              <li><BreweryPlacard {brewery} /></li>
             {/each}
           </ul>
         {/if}
@@ -69,13 +66,9 @@
       <section class="list-section">
         <h2 class="list-header">Most Popular Breweries</h2>
         {#if $popularBreweries}
-          <ul>
+          <ul class="margin-top-lg">
             {#each $popularBreweries as brewery}
-              <li data-brewery-id={brewery.id}>
-                <span class="brewery-name">{brewery.name}</span>
-                <span class="brewery-name">{brewery.average.toFixed(2)}</span>
-                <span class="brewery-name">{brewery.checkinCount}</span>
-              </li>
+              <li><BreweryPlacard {brewery} /></li>
             {/each}
           </ul>
         {/if}
@@ -88,6 +81,5 @@
   .home-tabs {
     display: flex;
     gap: var(--spacing-base);
-    margin-bottom: var(--spacing-lg);
   }
 </style>

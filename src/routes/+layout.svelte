@@ -13,7 +13,7 @@
 
   <Nav />
 
-  <main class="spacing-base">
+  <main class="padding-base padding-bottom-lg">
     <slot />
   </main>
 </div>
