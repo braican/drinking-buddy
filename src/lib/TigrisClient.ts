@@ -122,7 +122,10 @@ export default class TigrisClient {
       }
     }
 
-    const breweryObjects: Brewery[] = Object.values(breweryMap);
+    const breweryObjects: Brewery[] = Object.values<Brewery>(breweryMap).map(brewery => ({
+      ...brewery,
+      average: brewery.cumulative / brewery.checkinCount,
+    }));
     let totalAdded = 0;
 
     for (let i = 0; i < breweryObjects.length; i += this.BATCH_SIZE) {

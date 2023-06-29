@@ -39,4 +39,7 @@ export class Brewery implements TigrisCollectionType {
 
   @Field()
   cumulative?: number;
+
+  @Field()
+  average?: number;
 }
