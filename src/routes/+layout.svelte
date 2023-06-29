@@ -12,4 +12,6 @@
 
 <Nav />
 
-<slot />
+<main class="padding-base">
+  <slot />
+</main>

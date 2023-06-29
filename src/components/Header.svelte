@@ -49,7 +49,7 @@
   };
 </script>
 
-<header class="header padding-default">
+<header class="header padding-base">
   {#if $user}
     <figure class="user-photo">
       <img src={$user.avatar} alt="Nick Braica's Untappd profile." />
