@@ -53,7 +53,7 @@
     </figure>
 
     <p>Checkins: {$user.checkins?.toLocaleString()} / Beers: {$user.beers?.toLocaleString()}</p>
-    <p>Last Updated: {formatDate($user.lastUpdated.toString())}</p>
+    <p>Last Updated: {formatDate($user.lastUpdated?.toString())}</p>
     <button aria-label="Refresh checkins" on:click={refresh}>
       <RefreshIcon />
       <span>Refresh</span>
