@@ -1,13 +1,18 @@
 import { writable } from 'svelte/store';
+import { Request } from '@utils';
 import type { Checkin } from '@models';
+import type { LatestCheckins } from '../app.js';
 
 const latestCheckinStore = writable<Checkin[]>();
 
 export default {
   refreshLatest: async () => {
-    const resp = await fetch('/api/checkins/latest');
-    const { checkins } = await resp.json();
-    latestCheckinStore.set(checkins);
+    try {
+      const { checkins } = await Request.get<LatestCheckins>('/api/checkins/latest', fetch);
+      latestCheckinStore.set(checkins);
+    } catch (error) {
+      console.error('[checkinStore.refreshLatest error]', error);
+    }
   },
   latestCheckins: latestCheckinStore,
 };

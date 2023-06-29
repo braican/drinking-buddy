@@ -9,7 +9,7 @@
   {#if $latestCheckins}
     <ul>
       {#each $latestCheckins as checkin}
-        <li>
+        <li data-checkin-id={checkin.id}>
           <span class="brewery-name">{checkin.brewery.name}</span>
           <span class="brewery-name">{checkin.beer.name}</span>
         </li>
