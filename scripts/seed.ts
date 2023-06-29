@@ -10,6 +10,8 @@ import fs from 'fs';
 import { TigrisClient, UntappdClient } from '../src/lib/index.js';
 import { Mapper } from '../src/utils/index.js';
 
+const DATA_FILE_PATH = './data/checkins-backup-2023.05.31.json';
+
 const seedUser = async (tigris: TigrisClient) => {
   const client = new UntappdClient();
 
@@ -26,9 +28,7 @@ const seedUser = async (tigris: TigrisClient) => {
 };
 
 const seedCheckins = async (tigris: TigrisClient) => {
-  const path = './data/checkins-backup-2023.05.31.json';
-
-  await fs.readFile(path, async (err, data) => {
+  await fs.readFile(DATA_FILE_PATH, async (err, data) => {
     if (err) {
       console.log(err);
       return;

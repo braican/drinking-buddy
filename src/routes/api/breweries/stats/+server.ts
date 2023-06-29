@@ -5,11 +5,11 @@ import { TigrisClient } from '@lib';
 export async function GET({ setHeaders }): Promise<Response> {
   try {
     const tigris = await TigrisClient.create();
-    const breweries = await tigris.getBreweryStats();
+    const { bestBreweries, popularBreweries } = await tigris.getBreweryStats();
 
     return json({
       success: true,
-      data: { breweries },
+      data: { bestBreweries, popularBreweries },
     });
   } catch (error) {
     console.error('[Error in GET api/checkins/latest]', error);

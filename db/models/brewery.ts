@@ -34,12 +34,12 @@ export class Brewery implements TigrisCollectionType {
   @Field()
   lng: number;
 
-  @Field()
+  @Field({ index: true })
   checkinCount?: number;
 
   @Field()
   cumulative?: number;
 
-  @Field()
+  @Field({ index: true })
   average?: number;
 }

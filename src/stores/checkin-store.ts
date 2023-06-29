@@ -6,9 +6,9 @@ import type { LatestCheckins } from '@app';
 const latestCheckinStore = writable<Checkin[]>();
 
 export default {
-  refreshLatest: async () => {
+  refreshLatest: async (_fetch = fetch) => {
     try {
-      const { checkins } = await Request.get<LatestCheckins>('/api/checkins/latest', fetch);
+      const { checkins } = await Request.get<LatestCheckins>('/api/checkins/latest', _fetch);
       latestCheckinStore.set(checkins);
     } catch (error) {
       console.error('[checkinStore.refreshLatest error]', error);

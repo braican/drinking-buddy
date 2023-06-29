@@ -1,14 +1,8 @@
-import { checkinStore } from '@stores';
-import { Request } from '@utils';
-import type { LatestCheckins } from '@app';
+import { checkinStore, breweryStore } from '@stores';
 
 export async function load({ fetch }) {
   try {
-    const [{ checkins }, { breweries: bestBreweries }] = await Promise.all([
-      Request.get<LatestCheckins>('/api/checkins/latest', fetch),
-      Request.get('/api/breweries/stats', fetch),
-    ]);
-    checkinStore.latestCheckins.set(checkins);
+    await Promise.all([checkinStore.refreshLatest(fetch), breweryStore.refresh(fetch)]);
     return {};
   } catch (error) {
     return {

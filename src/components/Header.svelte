@@ -1,7 +1,7 @@
 <script lang="ts">
   import { RefreshIcon } from '@icons';
   import { Request, formatDate } from '@utils';
-  import { userStore as user, checkinStore } from '@stores';
+  import { userStore as user, checkinStore, breweryStore } from '@stores';
   import type { Checkin, User } from '@models';
   import type { UntappdUser } from '@lib/UntappdClient';
 
@@ -38,7 +38,10 @@
       ]);
 
       user.set(newUser);
-      checkinStore.refreshLatest();
+
+      await checkinStore.refreshLatest();
+      await breweryStore.refresh();
+
       console.log(`Added ${totalAdded} checkins to database.`);
     } catch (error) {
       console.error('There was a problem fetching the data.', error);

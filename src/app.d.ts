@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Checkin } from '@models';
+import type { Checkin, Brewery } from '@models';
 
 // for information about these interfaces
 declare global {
@@ -20,6 +20,11 @@ export interface ApiResponse<T> {
 
 export interface LatestCheckins {
   checkins: Checkin[];
+}
+
+export interface BreweryStats {
+  bestBreweries: Brewery[];
+  popularBreweries: Brewery[];
 }
 
 export {};
