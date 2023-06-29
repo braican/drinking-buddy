@@ -1,6 +1,6 @@
 import { Field, PrimaryKey, TigrisCollection, TigrisDataTypes } from '@tigrisdata/core';
-
 import type { TigrisCollectionType } from '@tigrisdata/core';
+import { Brewery } from './brewery.ts';
 
 class Beer {
   @Field()
@@ -20,38 +20,6 @@ class Beer {
 
   @Field()
   abv: number;
-}
-
-class Brewery {
-  @Field()
-  id!: number;
-
-  @Field()
-  name: string;
-
-  @Field()
-  slug: string;
-
-  @Field()
-  type: string;
-
-  @Field()
-  label: string;
-
-  @Field()
-  city: string;
-
-  @Field()
-  state: string;
-
-  @Field()
-  country: string;
-
-  @Field()
-  lat: number;
-
-  @Field()
-  lng: number;
 }
 
 class Venue {

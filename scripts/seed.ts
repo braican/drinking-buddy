@@ -46,7 +46,10 @@ const seedCheckins = async (tigris: TigrisClient) => {
     console.log(`Adding ${mappedCheckins.length} checkins...`);
 
     const totalAdded = await tigris.addCheckins(mappedCheckins);
-    console.log(`${totalAdded} added.`);
+    console.log(`${totalAdded} checkins added.`);
+
+    const addedBreweries = await tigris.updateBreweries();
+    console.log(`${addedBreweries} breweries added.`);
   });
 };
 

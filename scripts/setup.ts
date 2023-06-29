@@ -1,10 +1,10 @@
 import { Tigris } from '@tigrisdata/core';
-import { Checkin, User } from '../db/models/index.js';
+import { Checkin, User, Brewery } from '../db/models/index.js';
 
 async function main() {
   const tigrisClient = new Tigris();
   await tigrisClient.getDatabase().initializeBranch();
-  await tigrisClient.registerSchemas([Checkin, User]);
+  await tigrisClient.registerSchemas([Checkin, User, Brewery]);
 }
 
 main()

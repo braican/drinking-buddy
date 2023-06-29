@@ -1,9 +1,11 @@
 import { Tigris, FindQueryOptions } from '@tigrisdata/core';
 import type { DB, Collection } from '@tigrisdata/core';
-import type { Checkin, User } from '../../db/models/index.js';
+import type { Brewery, Checkin, User } from '../../db/models/index.js';
 
 export default class TigrisClient {
   private db: DB;
+  private BATCH_SIZE: number = 200;
+  private breweryCollection: Collection<Brewery>;
   private checkinCollection: Collection<Checkin>;
   private userCollection: Collection<User>;
 
@@ -20,6 +22,7 @@ export default class TigrisClient {
   private async initialize(): Promise<void> {
     const client = new Tigris();
     this.db = await client.getDatabase();
+    this.breweryCollection = this.db.getCollection<Brewery>('breweries');
     this.checkinCollection = this.db.getCollection<Checkin>('checkins');
     this.userCollection = this.db.getCollection<User>('users');
   }
@@ -61,35 +64,37 @@ export default class TigrisClient {
   }
 
   public async getBreweryStats() {
-    const checkins = this.checkinCollection.findMany();
-
-    const breweryMap = {};
-
-    for await (const ch of checkins) {
-      // const { brewery_slug: slug, brewery_name: name } = ch.brewery;
-      // const brewery = byBrewery[slug];
-      // if (brewery) {
-      //   byBrewery[slug].checkinCount += 1;
-      //   byBrewery[slug].cumulative += ch.rating_score;
-      // } else {
-      //   byBrewery[slug] = { name, slug, checkinCount: 1, cumulative: ch.rating_score };
-      // }
-    }
+    // const checkins = this.checkinCollection.findMany({
+    //   fields: {
+    //     include: ['brewery'],
+    //   },
+    //   options: new FindQueryOptions(100, 0),
+    // });
+    // const breweryMap = {};
+    // for await (const ch of checkins) {
+    //   const { name, slug } = ch.brewery;
+    //   if (!breweryMap[slug]) {
+    //     breweryMap[slug] = { name, slug, checkinCount: 1, cumulative: ch.rating };
+    //   } else {
+    //     breweryMap[slug].checkinCount += 1;
+    //     breweryMap[slug].cumulative += ch.rating;
+    //   }
+    // }
+    // console.log(Object.keys(breweryMap));
   }
 
   // ----- Add
 
   public async addCheckins(newCheckins: Checkin[]): Promise<number> {
     let totalAdded = 0;
-    const BATCH_SIZE = 200;
 
-    for (let i = 0; i < newCheckins.length; i += BATCH_SIZE) {
-      const batch = newCheckins.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < newCheckins.length; i += this.BATCH_SIZE) {
+      const batch = newCheckins.slice(i, i + this.BATCH_SIZE);
       const insertedCheckins = await this.checkinCollection.insertOrReplaceMany(batch);
       totalAdded += insertedCheckins.length;
       console.log(
-        `Batch ${(i + BATCH_SIZE) / BATCH_SIZE} / ${Math.ceil(
-          newCheckins.length / BATCH_SIZE,
+        `Batch ${(i + this.BATCH_SIZE) / this.BATCH_SIZE} / ${Math.ceil(
+          newCheckins.length / this.BATCH_SIZE,
         )} inserted.`,
       );
     }
@@ -99,5 +104,38 @@ export default class TigrisClient {
 
   public async addUser(newUser: User): Promise<void> {
     await this.userCollection.insertOrReplaceOne(newUser);
+  }
+
+  // ----- Update
+
+  public async updateBreweries(): Promise<number> {
+    const checkins = await this.checkinCollection.findMany();
+    const breweryMap = {};
+
+    for await (const ch of checkins) {
+      const { slug } = ch.brewery;
+      if (!breweryMap[slug]) {
+        breweryMap[slug] = { ...ch.brewery, checkinCount: 1, cumulative: ch.rating };
+      } else {
+        breweryMap[slug].checkinCount += 1;
+        breweryMap[slug].cumulative += ch.rating;
+      }
+    }
+
+    const breweryObjects: Brewery[] = Object.values(breweryMap);
+    let totalAdded = 0;
+
+    for (let i = 0; i < breweryObjects.length; i += this.BATCH_SIZE) {
+      const batch = breweryObjects.slice(i, i + this.BATCH_SIZE);
+      const insertedBreweries = await this.breweryCollection.insertOrReplaceMany(batch);
+      totalAdded += insertedBreweries.length;
+      console.log(
+        `Batch ${(i + this.BATCH_SIZE) / this.BATCH_SIZE} / ${Math.ceil(
+          breweryObjects.length / this.BATCH_SIZE,
+        )} inserted.`,
+      );
+    }
+
+    return totalAdded;
   }
 }
