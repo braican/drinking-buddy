@@ -52,7 +52,7 @@ export default class TigrisClient {
   }
 
   public async getLatestCheckins(): Promise<Checkin[]> {
-    const checkins = this.checkinCollection.findMany({
+    const checkins = await this.checkinCollection.findMany({
       sort: {
         field: 'createdAt',
         order: '$desc',
@@ -63,7 +63,7 @@ export default class TigrisClient {
     return await checkins.toArray();
   }
 
-  public async getBreweryStats() {
+  public async getGlobalStats() {
     const [bestBreweriesCursor, popularBreweriesCursor] = await Promise.all([
       this.breweryCollection.findMany({
         filter: {
@@ -93,6 +93,28 @@ export default class TigrisClient {
       bestBreweries,
       popularBreweries,
     };
+  }
+
+  public async getBrewery(brewerySlug) {
+    return await this.breweryCollection.findOne({
+      filter: {
+        slug: {
+          $eq: brewerySlug,
+        },
+      },
+    });
+  }
+
+  public async getBreweryCheckins(brewerySlug) {
+    const checkins = await this.checkinCollection.findMany({
+      filter: {
+        'brewery.slug': {
+          $eq: brewerySlug,
+        },
+      },
+    });
+
+    return await checkins.toArray();
   }
 
   // ----- Add

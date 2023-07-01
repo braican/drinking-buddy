@@ -5,7 +5,7 @@ import { TigrisClient } from '@lib';
 export async function GET({ setHeaders }): Promise<Response> {
   try {
     const tigris = await TigrisClient.create();
-    const { bestBreweries, popularBreweries } = await tigris.getBreweryStats();
+    const { bestBreweries, popularBreweries } = await tigris.getGlobalStats();
 
     return json({
       success: true,

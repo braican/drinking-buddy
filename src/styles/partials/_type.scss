@@ -14,10 +14,12 @@ strong {
 h1 {
   font-size: var(--step-4);
   font-weight: var(--fw-bold);
+  line-height: 1.1;
 }
 h2 {
   font-size: var(--step-3);
   font-weight: var(--fw-bold);
+  line-height: 1.1;
 }
 
 // Utility font sizes
@@ -85,8 +87,6 @@ button {
 .list-header {
   display: flex;
   align-items: flex-start;
-  font-size: var(--step-4);
-  line-height: 1.1;
 
   &:before {
     content: '';

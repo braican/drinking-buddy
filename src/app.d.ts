@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Checkin, Brewery } from '@models';
+import type { Checkin, Brewery, Beer } from '@models';
 
 // for information about these interfaces
 declare global {
@@ -22,9 +22,24 @@ export interface LatestCheckins {
   checkins: Checkin[];
 }
 
-export interface BreweryStats {
+export interface GlobalStats {
   bestBreweries: Brewery[];
   popularBreweries: Brewery[];
+}
+
+export interface BreweryBeer extends Beer {
+  lastHad: Date;
+  checkins: {
+    date: Date;
+    rating: number;
+  }[];
+}
+
+export interface BreweryStats extends Brewery {
+  beers: BreweryBeer[];
+  rating: number;
+  checkinCount: number;
+  checkins: Checkin[];
 }
 
 export {};
