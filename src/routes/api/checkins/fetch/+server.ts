@@ -17,7 +17,7 @@ export async function POST({ request }) {
       data: { newCheckins },
     });
   } catch (error) {
-    console.error('[Error in POST api/checkins/refresh]', error);
+    console.error('[Error in POST api/checkins/fetch]', error);
     return json({
       success: false,
       message: error.message,

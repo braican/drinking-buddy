@@ -3,7 +3,7 @@
   import { checkinStore, breweryStore } from '@stores';
   import { BreweryPlacard, CheckinPlacard } from '@components';
 
-  const views = ['Stats', 'Checkins'];
+  const views = ['Breweries', 'Checkins'];
 
   let storesLoaded = false;
   let activeView = views[0];
@@ -48,9 +48,9 @@
           <p>No checkins.</p>
         {/if}
       </section>
-    {:else if activeView === 'Stats'}
+    {:else if activeView === 'Breweries'}
       <section class="list-section">
-        <h2 class="list-header">Best Breweries</h2>
+        <h2 class="list-header">Highest Rated</h2>
         {#if $bestBreweries}
           <ul class="margin-top-lg">
             {#each $bestBreweries as brewery}
@@ -61,7 +61,7 @@
       </section>
 
       <section class="list-section">
-        <h2 class="list-header">Most Popular Breweries</h2>
+        <h2 class="list-header">Most Popular</h2>
         {#if $popularBreweries}
           <ul class="margin-top-lg">
             {#each $popularBreweries as brewery}

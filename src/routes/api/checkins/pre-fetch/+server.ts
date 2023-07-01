@@ -25,7 +25,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('[Error in GET api/checkins/pre-refresh]', error);
+    console.error('[Error in GET api/checkins/pre-fetch]', error);
 
     return json({
       success: false,
