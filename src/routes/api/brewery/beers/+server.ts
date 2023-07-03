@@ -39,7 +39,7 @@ export async function GET({ setHeaders, url }) {
       success: true,
       data: {
         rating: (cumulative / checkins.length).toFixed(2),
-        beers,
+        beers: Object.values(beers),
         checkinCount: checkins.length,
         checkins,
       },
