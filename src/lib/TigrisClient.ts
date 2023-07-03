@@ -112,6 +112,10 @@ export default class TigrisClient {
           $eq: brewerySlug,
         },
       },
+      sort: {
+        field: 'createdAt',
+        order: '$desc',
+      },
     });
 
     return await checkins.toArray();
