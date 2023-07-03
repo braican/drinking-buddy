@@ -35,7 +35,7 @@ export interface BreweryBeer extends Beer {
   }[];
 }
 
-export interface BreweryStats extends Brewery {
+export interface BreweryStats {
   beers: BreweryBeer[];
   rating: number;
   checkinCount: number;

@@ -19,7 +19,7 @@
   });
 </script>
 
-<article data-checkin-id={checkin.id} class="checkin padding-base">
+<article data-checkin-id={checkin.id} class="checkin padding-base top-border">
   <p>
     <span class="brewery-name">{checkin.brewery.name}</span>
     <span class="beer-name"><strong>{checkin.beer.name}</strong></span>
@@ -39,7 +39,6 @@
   .checkin {
     display: grid;
     gap: var(--spacing-sm);
-    border-top: 1px solid var(--color-white-15);
   }
 
   .venue {

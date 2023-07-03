@@ -22,7 +22,7 @@ h2 {
   line-height: 1.1;
 }
 
-// Utility font sizes
+// Utility
 
 .fs-lg {
   font-size: var(--step-1);
@@ -42,6 +42,10 @@ h2 {
 
 .color-opacity-50 {
   opacity: 0.5;
+}
+
+.text-align-right {
+  text-align: right;
 }
 
 // Buttons
