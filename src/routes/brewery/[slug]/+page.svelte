@@ -94,6 +94,6 @@
   .loading-name {
     width: 50vw;
     display: block;
-    background-color: var(--color-white-alpha-20);
+    background-color: var(--color-white-alpha-06);
   }
 </style>

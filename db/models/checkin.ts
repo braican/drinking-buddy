@@ -7,10 +7,10 @@ class Brewery {
   id!: number;
 
   @Field()
-  name: string;
+  name!: string;
 
   @Field()
-  slug: string;
+  slug!: string;
 
   @Field()
   type: string;
@@ -39,7 +39,10 @@ class Venue {
   id!: number;
 
   @Field()
-  name: string;
+  name!: string;
+
+  @Field()
+  slug!: string;
 
   @Field()
   address: string;

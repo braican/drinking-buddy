@@ -30,7 +30,7 @@ const seedUser = async (tigris: TigrisClient) => {
 const seedCheckins = async (tigris: TigrisClient) => {
   await fs.readFile(DATA_FILE_PATH, async (err, data) => {
     if (err) {
-      console.log(err);
+      console.error(err);
       return;
     }
 
@@ -57,5 +57,10 @@ const seedCheckins = async (tigris: TigrisClient) => {
   const tigris = await TigrisClient.create();
 
   await seedUser(tigris);
-  await seedCheckins(tigris);
+
+  try {
+    await seedCheckins(tigris);
+  } catch (error) {
+    console.error('[Error]', error);
+  }
 })();

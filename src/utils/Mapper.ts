@@ -33,6 +33,7 @@ export default class Mapper {
         : {
             id: ch.venue.venue_id,
             name: ch.venue.venue_name,
+            slug: ch.venue.venue_slug,
             address: ch.venue.location.venue_address,
             city: ch.venue.location.venue_city,
             state: ch.venue.location.venue_state,

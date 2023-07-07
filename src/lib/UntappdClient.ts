@@ -65,6 +65,7 @@ export interface UntappdCheckinData {
   venue: {
     venue_id: number;
     venue_name: string;
+    venue_slug: string;
     location: {
       venue_address;
       venue_city: string;
