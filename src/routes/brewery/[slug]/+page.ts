@@ -4,15 +4,10 @@ import type { Brewery } from '@models';
 import type { BreweryStats } from '@app';
 
 export async function load({ fetch, params }) {
-  const { brewery } = await Request.get<{ brewery: Brewery }>(
-    `/api/brewery?slug=${params.slug}`,
-    fetch,
-  );
-
   try {
     return {
-      brewery,
       streamed: {
+        brewery: Request.get<Brewery>(`/api/brewery?slug=${params.slug}`, fetch),
         stats: Request.get<BreweryStats>(`/api/brewery/beers?slug=${params.slug}`, fetch),
       },
     };

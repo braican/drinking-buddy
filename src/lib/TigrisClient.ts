@@ -1,4 +1,4 @@
-import { Tigris, FindQueryOptions } from '@tigrisdata/core';
+import { Tigris, FindQueryOptions, IndexedDoc } from '@tigrisdata/core';
 import type { DB, Collection } from '@tigrisdata/core';
 import type { Brewery, Checkin, User } from '../../db/models/index.js';
 
@@ -119,6 +119,30 @@ export default class TigrisClient {
     });
 
     return await checkins.toArray();
+  }
+
+  public async searchBreweryNames(query: string): Promise<Brewery[]> {
+    const results = await this.breweryCollection.search({
+      q: query,
+      searchFields: ['name'],
+      includeFields: ['name', 'slug'],
+      sort: [
+        {
+          field: 'name',
+          order: '$asc',
+        },
+      ],
+    });
+
+    const hits: IndexedDoc<Brewery>[] = [];
+
+    for await (const result of results) {
+      hits.push(...result.hits);
+    }
+
+    console.log(hits);
+
+    return hits.map(({ document }) => document);
   }
 
   // ----- Add

@@ -21,10 +21,14 @@
 </script>
 
 <header class="padding-bottom-lg">
-  <h1>{data.brewery.name}</h1>
+  {#await data.streamed.brewery}
+    <h1 class="loading-name">&nbsp;</h1>
+  {:then brewery}
+    <h1>{brewery.name}</h1>
+  {/await}
 
   {#await data.streamed.stats}
-    <p>Loading...</p>
+    <p class="margin-top-lg">Loading...</p>
   {:then stats}
     <p class="margin-top-sm">Rating: <strong>{stats.rating}</strong></p>
     <p class="margin-top-sm">{stats.checkinCount} checkin{stats.checkinCount > 1 ? 's' : ''}</p>
@@ -85,5 +89,11 @@
 
   .sort-label {
     display: block;
+  }
+
+  .loading-name {
+    width: 50vw;
+    display: block;
+    background-color: var(--color-white-alpha-20);
   }
 </style>

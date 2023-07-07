@@ -1,7 +1,9 @@
 @use './partials/reset';
 @use './partials/spacing';
 @use './partials/borders';
+@use './partials/forms';
 @use './partials/type';
+@use './partials/ux';
 
 :root {
   --ff: 'Inter', sans-serif;
@@ -24,6 +26,8 @@
 
   --color-black: #1b1812;
   --color-white: #fff;
+  --color-white-alpha-06: rgba(255, 255, 255, 0.06);
+  --color-white-alpha-20: rgba(255, 255, 255, 0.2);
   --color-white-8: color-mix(in srgb, var(--color-white) 8%, transparent);
   --color-white-15: color-mix(in srgb, var(--color-white) 15%, transparent);
   --color-white-25: color-mix(in srgb, var(--color-white) 25%, transparent);

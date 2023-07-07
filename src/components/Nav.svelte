@@ -1,15 +1,23 @@
 <script>
+  import { viewStore } from '@stores';
+  import { Search } from '@components';
   import { HomeIcon, SearchIcon } from '@icons';
+
+  const { searchVisible } = viewStore;
 </script>
 
 <nav class="nav">
   <a class="nav-button" href="/" aria-label="Home">
     <HomeIcon />
   </a>
-  <button class="nav-button" aria-label="Search">
+  <button class="nav-button" aria-label="Search" on:click={viewStore.showSearch}>
     <SearchIcon />
   </button>
 </nav>
+
+{#if $searchVisible}
+  <Search />
+{/if}
 
 <style lang="scss">
   .nav {

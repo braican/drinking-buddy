@@ -42,4 +42,8 @@ export interface BreweryStats {
   checkins: Checkin[];
 }
 
+export interface BrewerySearchResults {
+  results: Brewery[];
+}
+
 export {};

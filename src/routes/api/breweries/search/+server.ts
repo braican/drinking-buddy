@@ -2,20 +2,18 @@ import { json } from '@sveltejs/kit';
 import { TigrisClient } from '@lib';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ setHeaders, url }) {
+export async function GET({ setHeaders, url }): Promise<Response> {
   try {
-    const slug = url.searchParams.get('slug');
+    const query = url.searchParams.get('query');
     const tigris = await TigrisClient.create();
-    const brewery = await tigris.getBrewery(slug);
+    const results = await tigris.searchBreweryNames(query);
 
     return json({
       success: true,
-      data: {
-        ...brewery,
-      },
+      data: { results },
     });
   } catch (error) {
-    console.error('[Error in GET api/brewery]', error);
+    console.error('[Error in GET api/checkins/latest]', error);
     return json({
       success: false,
       message: error.message,

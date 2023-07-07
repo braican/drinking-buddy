@@ -1,4 +1,10 @@
-import { Field, PrimaryKey, TigrisCollection, TigrisDataTypes } from '@tigrisdata/core';
+import {
+  Field,
+  PrimaryKey,
+  TigrisCollection,
+  TigrisDataTypes,
+  SearchField,
+} from '@tigrisdata/core';
 
 import type { TigrisCollectionType } from '@tigrisdata/core';
 
@@ -7,6 +13,7 @@ export class Brewery implements TigrisCollectionType {
   @PrimaryKey(TigrisDataTypes.INT64)
   id!: number;
 
+  @SearchField({ sort: true })
   @Field()
   name: string;
 

@@ -3,6 +3,16 @@
   padding: var(--spacing-base);
 }
 
+.padding-top-bottom-base {
+  padding-top: var(--spacing-base);
+  padding-bottom: var(--spacing-base);
+}
+
+.padding-top-bottom-sm {
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+}
+
 .padding-sm {
   padding: var(--spacing-sm);
 }

@@ -25,18 +25,26 @@ export default class Request {
     });
   }
 
-  static get<Response>(url, _fetch = fetch): Promise<Response> {
-    const f = _fetch(url);
+  static get<Response>(url: string, _fetch = fetch, options: object = {}): Promise<Response> {
+    const f = _fetch(url, options);
     return Request.req<Response>(f);
   }
 
-  static post<Response>(url: string, body: object = {}, _fetch = fetch): Promise<Response> {
+  static post<Response>(
+    url: string,
+    body: object = {},
+    _fetch = fetch,
+    options: object = {},
+  ): Promise<Response> {
+    const data = JSON.stringify(body);
+
     const f = _fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: data,
+      ...options,
     });
 
     return Request.req<Response>(f);
