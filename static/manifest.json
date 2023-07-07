@@ -1,0 +1,22 @@
+{
+  "short_name": "Drinking Buddy",
+  "name": "Drinking Buddy",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "background_color": "#f19d0a",
+  "theme_color": "#f19d0a",
+  "display": "standalone",
+  "scope": "/",
+  "description": "What can I get you?"
+}
