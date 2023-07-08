@@ -1,13 +1,17 @@
 {
   "name": "drinking-buddy",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Your friend at the bar.",
   "scripts": {
-    "start": "npm-run-all --parallel watch:server watch:build",
-    "watch:server": "nodemon ./index.js",
-    "watch:build": "webpack watch --mode development",
-    "build": "webpack --mode production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "format": "prettier --plugin-search-dir . --write .",
+    "update-tigris-schema": "node --loader ts-node/esm scripts/setup.ts",
+    "tigris-info": "node --loader ts-node/esm scripts/tigris-info.ts"
   },
   "repository": {
     "type": "git",
@@ -21,32 +25,28 @@
   "homepage": "https://github.com/braican/drinking-buddy#readme",
   "main": "index.js",
   "devDependencies": {
-    "@babel/cli": "^7.13.14",
-    "@babel/core": "^7.13.14",
-    "@babel/node": "^7.13.13",
-    "@babel/preset-env": "^7.13.12",
-    "@upstatement/eslint-config": "^0.4.3",
-    "@upstatement/prettier-config": "^0.3.0",
-    "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.2.2",
-    "css-loader": "^5.2.0",
-    "dotenv": "^8.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.15.0",
-    "html-loader": "^2.1.2",
-    "mini-css-extract-plugin": "^1.4.0",
-    "nodemon": "^2.0.7",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^1.19.1",
-    "sass": "^1.32.8",
-    "sass-loader": "^11.0.1",
-    "webpack": "^5.30.0",
-    "webpack-cli": "^4.6.0"
+    "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/kit": "^1.20.4",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@upstatement/prettier-config": "^1.1.0",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-svelte": "^2.30.0",
+    "isomorphic-fetch": "^3.0.0",
+    "prettier": "^2.8.0",
+    "prettier-plugin-svelte": "^2.10.1",
+    "qs": "^6.11.2",
+    "svelte": "^4.0.0",
+    "svelte-check": "^3.4.3",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.1",
+    "typescript": "^5.0.0",
+    "vite": "^4.3.6"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "mustache": "^4.2.0",
-    "node-fetch": "^2.6.1",
-    "qs": "^6.10.1"
-  }
+    "@tigrisdata/core": "^1.2.3"
+  },
+  "type": "module"
 }

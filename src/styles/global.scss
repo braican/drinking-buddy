@@ -1,0 +1,39 @@
+@use './partials/reset';
+@use './partials/spacing';
+@use './partials/borders';
+@use './partials/forms';
+@use './partials/type';
+@use './partials/ux';
+
+:root {
+  --ff: 'Inter', sans-serif;
+  --fw-base: 400;
+  --fw-bold: 700;
+
+  --step--2: clamp(0.69rem, calc(0.66rem + 0.18vw), 0.8rem);
+  --step--1: clamp(0.83rem, calc(0.78rem + 0.29vw), 1rem);
+  --step-0: clamp(1rem, calc(0.91rem + 0.43vw), 1.25rem);
+  --step-1: clamp(1.2rem, calc(1.07rem + 0.63vw), 1.56rem);
+  --step-2: clamp(1.44rem, calc(1.26rem + 0.89vw), 1.95rem);
+  --step-3: clamp(1.73rem, calc(1.48rem + 1.24vw), 2.44rem);
+  --step-4: clamp(2.07rem, calc(1.73rem + 1.7vw), 3.05rem);
+
+  --spacing-xl: 4rem;
+  --spacing-lg: 2rem;
+  --spacing-base: 1rem;
+  --spacing-sm: 0.5rem;
+  --spacing-xs: 4px;
+
+  --color-black: #1b1812;
+  --color-white: #fff;
+  --color-white-alpha-06: rgba(255, 255, 255, 0.06);
+  --color-white-alpha-20: rgba(255, 255, 255, 0.2);
+  --color-white-8: color-mix(in srgb, var(--color-white) 8%, transparent);
+  --color-white-15: color-mix(in srgb, var(--color-white) 15%, transparent);
+  --color-white-25: color-mix(in srgb, var(--color-white) 25%, transparent);
+  --color-primary: #f19d0a;
+  --color-primary-hover: color-mix(in srgb, var(--color-primary), var(--color-black) 10%);
+  --color-accent: #fa2d02;
+
+  --border-radius: 2px;
+}

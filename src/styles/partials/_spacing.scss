@@ -1,0 +1,41 @@
+// Padding
+.padding-base {
+  padding: var(--spacing-base);
+}
+
+.padding-top-bottom-base {
+  padding-top: var(--spacing-base);
+  padding-bottom: var(--spacing-base);
+}
+
+.padding-top-bottom-sm {
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+}
+
+.padding-sm {
+  padding: var(--spacing-sm);
+}
+
+.padding-bottom-lg {
+  padding-bottom: var(--spacing-lg);
+}
+
+// Margin
+
+.margin-top-lg {
+  margin-top: var(--spacing-lg);
+}
+.margin-top-sm {
+  margin-top: var(--spacing-sm);
+}
+.margin-top-xs {
+  margin-top: var(--spacing-xs);
+}
+
+.margin-bottom-xl {
+  margin-bottom: var(--spacing-xl);
+}
+.margin-bottom-lg {
+  margin-bottom: var(--spacing-lg);
+}

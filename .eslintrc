@@ -1,7 +1,11 @@
 {
-  "extends": "@upstatement",
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "env": {
     "browser": true,
     "node": true
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-constant-condition": ["error", { "checkLoops": false }]
   }
 }
