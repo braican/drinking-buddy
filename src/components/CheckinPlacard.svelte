@@ -5,7 +5,7 @@
 
   export let checkin: Checkin;
 
-  const ratingClasses = new Array(5).fill('').map((v, i) => {
+  $: ratingClasses = new Array(5).fill('').map((v, i) => {
     const diff = checkin.rating - i;
     return diff >= 1
       ? 'fill'
