@@ -55,6 +55,8 @@
       setTimeout(() => (refreshStatus = ''), 2000);
     } catch (error) {
       console.error('There was a problem fetching the data.', error);
+      refreshStatus = `There was a problem fetching the data.`;
+      setTimeout(() => (refreshStatus = ''), 2000);
     }
 
     refreshButtonText = 'Refresh';
