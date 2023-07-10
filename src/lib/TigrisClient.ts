@@ -190,11 +190,16 @@ export default class TigrisClient {
     }
 
     if (newCheckins) {
-      const breweriesWithUpdates = await this.breweryCollection.findMany({
-        filter: {
-          $or: Object.keys(breweryMap).map(brewerySlug => ({ slug: brewerySlug })),
-        },
-      });
+      const filter =
+        Object.keys(breweryMap).length > 1
+          ? {
+              $or: Object.keys(breweryMap).map(brewerySlug => ({ slug: brewerySlug })),
+            }
+          : {
+              slug: Object.keys(breweryMap)[0],
+            };
+
+      const breweriesWithUpdates = await this.breweryCollection.findMany({ filter });
 
       for await (const brewery of breweriesWithUpdates) {
         if (breweryMap[brewery.slug]) {
