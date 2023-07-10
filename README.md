@@ -45,6 +45,14 @@ Updates the database with the latest data from Untappd.
 node --loader ts-node/esm scripts/update.ts
 ```
 
+## Refresh Breweries
+
+Refreshes the brewery data based on all checkins.
+
+```sh
+node --loader ts-node/esm scripts/refresh-breweries.ts
+```
+
 ### Tigris info
 
 Gets stats about the Tigris database.
