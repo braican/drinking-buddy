@@ -19,7 +19,9 @@ export async function GET({ setHeaders, url }) {
         rating: ch.rating,
       };
 
-      cumulative += ch.rating;
+      if (ch.rating) {
+        cumulative += ch.rating;
+      }
 
       if (!beers[beer.id]) {
         beers[beer.id] = {
@@ -38,7 +40,7 @@ export async function GET({ setHeaders, url }) {
     return json({
       success: true,
       data: {
-        rating: (cumulative / checkins.length).toFixed(2),
+        rating: (cumulative / checkins.filter(ch => ch.rating).length).toFixed(2),
         beers: Object.values(beers),
         checkinCount: checkins.length,
         checkins,
