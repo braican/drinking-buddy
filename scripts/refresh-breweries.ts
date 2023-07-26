@@ -11,6 +11,8 @@ import { TigrisClient } from '../src/lib/index.js';
 (async () => {
   const tigris = await TigrisClient.create();
   try {
+    console.log('Updating breweries...');
+
     await tigris.updateBreweries();
   } catch (error) {
     console.error('[Error]', error);
