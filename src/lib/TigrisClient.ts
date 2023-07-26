@@ -181,7 +181,8 @@ export default class TigrisClient {
     const checkins = newCheckins || (await this.checkinCollection.findMany());
 
     if (typeof process === 'object' && newCheckins === null && checkins) {
-      console.log(`${this.checkinCollection.count()} fetched.`);
+      const checkinCount = await this.checkinCollection.count();
+      console.log(`${checkinCount} checkins fetched.`);
     }
 
     if (!checkins) {
