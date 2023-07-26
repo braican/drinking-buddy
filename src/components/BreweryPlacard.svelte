@@ -5,7 +5,9 @@
 </script>
 
 <article data-brewery-id={brewery.id} class="brewery padding-base">
-  <span class="brewery-name fs-lg"><a href={`/brewery/${brewery.slug}`}>{brewery.name}</a></span>
+  <span class="brewery-name fs-lg">
+    <a href={`/brewery/${brewery.slug}`} class="link">{brewery.name}</a>
+  </span>
   <span class="brewery-average fs-lg ff-mono">{brewery.average.toFixed(2)}</span>
   <span class="brewery-count fs-sm color-opacity-50">Total beers: {brewery.checkinCount}</span>
 </article>

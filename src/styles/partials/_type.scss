@@ -86,6 +86,12 @@ button {
   }
 }
 
+.link {
+  &:hover {
+    color: var(--color-primary-hover);
+  }
+}
+
 // Special components
 
 .list-header {
@@ -100,11 +106,5 @@ button {
     margin-top: 0.5em;
     margin-right: 10px;
     background-color: var(--color-primary);
-  }
-}
-
-.list-section {
-  + .list-section {
-    margin-top: var(--spacing-xl);
   }
 }
