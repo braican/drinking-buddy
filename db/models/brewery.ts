@@ -49,4 +49,7 @@ export class Brewery implements TigrisCollectionType {
 
   @Field({ index: true })
   average?: number;
+
+  @Field()
+  ratedCheckins?: number;
 }

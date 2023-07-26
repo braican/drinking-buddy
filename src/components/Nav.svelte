@@ -41,5 +41,9 @@
       width: 50%;
       display: block;
     }
+
+    &:hover {
+      background-color: var(--color-primary-hover);
+    }
   }
 </style>

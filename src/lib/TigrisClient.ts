@@ -173,7 +173,17 @@ export default class TigrisClient {
   public async updateBreweries(newCheckins: Checkin[] = null): Promise<number> {
     const breweryMap = {};
     let totalAdded = 0;
+
+    if (typeof process === 'object' && newCheckins === null) {
+      console.log('Fetching all checkins from database...');
+    }
+
     const checkins = newCheckins || (await this.checkinCollection.findMany());
+
+    if (typeof process === 'object' && newCheckins === null && checkins) {
+      const checkinCount = await this.checkinCollection.count();
+      console.log(`${checkinCount} checkins fetched.`);
+    }
 
     if (!checkins) {
       return 0;
@@ -182,10 +192,19 @@ export default class TigrisClient {
     for await (const ch of checkins) {
       const { slug } = ch.brewery;
       if (!breweryMap[slug]) {
-        breweryMap[slug] = { ...ch.brewery, checkinCount: 1, cumulative: ch.rating };
+        breweryMap[slug] = {
+          ...ch.brewery,
+          checkinCount: 1,
+          cumulative: ch.rating,
+          ratedCheckins: ch.rating ? 1 : 0,
+        };
       } else {
         breweryMap[slug].checkinCount += 1;
-        breweryMap[slug].cumulative += ch.rating;
+
+        if (ch.rating) {
+          breweryMap[slug].cumulative += ch.rating;
+          breweryMap[slug].ratedCheckins += 1;
+        }
       }
     }
 
@@ -205,13 +224,14 @@ export default class TigrisClient {
         if (breweryMap[brewery.slug]) {
           breweryMap[brewery.slug].checkinCount += brewery.checkinCount;
           breweryMap[brewery.slug].cumulative += brewery.cumulative;
+          breweryMap[brewery.slug].ratedCheckins += brewery.ratedCheckins;
         }
       }
     }
 
     const breweryObjects: Brewery[] = Object.values<Brewery>(breweryMap).map(brewery => ({
       ...brewery,
-      average: brewery.cumulative / brewery.checkinCount,
+      average: brewery.cumulative / brewery.ratedCheckins,
     }));
 
     for (let i = 0; i < breweryObjects.length; i += this.BATCH_SIZE) {
