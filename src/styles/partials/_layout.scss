@@ -1,0 +1,8 @@
+.split {
+  display: grid;
+  gap: var(--spacing-xl);
+
+  &--50-50 {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}

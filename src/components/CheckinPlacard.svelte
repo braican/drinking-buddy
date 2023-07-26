@@ -28,10 +28,15 @@
     <p class="fs-sm venue"><BuildingIcon />{checkin.venue.name}</p>
   {/if}
   <p class="fs-xs color-opacity-50">{formatDate(checkin.createdAt.toString())}</p>
+
   <div class="rating margin-top-sm">
-    {#each ratingClasses as cl}
-      <span class={cl} />
-    {/each}
+    {#if checkin.rating}
+      {#each ratingClasses as cl}
+        <span class={cl} />
+      {/each}
+    {:else}
+      <p class="fs-xs">No rating!</p>
+    {/if}
   </div>
 </article>
 
