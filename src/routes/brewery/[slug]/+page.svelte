@@ -21,11 +21,11 @@
 </script>
 
 <header class="padding-bottom-lg">
-  {#await data.streamed.brewery}
+  <!-- {#await data.streamed.brewery}
     <h1 class="loading-name">&nbsp;</h1>
-  {:then brewery}
-    <h1>{brewery.name}</h1>
-  {/await}
+  {:then brewery} -->
+  <h1>{data.brewery.name}</h1>
+  <!-- {/await} -->
 
   {#await data.streamed.stats}
     <p class="margin-top-lg">Loading...</p>
@@ -74,7 +74,7 @@
             {/each}
           </ul>
         {:else}
-          <p>No checkins.</p>
+          <p class="margin-top-lg">No checkins</p>
         {/if}
       </section>
     {/if}
@@ -89,11 +89,5 @@
 
   .sort-label {
     display: block;
-  }
-
-  .loading-name {
-    width: 50vw;
-    display: block;
-    background-color: var(--color-white-alpha-06);
   }
 </style>
