@@ -21,11 +21,7 @@
 </script>
 
 <header class="padding-bottom-lg">
-  <!-- {#await data.streamed.brewery}
-    <h1 class="loading-name">&nbsp;</h1>
-  {:then brewery} -->
   <h1>{data.brewery.name}</h1>
-  <!-- {/await} -->
 
   {#await data.streamed.stats}
     <p class="margin-top-lg">Loading...</p>

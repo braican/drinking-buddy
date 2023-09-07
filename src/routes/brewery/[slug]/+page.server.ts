@@ -7,9 +7,6 @@ export async function load({ fetch, params }) {
   try {
     const brewery = await Request.get<Brewery>(`/api/brewery?slug=${params.slug}`, fetch);
 
-    if (!brewery) {
-      console.log('no brewery');
-    }
     return {
       brewery,
       streamed: {
