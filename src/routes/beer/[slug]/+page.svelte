@@ -6,16 +6,18 @@
   let rating = null;
   let hads = 0;
 
-  data.streamed.checkinData.then(ch => {
-    const ratedCheckins = ch.filter(ch => ch.rating !== 0);
-    checkinsLoaded = true;
+  data.streamed.checkinData
+    .then(ch => {
+      const ratedCheckins = ch.filter(ch => ch.rating !== 0);
+      checkinsLoaded = true;
 
-    hads = ch.length;
+      hads = ch.length;
 
-    rating = (
-      ratedCheckins.reduce((acc, curr) => acc + curr.rating, 0) / ratedCheckins.length
-    ).toFixed(2);
-  });
+      rating = (
+        ratedCheckins.reduce((acc, curr) => acc + curr.rating, 0) / ratedCheckins.length
+      ).toFixed(2);
+    })
+    .catch(e => console.error(e));
 </script>
 
 <header class="padding-bottom-lg">
@@ -41,7 +43,8 @@
       <p class="margin-top-sm">Hads: <strong>{hads}</strong></p>
     {/if}
   {:catch}
-    <h1>No beer found!</h1>
+    <h1>No beer here.</h1>
+    <p class="margin-top-sm">The requested beer doesn't exist, or you've never had it.</p>
   {/await}
 </header>
 

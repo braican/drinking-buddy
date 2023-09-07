@@ -17,17 +17,12 @@ export async function GET({ setHeaders, url }) {
       success: true,
       data: [...checkins],
     });
-  } catch (e) {
-    if (e && e.status === 404) {
-      throw error(404, {
-        message: 'Not found',
-      });
-    }
-
-    console.error('[Error in GET api/beer]', e);
+  } catch (error) {
+    console.error('[Error in GET api/beer]', error);
     return json({
       success: false,
-      message: e.message,
+      message: error.body.message,
+      status: error.status,
     });
   }
 }
