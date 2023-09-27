@@ -50,7 +50,8 @@ export async function GET({ setHeaders, url }) {
     console.error('[Error in GET api/brewery]', error);
     return json({
       success: false,
-      message: error.message,
+      message: error.body.message,
+      status: error.status,
     });
   }
 }

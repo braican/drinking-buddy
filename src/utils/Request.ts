@@ -1,11 +1,16 @@
 import 'isomorphic-fetch';
+import { error } from '@sveltejs/kit';
 import type { ApiResponse } from '../app';
 
 export default class Request {
   static req<Response>(f): Promise<Response> {
     return new Promise((resolve, reject) => {
       f.then(response => {
-        if (response.ok || response.status === 400) {
+        if (response.status === 404) {
+          throw error(404);
+        }
+
+        if (response.ok) {
           return response.json();
         }
         throw new Error(
@@ -15,6 +20,10 @@ export default class Request {
         .then((data: ApiResponse<Response>) => {
           if (data.success) {
             return resolve(data.data);
+          }
+
+          if (data.status === 404) {
+            throw error(404);
           }
 
           throw new Error(

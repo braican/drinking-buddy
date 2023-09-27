@@ -5,7 +5,8 @@ body {
   line-height: 1.4;
 }
 
-strong {
+strong,
+.fw-bold {
   font-weight: var(--fw-bold);
 }
 
@@ -107,4 +108,13 @@ button {
     margin-right: 10px;
     background-color: var(--color-primary);
   }
+}
+
+// Interactive
+.loading-name {
+  // width: 50vw;
+  display: block;
+  background-color: var(--color-white-alpha-06);
+  color: transparent;
+  font-weight: normal;
 }

@@ -105,6 +105,36 @@ export default class TigrisClient {
     });
   }
 
+  public async getFirstBeerCheckin(beerSlug: string) {
+    return await this.checkinCollection.findOne({
+      filter: {
+        'beer.slug': {
+          $eq: beerSlug,
+        },
+      },
+      sort: {
+        field: 'createdAt',
+        order: '$desc',
+      },
+    });
+  }
+
+  public async getBeerCheckins(beerSlug: string) {
+    const checkins = await this.checkinCollection.findMany({
+      filter: {
+        'beer.slug': {
+          $eq: beerSlug,
+        },
+      },
+      sort: {
+        field: 'createdAt',
+        order: '$desc',
+      },
+    });
+
+    return await checkins.toArray();
+  }
+
   public async getBreweryCheckins(brewerySlug) {
     const checkins = await this.checkinCollection.findMany({
       filter: {

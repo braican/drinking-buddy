@@ -67,7 +67,7 @@
 <header class="header padding-base">
   {#if $user}
     <figure class="user-photo">
-      <img src={$user.avatar} alt="Nick Braica's Untappd profile." />
+      <a href="/"><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
     </figure>
 
     <div class="stats">
