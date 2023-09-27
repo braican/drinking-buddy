@@ -13,7 +13,7 @@ export async function GET({ setHeaders, url }): Promise<Response> {
       data: { results },
     });
   } catch (error) {
-    console.error('[Error in GET api/checkins/latest]', error);
+    console.error('[Error in GET api/breweries/search]', error);
     return json({
       success: false,
       message: error.message,

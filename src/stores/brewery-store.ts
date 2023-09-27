@@ -7,13 +7,13 @@ const bestBreweries = writable<Brewery[]>();
 const popularBreweries = writable<Brewery[]>();
 
 export default {
-  refresh: async (_fetch = fetch) => {
+  refresh: async () => {
     try {
-      const stats = await Request.get<GlobalStats>('/api/breweries/stats', _fetch);
+      const stats = await Request.get<GlobalStats>('/api/breweries/stats');
       bestBreweries.set(stats.bestBreweries);
       popularBreweries.set(stats.popularBreweries);
     } catch (error) {
-      console.error('[checkinStore.refreshLatest error]', error);
+      console.error('[breweryStore.refresh error]', error);
     }
   },
   bestBreweries,

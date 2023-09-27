@@ -48,7 +48,7 @@
 
       user.set(newUser);
 
-      await checkinStore.refreshLatest();
+      await checkinStore.refresh();
       await breweryStore.refresh();
 
       refreshStatus = `Added ${totalAdded} checkins to database.`;

@@ -12,7 +12,7 @@ export async function GET({ setHeaders }): Promise<Response> {
       data: { bestBreweries, popularBreweries },
     });
   } catch (error) {
-    console.error('[Error in GET api/checkins/latest]', error);
+    console.error('[Error in GET api/breweries/stats]', error);
     return json({
       success: false,
       message: error.message,
