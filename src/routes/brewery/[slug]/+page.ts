@@ -8,31 +8,21 @@ export async function load({ fetch, params }) {
     const req = new ApiRequest(fetch);
     const response = await req.get<{ brewery: Brewery }>(`brewery?slug=${params.slug}`);
 
+    if (response === null) {
+      throw error(404);
+    }
+
     return {
       brewery: response.brewery,
-      streamed: {},
+      streamed: {
+        stats: req.get<BreweryStats>(`brewery/beers?slug=${params.slug}`),
+      },
     };
-  } catch (error) {
-    console.log('there is an error', error);
+  } catch (err) {
+    if (err.status === 404) {
+      throw error(404, 'Brewery not found.');
+    }
 
     return {};
   }
-
-  // try {
-  //   const brewery = await Request.get<Brewery>(`/api/brewery?slug=${params.slug}`, fetch);
-
-  //   return {
-  //     brewery,
-  //     streamed: {
-  //       stats: Request.get<BreweryStats>(`/api/brewery/beers?slug=${params.slug}`, fetch),
-  //     },
-  //   };
-  // } catch (e) {
-  //   if (e.status === 404) {
-  //     throw error(404);
-  //   }
-
-  //   console.error('Error loading brewery data: ', e);
-  //   throw error(500, 'Something went wrong.');
-  // }
 }

@@ -20,6 +20,10 @@ export default class ApiRequest {
             return resolve(data.data);
           }
 
+          if (data && data.status === 404) {
+            return resolve(null);
+          }
+
           throw new Error(data.message);
         })
         .catch(error => reject(error));
