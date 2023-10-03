@@ -5,10 +5,10 @@ import { ApiResponse } from '@utils';
 export async function GET({ setHeaders }): Promise<Response> {
   try {
     const tigris = await TigrisClient.create();
-    const checkins = await tigris.getLatestCheckins();
-    return ApiResponse.success({ checkins });
+    const bestBreweries = await tigris.getBestBreweries();
+    return ApiResponse.success({ breweries: bestBreweries });
   } catch (error) {
-    console.error('[Error in GET api/checkins/latest]', error);
+    console.error('[Error in GET api/breweries/best]', error);
     return ApiResponse.error(error.message);
   }
 }

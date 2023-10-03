@@ -7,32 +7,32 @@
 
   const sortOptions = ['Alphabetical', 'Highest rated', 'Most hads'];
 
-  $: sortedBeers = async () => {
-    const { beers } = await data.streamed.stats;
+  // $: sortedBeers = async () => {
+  //   const { beers } = await data.streamed.stats;
 
-    if (sort === 'Alphabetical') {
-      return beers.sort((a, b) => (a.name > b.name ? 1 : -1));
-    } else if (sort === 'Highest rated') {
-      return beers.sort((a, b) => (beerRating(a) > beerRating(b) ? -1 : 1));
-    } else {
-      return beers.sort((a, b) => (a.checkins.length > b.checkins.length ? -1 : 1));
-    }
-  };
+  //   if (sort === 'Alphabetical') {
+  //     return beers.sort((a, b) => (a.name > b.name ? 1 : -1));
+  //   } else if (sort === 'Highest rated') {
+  //     return beers.sort((a, b) => (beerRating(a) > beerRating(b) ? -1 : 1));
+  //   } else {
+  //     return beers.sort((a, b) => (a.checkins.length > b.checkins.length ? -1 : 1));
+  //   }
+  // };
 </script>
 
 <header class="padding-bottom-lg">
   <h1>{data.brewery.name}</h1>
 
-  {#await data.streamed.stats}
+  <!-- {#await data.streamed.stats}
     <p class="margin-top-lg">Loading...</p>
   {:then stats}
     <p class="margin-top-sm">Rating: <strong>{stats.rating}</strong></p>
     <p class="margin-top-sm">{stats.checkinCount} checkin{stats.checkinCount > 1 ? 's' : ''}</p>
     <p>{stats.beers.length} beer{stats.beers.length > 1 ? 's' : ''}</p>
-  {/await}
+  {/await} -->
 </header>
 
-{#await data.streamed.stats then stats}
+<!-- {#await data.streamed.stats then stats}
   <Tabs views={['Beers', 'Checkins']} let:view>
     {#if view === 'Beers'}
       <section class="list-section">
@@ -75,7 +75,7 @@
       </section>
     {/if}
   </Tabs>
-{/await}
+{/await} -->
 
 <style lang="scss">
   .beer-header {

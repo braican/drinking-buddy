@@ -63,36 +63,33 @@ export default class TigrisClient {
     return await checkins.toArray();
   }
 
-  public async getGlobalStats() {
-    const [bestBreweriesCursor, popularBreweriesCursor] = await Promise.all([
-      this.breweryCollection.findMany({
-        filter: {
-          checkinCount: {
-            $gt: '5',
-          },
+  public async getBestBreweries() {
+    const breweries = await this.breweryCollection.findMany({
+      filter: {
+        checkinCount: {
+          $gt: '5',
         },
-        sort: {
-          field: 'average',
-          order: '$desc',
-        },
-        options: new FindQueryOptions(10, 0),
-      }),
-      this.breweryCollection.findMany({
-        sort: {
-          field: 'checkinCount',
-          order: '$desc',
-        },
-        options: new FindQueryOptions(10, 0),
-      }),
-    ]);
+      },
+      sort: {
+        field: 'average',
+        order: '$desc',
+      },
+      options: new FindQueryOptions(10, 0),
+    });
 
-    const bestBreweries = await bestBreweriesCursor.toArray();
-    const popularBreweries = await popularBreweriesCursor.toArray();
+    return await breweries.toArray();
+  }
 
-    return {
-      bestBreweries,
-      popularBreweries,
-    };
+  public async getMostPopularBreweries() {
+    const breweries = await this.breweryCollection.findMany({
+      sort: {
+        field: 'checkinCount',
+        order: '$desc',
+      },
+      options: new FindQueryOptions(10, 0),
+    });
+
+    return await breweries.toArray();
   }
 
   public async getBrewery(brewerySlug) {

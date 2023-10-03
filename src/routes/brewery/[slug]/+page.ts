@@ -1,17 +1,20 @@
 import { error } from '@sveltejs/kit';
-import { Request, Api } from '@utils';
+import { ApiRequest } from '@utils';
 import type { Brewery } from '@models';
 import type { BreweryStats } from '@app';
 
 export async function load({ fetch, params }) {
   try {
-    const f = await fetch(`${Api.BASE_URL}/brewery?slug=${params.slug}`);
-    const data = await f.json();
+    const req = new ApiRequest(fetch);
+    const response = await req.get<{ brewery: Brewery }>(`brewery?slug=${params.slug}`);
 
     return {
+      brewery: response.brewery,
       streamed: {},
     };
   } catch (error) {
+    console.log('there is an error', error);
+
     return {};
   }
 

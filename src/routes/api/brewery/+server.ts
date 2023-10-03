@@ -1,5 +1,5 @@
-import { json, error } from '@sveltejs/kit';
 import { TigrisClient } from '@lib';
+import { ApiResponse } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
@@ -9,21 +9,12 @@ export async function GET({ setHeaders, url }) {
     const brewery = await tigris.getBrewery(slug);
 
     if (!brewery) {
-      throw error(404, 'Brewery not found.');
+      return ApiResponse.error('Brewery not found.', 404);
     }
 
-    return json({
-      success: true,
-      data: {
-        ...brewery,
-      },
-    });
+    return ApiResponse.success({ brewery });
   } catch (error) {
     console.error('[Error in GET api/brewery]', error);
-    return json({
-      success: false,
-      message: error.body.message,
-      status: error.status,
-    });
+    return ApiResponse.error(error.message, error.status);
   }
 }
