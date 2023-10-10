@@ -1,4 +1,4 @@
-import { Tigris, FindQueryOptions, IndexedDoc } from '@tigrisdata/core';
+import { Tigris, FindQueryOptions, IndexedDoc, Case } from '@tigrisdata/core';
 import type { DB, Collection } from '@tigrisdata/core';
 import type { Brewery, Checkin, User } from '../../db/models/index.js';
 
@@ -37,6 +37,35 @@ export default class TigrisClient {
       },
       options: new FindQueryOptions(1, 0),
     });
+  }
+
+  public async getStyles(): Promise<string[]> {
+    const checkins = await this.checkinCollection.findMany();
+
+    if (typeof process === 'object' && checkins) {
+      const checkinCount = await this.checkinCollection.count();
+      console.log(`${checkinCount} checkins fetched.`);
+    }
+
+    if (!checkins) {
+      return [];
+    }
+
+    const styles = [];
+
+    for await (const ch of checkins) {
+      let { style } = ch.beer;
+
+      if (style.includes('-')) {
+        style = style.split('-')[0].trim();
+      }
+
+      if (!styles.includes(style)) {
+        styles.push(style);
+      }
+    }
+
+    return styles;
   }
 
   public async getCheckinCount(): Promise<number> {
@@ -167,9 +196,38 @@ export default class TigrisClient {
       hits.push(...result.hits);
     }
 
-    console.log(hits);
-
     return hits.map(({ document }) => document);
+  }
+
+  public async getTopBeers(style, state) {
+    const filters = [];
+
+    if (state) {
+      filters.push({
+        'brewery.state': {
+          $eq: state.toUpperCase(),
+        },
+      });
+    }
+
+    if (style) {
+      filters.push({
+        'beer.style': {
+          $contains: style.charAt(0).toUpperCase() + style.slice(1).toLowerCase(),
+        },
+      });
+    }
+
+    const checkins = await this.checkinCollection.findMany({
+      filter: filters.length > 1 ? { $and: filters } : {},
+      sort: {
+        field: 'createdAt',
+        order: '$desc',
+      },
+      options: new FindQueryOptions(10, 0),
+    });
+
+    return await checkins.toArray();
   }
 
   // ----- Add
