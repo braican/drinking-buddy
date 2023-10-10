@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import { RefreshIcon } from '@icons';
-  import { Request, formatDate } from '@utils';
+  import { ApiRequest, formatDate } from '@utils';
   import { userStore as user, checkinStore, breweryStore } from '@stores';
   import type { Checkin, User } from '@models';
   import type { UntappdUser } from '@lib/UntappdClient';
@@ -17,11 +17,13 @@
     console.log('Refreshing database with the latest from Untappd...');
 
     try {
-      const { untappdUser, dbCheckins, lastDbCheckin } = await Request.get<{
+      const req = new ApiRequest();
+
+      const { untappdUser, dbCheckins, lastDbCheckin } = await req.get<{
         untappdUser: UntappdUser;
         dbCheckins: number;
         lastDbCheckin: Checkin;
-      }>('/api/checkins/pre-fetch');
+      }>('checkins/pre-fetch');
 
       console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
       console.log('Checkins in database:', dbCheckins);
@@ -36,21 +38,17 @@
 
       refreshStatus = `Fetching ${untappdUser.stats.total_checkins - dbCheckins} checkins...`;
 
-      const { newCheckins } = await Request.post<{ newCheckins: Checkin[] }>(
-        '/api/checkins/fetch',
-        { lastDbCheckin },
-      );
+      const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
+        lastDbCheckin,
+      });
 
       const [{ totalAdded }, { user: newUser }] = await Promise.all([
-        Request.post<{ totalAdded: number }>('/api/checkins/add', { newCheckins }),
-        Request.post<{ user: User }>('/api/user', { untappdUser }),
+        req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
+        req.post<{ user: User }>('user', { untappdUser }),
       ]);
-
       user.set(newUser);
-
       await checkinStore.refresh();
       await breweryStore.refresh();
-
       refreshStatus = `Added ${totalAdded} checkins to database.`;
       setTimeout(() => (refreshStatus = ''), 2000);
     } catch (error) {
