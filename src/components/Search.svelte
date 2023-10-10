@@ -3,7 +3,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { fade } from 'svelte/transition';
   import { CloseIcon, RightArrowIcon } from '@icons';
-  import { Request } from '@utils';
+  import { ApiRequest } from '@utils';
   import type { Brewery } from '@models';
   import type { BrewerySearchResults } from '@app';
 
@@ -40,9 +40,11 @@
       loading = true;
       controller = new AbortController();
       const signal = controller.signal;
+      const req = new ApiRequest(fetch);
 
       timer = setTimeout(() => {
-        Request.get<BrewerySearchResults>(`/api/breweries/search?query=${query}`, fetch, { signal })
+        req
+          .get<BrewerySearchResults>(`/api/breweries/search?query=${query}`, { signal })
           .then(r => {
             results = r.results;
             loading = false;

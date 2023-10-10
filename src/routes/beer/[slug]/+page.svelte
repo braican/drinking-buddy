@@ -7,7 +7,8 @@
   let hads = 0;
 
   data.streamed.checkinData
-    .then(ch => {
+    .then(response => {
+      const ch = response.checkins;
       const ratedCheckins = ch.filter(ch => ch.rating !== 0);
       checkinsLoaded = true;
 
@@ -55,9 +56,9 @@
     <section class="list-section">
       <h2 class="list-header">Checkins</h2>
 
-      {#if checkinData.length > 0}
+      {#if checkinData.checkins.length > 0}
         <ul class="margin-top-lg">
-          {#each checkinData as checkin}
+          {#each checkinData.checkins as checkin}
             <li><CheckinPlacard {checkin} light /></li>
           {/each}
         </ul>

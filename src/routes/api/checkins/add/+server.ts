@@ -1,5 +1,5 @@
-import { json } from '@sveltejs/kit';
 import { TigrisClient } from '@lib';
+import { ApiResponse } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
@@ -9,15 +9,9 @@ export async function POST({ request }) {
     const totalAdded = await tigris.addCheckins(newCheckins);
     await tigris.updateBreweries(newCheckins);
 
-    return json({
-      success: true,
-      data: { totalAdded },
-    });
+    return ApiResponse.success({ totalAdded });
   } catch (error) {
     console.error('[Error in POST api/checkins/add]', error);
-    return json({
-      success: false,
-      message: error.message,
-    });
+    return ApiResponse.error(error.message);
   }
 }
