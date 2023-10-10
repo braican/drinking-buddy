@@ -1,6 +1,5 @@
-import { error } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { TigrisClient } from '@lib';
+import { ApiResponse } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
@@ -10,19 +9,12 @@ export async function GET({ setHeaders, url }) {
     const checkins = await tigris.getBeerCheckins(slug);
 
     if (checkins.length < 1) {
-      throw error(404);
+      return ApiResponse.error('Beer not found.', 404);
     }
 
-    return json({
-      success: true,
-      data: [...checkins],
-    });
+    return ApiResponse.success({ checkins });
   } catch (error) {
-    console.error('[Error in GET api/beer]', error);
-    return json({
-      success: false,
-      message: error.body.message,
-      status: error.status,
-    });
+    console.error('[Error in GET api/beer/checkins]', error);
+    return ApiResponse.error(error.message, error.status);
   }
 }
