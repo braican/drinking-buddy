@@ -12,19 +12,15 @@ declare global {
   }
 }
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T = null> {
   success: boolean;
   message?: string;
   data?: T;
+  status?: number;
 }
 
 export interface LatestCheckins {
   checkins: Checkin[];
-}
-
-export interface GlobalStats {
-  bestBreweries: Brewery[];
-  popularBreweries: Brewery[];
 }
 
 export interface BreweryBeer extends Beer {

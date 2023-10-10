@@ -4,6 +4,7 @@
   import { BuildingIcon } from '@icons';
 
   export let checkin: Checkin;
+  export let light: boolean = false;
 
   $: ratingClasses = new Array(5).fill('').map((v, i) => {
     const diff = checkin.rating - i;
@@ -20,14 +21,22 @@
 </script>
 
 <article data-checkin-id={checkin.id} class="checkin padding-base top-border">
-  <p>
-    <span class="brewery-name">{checkin.brewery.name}</span>
-    <span class="beer-name"><strong>{checkin.beer.name}</strong></span>
+  {#if !light}
+    <p>
+      <a class="link" href={`/beer/${checkin.beer.slug}`}>
+        <span class="brewery-name">{checkin.brewery.name}</span>
+        <span class="beer-name"><strong>{checkin.beer.name}</strong></span>
+      </a>
+    </p>
+  {/if}
+
+  <p class:fw-bold={light} class:fs-xs={!light} class:color-opacity-50={!light}>
+    {formatDate(checkin.createdAt.toString())}
   </p>
+
   {#if checkin.venue}
     <p class="fs-sm venue"><BuildingIcon />{checkin.venue.name}</p>
   {/if}
-  <p class="fs-xs color-opacity-50">{formatDate(checkin.createdAt.toString())}</p>
 
   <div class="rating margin-top-sm">
     {#if checkin.rating}

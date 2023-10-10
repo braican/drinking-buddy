@@ -6,15 +6,18 @@ export async function GET({ setHeaders, url }) {
   try {
     const slug = url.searchParams.get('slug');
     const tigris = await TigrisClient.create();
-    const brewery = await tigris.getBrewery(slug);
+    const checkin = await tigris.getFirstBeerCheckin(slug);
 
-    if (!brewery) {
-      return ApiResponse.error('Brewery not found.', 404);
+    if (!checkin) {
+      return ApiResponse.error('Beer not found.', 404);
     }
 
-    return ApiResponse.success({ brewery });
+    const beer = checkin.beer;
+    const brewery = checkin.brewery;
+
+    return ApiResponse.success({ beer, brewery });
   } catch (error) {
-    console.error('[Error in GET api/brewery]', error);
+    console.error('[Error in GET api/beer]', error);
     return ApiResponse.error(error.message, error.status);
   }
 }

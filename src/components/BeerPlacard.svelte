@@ -7,7 +7,9 @@
 
 <article data-beer-id={beer.id} class="beer padding-base top-border">
   <div class="beer-stats">
-    <p class="beer-name"><strong>{beer.name}</strong></p>
+    <p class="beer-name">
+      <a class="link" href={`/beer/${beer.slug}`}><strong>{beer.name}</strong></a>
+    </p>
     <p class="margin-top-xs fs-sm beer-style">{beer.style}</p>
     <p class="fs-sm beer-abv">{beer.abv}% ABV</p>
     <p class="fs-sm beer-last-had">Last had: {formatDate(beer.lastHad.toString())}</p>

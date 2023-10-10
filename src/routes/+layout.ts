@@ -1,13 +1,15 @@
-import { Request } from '@utils';
+import { ApiRequest } from '@utils';
 import type { User } from '@models';
 
 export async function load({ fetch }) {
   try {
-    return await Request.get<{ user: User }>('/api/user', fetch);
-  } catch (error) {
+    const req = new ApiRequest(fetch);
+    const response = await req.get<{ user: User }>('user');
+
     return {
-      success: false,
-      error,
+      user: response.user,
     };
+  } catch (error) {
+    return {};
   }
 }

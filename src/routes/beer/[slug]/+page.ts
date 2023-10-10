@@ -1,21 +1,16 @@
 import { error } from '@sveltejs/kit';
 import { ApiRequest } from '@utils';
-import type { Brewery } from '@models';
-import type { BreweryStats } from '@app';
+import type { Beer, Brewery, Checkin } from '@models';
 
 export async function load({ fetch, params }) {
   try {
     const req = new ApiRequest(fetch);
-    const response = await req.get<{ brewery: Brewery }>(`brewery?slug=${params.slug}`);
-
-    if (response === null) {
-      throw error(404);
-    }
 
     return {
-      brewery: response.brewery,
+      slug: params.slug,
       streamed: {
-        stats: req.get<BreweryStats>(`brewery/beers?slug=${params.slug}`),
+        beerData: req.get<{ beer: Beer; brewery: Brewery }>(`beer?slug=${params.slug}`),
+        checkinData: req.get<{ checkins: Checkin[] }>(`beer/checkins?slug=${params.slug}`),
       },
     };
   } catch (err) {

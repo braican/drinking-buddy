@@ -1,5 +1,5 @@
-import { json } from '@sveltejs/kit';
 import { TigrisClient } from '@lib';
+import { ApiResponse } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
@@ -37,20 +37,14 @@ export async function GET({ setHeaders, url }) {
       }
     });
 
-    return json({
-      success: true,
-      data: {
-        rating: (cumulative / checkins.filter(ch => ch.rating).length).toFixed(2),
-        beers: Object.values(beers),
-        checkinCount: checkins.length,
-        checkins,
-      },
+    return ApiResponse.success({
+      rating: (cumulative / checkins.filter(ch => ch.rating).length).toFixed(2),
+      beers: Object.values(beers),
+      checkinCount: checkins.length,
+      checkins,
     });
   } catch (error) {
-    console.error('[Error in GET api/brewery]', error);
-    return json({
-      success: false,
-      message: error.message,
-    });
+    console.error('[Error in GET api/brewery/beers]', error);
+    return ApiResponse.error(error.message, error.status);
   }
 }

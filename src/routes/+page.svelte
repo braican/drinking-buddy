@@ -6,7 +6,7 @@
   let storesLoaded = false;
 
   onMount(async () => {
-    await Promise.all([checkinStore.refreshLatest(), breweryStore.refresh()]);
+    await Promise.all([checkinStore.refresh(), breweryStore.refresh()]);
     storesLoaded = true;
   });
 
