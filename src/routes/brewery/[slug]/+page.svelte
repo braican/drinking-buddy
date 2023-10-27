@@ -26,8 +26,8 @@
       {/await}
     {:else if view === 'Checkins'}
       <section class="list-section">
-        <h2 class="list-header">Checkins</h2>
         {#if stats.checkins}
+          <h2 class="list-header">{stats.checkins.length} Checkins</h2>
           <ul class="margin-top-lg">
             {#each stats.checkins as checkin}
               <li><CheckinPlacard {checkin} /></li>

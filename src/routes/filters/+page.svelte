@@ -8,12 +8,17 @@
   let style = '';
   let state = '';
 
+  let filteredStyle = '';
+  let filteredState = '';
+
   let checkins = [];
   let beers = [];
   let filtered = false;
   let loading = false;
 
   const filter = async () => {
+    if (style === filteredStyle && state === filteredState) return;
+
     const req = new ApiRequest();
     loading = true;
 
@@ -23,6 +28,9 @@
         ...(state && { state }),
       })}`,
     );
+
+    filteredStyle = style;
+    filteredState = state;
 
     filtered = true;
     loading = false;
@@ -83,17 +91,23 @@
     <p>Loading...</p>
   {:else if !filtered}
     <p>Use the filters to drill down.</p>
-  {:else}
+  {:else if checkins.length > 0}
+    <p class="margin-bottom-lg fs-sm">
+      You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
+      {filteredStyle} beer{beers.length === 1 ? '' : 's'}{filteredState
+        ? ` from ${states[filteredState]}`
+        : ''}.
+    </p>
+
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
       {#if view === 'Checkins'}
         {#if filtered && checkins.length}
+          <h2 class="list-header">{checkins.length.toLocaleString()} Checkins</h2>
           <ul class="margin-top-lg">
             {#each checkins as checkin}
               <li><CheckinPlacard {checkin} /></li>
             {/each}
           </ul>
-        {:else}
-          <p>No checkins match that filter.</p>
         {/if}
       {:else if view === 'Beers'}
         <BeerList {beers} />
@@ -101,5 +115,7 @@
         <p>Breweries here</p>
       {/if}
     </Tabs>
+  {:else}
+    <p>You've not had any {style} beers{state ? ` from ${states[state]}` : ''}</p>
   {/if}
 </main>

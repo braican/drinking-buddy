@@ -24,7 +24,7 @@
 
 <section class="list-section">
   <header class="beer-header">
-    <h2 class="list-header">Beers</h2>
+    <h2 class="list-header">{beers.length} beers</h2>
     <div class="text-align-right">
       <label class="fs-xs block-label" for="brewery-beer-sort">Sort by:</label>
       <select bind:value={sort} id="brweery-beer-sort">
