@@ -23,11 +23,13 @@
 <header class="padding-bottom-lg">
   <h1>{data.brewery.name}</h1>
 
+  <p class="color-opacity-50 margin-top-sm">{data.brewery.city}, {data.brewery.state}</p>
+
   {#await data.streamed.stats}
-    <p class="margin-top-lg">Loading...</p>
+    <p class="margin-top-md">Loading...</p>
   {:then stats}
-    <p class="margin-top-sm">Rating: <strong>{stats.rating}</strong></p>
-    <p class="margin-top-sm">{stats.checkinCount} checkin{stats.checkinCount > 1 ? 's' : ''}</p>
+    <p class="margin-top-md">Rating: <strong>{stats.rating}</strong></p>
+    <p>{stats.checkinCount} checkin{stats.checkinCount > 1 ? 's' : ''}</p>
     <p>{stats.beers.length} beer{stats.beers.length > 1 ? 's' : ''}</p>
   {/await}
 </header>

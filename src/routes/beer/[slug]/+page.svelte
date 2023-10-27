@@ -30,7 +30,17 @@
         <a class="link" href={`/brewery/${beerData.brewery.slug}`}
           >&larr; {beerData.brewery.name}</a>
       </p>
-      <h1>{beerData.beer.name}</h1>
+
+      <div>
+        <h1>{beerData.beer.name}</h1>
+        <p class="fs-sm color-opacity-50 margin-top-sm">{beerData.beer.abv}% ABV</p>
+        <p class="fs-sm color-opacity-50">{beerData.beer.style}</p>
+
+        {#if checkinsLoaded}
+          <p class="margin-top-sm">Rating: <strong>{rating}</strong></p>
+          <p>Hads: <strong>{hads}</strong></p>
+        {/if}
+      </div>
 
       {#if beerData.beer.label}
         <img
@@ -38,11 +48,6 @@
           alt={beerData.beer.name} />
       {/if}
     </div>
-
-    {#if checkinsLoaded}
-      <p class="margin-top-md">Rating: <strong>{rating}</strong></p>
-      <p class="margin-top-sm">Hads: <strong>{hads}</strong></p>
-    {/if}
   {:catch}
     <h1>No beer here.</h1>
     <p class="margin-top-sm">The requested beer doesn't exist, or you've never had it.</p>

@@ -37,4 +37,8 @@
     gap: var(--spacing-sm);
     justify-content: space-between;
   }
+
+  .beer-count {
+    white-space: nowrap;
+  }
 </style>
