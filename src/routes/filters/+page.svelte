@@ -3,7 +3,7 @@
   import type { BreweryBeer } from '@app';
   import { states, styles } from '@utils/constants';
   import { ApiRequest, beerRating } from '@utils';
-  import { Tabs, BreweryPlacard, BeerPlacard, CheckinPlacard } from '@components';
+  import { Tabs, BeerList, CheckinPlacard } from '@components';
   import { FiltersIcon } from '@icons';
   let style = '';
   let state = '';
@@ -12,10 +12,6 @@
   let beers = [];
   let filtered = false;
   let loading = false;
-
-  let sort = 'Alphabetical';
-
-  const sortOptions = ['Alphabetical', 'Highest rated', 'Most hads'];
 
   const filter = async () => {
     const req = new ApiRequest();
@@ -32,16 +28,6 @@
     loading = false;
     checkins = results.checkins;
     beers = results.beers;
-  };
-
-  $: sortedBeers = async () => {
-    if (sort === 'Alphabetical') {
-      return beers.sort((a, b) => (a.name > b.name ? 1 : -1));
-    } else if (sort === 'Highest rated') {
-      return beers.sort((a, b) => (beerRating(a) > beerRating(b) ? -1 : 1));
-    } else {
-      return beers.sort((a, b) => (a.checkins.length > b.checkins.length ? -1 : 1));
-    }
   };
 </script>
 
@@ -96,7 +82,7 @@
   {#if loading}
     <p>Loading...</p>
   {:else if !filtered}
-    <p>Use the filters to find your checkins.</p>
+    <p>Use the filters to drill down.</p>
   {:else}
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
       {#if view === 'Checkins'}
@@ -110,31 +96,7 @@
           <p>No checkins match that filter.</p>
         {/if}
       {:else if view === 'Beers'}
-        <section class="list-section">
-          <header class="beer-header">
-            <h2 class="list-header">Beers</h2>
-            <div class="text-align-right">
-              <label class="fs-xs block-label" for="brewery-beer-sort">Sort by:</label>
-              <select bind:value={sort} id="brweery-beer-sort">
-                {#each sortOptions as sortOption}
-                  <option value={sortOption}>{sortOption}</option>
-                {/each}
-              </select>
-            </div>
-          </header>
-
-          {#await sortedBeers() then sortedBeers}
-            {#if sortedBeers}
-              <ul class="margin-top-lg">
-                {#each sortedBeers as beer}
-                  <li><BeerPlacard {beer} /></li>
-                {/each}
-              </ul>
-            {:else}
-              <p>No beers.</p>
-            {/if}
-          {/await}
-        </section>
+        <BeerList {beers} />
       {:else if view === 'Breweries'}
         <p>Breweries here</p>
       {/if}

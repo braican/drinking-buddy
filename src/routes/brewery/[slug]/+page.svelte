@@ -1,23 +1,7 @@
 <script lang="ts">
-  import { Tabs, BeerPlacard, CheckinPlacard } from '@components';
-  import { beerRating } from '@utils';
+  import { Tabs, BeerList, CheckinPlacard } from '@components';
 
   export let data;
-  let sort = 'Alphabetical';
-
-  const sortOptions = ['Alphabetical', 'Highest rated', 'Most hads'];
-
-  $: sortedBeers = async () => {
-    const { beers } = await data.streamed.stats;
-
-    if (sort === 'Alphabetical') {
-      return beers.sort((a, b) => (a.name > b.name ? 1 : -1));
-    } else if (sort === 'Highest rated') {
-      return beers.sort((a, b) => (beerRating(a) > beerRating(b) ? -1 : 1));
-    } else {
-      return beers.sort((a, b) => (a.checkins.length > b.checkins.length ? -1 : 1));
-    }
-  };
 </script>
 
 <header class="padding-bottom-lg">
@@ -37,31 +21,9 @@
 {#await data.streamed.stats then stats}
   <Tabs views={['Beers', 'Checkins']} let:view>
     {#if view === 'Beers'}
-      <section class="list-section">
-        <header class="beer-header">
-          <h2 class="list-header">Beers</h2>
-          <div class="text-align-right">
-            <label class="fs-xs block-label" for="brewery-beer-sort">Sort by:</label>
-            <select bind:value={sort} id="brweery-beer-sort">
-              {#each sortOptions as sortOption}
-                <option value={sortOption}>{sortOption}</option>
-              {/each}
-            </select>
-          </div>
-        </header>
-
-        {#await sortedBeers() then sortedBeers}
-          {#if sortedBeers}
-            <ul class="margin-top-lg">
-              {#each sortedBeers as beer}
-                <li><BeerPlacard {beer} showBrewery={false} /></li>
-              {/each}
-            </ul>
-          {:else}
-            <p>No beers.</p>
-          {/if}
-        {/await}
-      </section>
+      {#await data.streamed.stats then stats}
+        <BeerList beers={stats.beers} showBreweries={false} />
+      {/await}
     {:else if view === 'Checkins'}
       <section class="list-section">
         <h2 class="list-header">Checkins</h2>
@@ -78,10 +40,3 @@
     {/if}
   </Tabs>
 {/await}
-
-<style lang="scss">
-  .beer-header {
-    display: flex;
-    justify-content: space-between;
-  }
-</style>

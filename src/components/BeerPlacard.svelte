@@ -4,8 +4,6 @@
 
   export let showBrewery = true;
   export let beer: BreweryBeer;
-
-  console.log(beer);
 </script>
 
 <article data-beer-id={beer.id} class="beer padding-base top-border">
