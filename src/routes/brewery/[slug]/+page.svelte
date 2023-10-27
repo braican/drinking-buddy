@@ -39,7 +39,7 @@
         <header class="beer-header">
           <h2 class="list-header">Beers</h2>
           <div class="text-align-right">
-            <label class="fs-xs sort-label" for="brewery-beer-sort">Sort by:</label>
+            <label class="fs-xs block-label" for="brewery-beer-sort">Sort by:</label>
             <select bind:value={sort} id="brweery-beer-sort">
               {#each sortOptions as sortOption}
                 <option value={sortOption}>{sortOption}</option>
@@ -52,7 +52,7 @@
           {#if sortedBeers}
             <ul class="margin-top-lg">
               {#each sortedBeers as beer}
-                <li><BeerPlacard {beer} /></li>
+                <li><BeerPlacard {beer} showBrewery={false} /></li>
               {/each}
             </ul>
           {:else}
@@ -81,9 +81,5 @@
   .beer-header {
     display: flex;
     justify-content: space-between;
-  }
-
-  .sort-label {
-    display: block;
   }
 </style>

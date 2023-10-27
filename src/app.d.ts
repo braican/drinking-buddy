@@ -24,6 +24,7 @@ export interface LatestCheckins {
 }
 
 export interface BreweryBeer extends Beer {
+  brewery: string;
   lastHad: Date;
   checkins: {
     date: Date;

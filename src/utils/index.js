@@ -4,3 +4,4 @@ export { default as ApiRequest } from './ApiRequest.ts';
 export { default as ApiResponse } from './ApiResponse.ts';
 export { formatDate } from './formatDate.ts';
 export { beerRating } from './beerRating.ts';
+export { checkinsToBeers } from './checkinsToBeers.ts';

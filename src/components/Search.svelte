@@ -44,7 +44,7 @@
 
       timer = setTimeout(() => {
         req
-          .get<BrewerySearchResults>(`/api/breweries/search?query=${query}`, { signal })
+          .get<BrewerySearchResults>(`breweries/search?query=${query}`, { signal })
           .then(r => {
             results = r.results;
             loading = false;

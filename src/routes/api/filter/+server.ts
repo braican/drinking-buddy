@@ -1,5 +1,5 @@
 import { TigrisClient } from '@lib';
-import { ApiResponse } from '@utils';
+import { ApiResponse, checkinsToBeers } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
@@ -8,9 +8,9 @@ export async function GET({ setHeaders, url }) {
     const state = url.searchParams.get('state');
     const tigris = await TigrisClient.create();
 
-    const topBeers = await tigris.getTopBeers(style, state);
+    const checkins = await tigris.getFilteredCheckins(style, state);
 
-    return ApiResponse.success({ beers: topBeers });
+    return ApiResponse.success({ checkins: checkins, beers: checkinsToBeers(checkins) });
   } catch (error) {
     console.error('[Error in GET api/filter]', error);
     return ApiResponse.error(error.message, error.status);

@@ -53,9 +53,13 @@ h2 {
 
 button {
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
 }
 .button {
-  line-height: 1;
   border-radius: var(--border-radius);
   padding: var(--spacing-sm);
   font-size: var(--fs-sm);
@@ -84,6 +88,20 @@ button {
   &--active {
     border-color: var(--color-primary);
     background-color: var(--color-white-15);
+  }
+}
+
+.button-inline-icon {
+  display: flex;
+  align-items: center;
+
+  > .icon {
+    width: 24px;
+    margin-left: 0.5em;
+
+    svg {
+      display: block;
+    }
   }
 }
 
@@ -117,4 +135,8 @@ button {
   background-color: var(--color-white-alpha-06);
   color: transparent;
   font-weight: normal;
+}
+
+.block-label {
+  display: block;
 }

@@ -1,4 +1,5 @@
-import { Tigris, FindQueryOptions, IndexedDoc, Case } from '@tigrisdata/core';
+import { Tigris, FindQueryOptions, IndexedDoc } from '@tigrisdata/core';
+import { styles } from '@utils/constants';
 import type { DB, Collection } from '@tigrisdata/core';
 import type { Brewery, Checkin, User } from '../../db/models/index.js';
 
@@ -54,18 +55,12 @@ export default class TigrisClient {
     const styles = [];
 
     for await (const ch of checkins) {
-      let { style } = ch.beer;
-
-      if (style.includes('-')) {
-        style = style.split('-')[0].trim();
-      }
-
-      if (!styles.includes(style)) {
-        styles.push(style);
+      if (!styles.includes(ch.beer.style)) {
+        styles.push(ch.beer.style);
       }
     }
 
-    return styles;
+    return styles.sort((a, b) => (a > b ? 1 : -1));
   }
 
   public async getCheckinCount(): Promise<number> {
@@ -161,7 +156,7 @@ export default class TigrisClient {
     return await checkins.toArray();
   }
 
-  public async getBreweryCheckins(brewerySlug) {
+  public async getBreweryCheckins(brewerySlug): Promise<Checkin[]> {
     const checkins = await this.checkinCollection.findMany({
       filter: {
         'brewery.slug': {
@@ -199,32 +194,39 @@ export default class TigrisClient {
     return hits.map(({ document }) => document);
   }
 
-  public async getTopBeers(style, state) {
+  public async getFilteredCheckins(style, state): Promise<Checkin[] | []> {
     const filters = [];
 
     if (state) {
       filters.push({
-        'brewery.state': {
-          $eq: state.toUpperCase(),
-        },
+        'brewery.state': state.toUpperCase(),
       });
     }
 
     if (style) {
-      filters.push({
-        'beer.style': {
-          $contains: style.charAt(0).toUpperCase() + style.slice(1).toLowerCase(),
-        },
-      });
+      const mappedStyles = styles[style];
+
+      if (mappedStyles && mappedStyles.length > 1) {
+        filters.push({
+          $or: mappedStyles.map(s => ({ 'beer.style': s })),
+        });
+      } else if (mappedStyles) {
+        filters.push({
+          'beer.style': mappedStyles[0],
+        });
+      }
+    }
+
+    if (!filters) {
+      return [];
     }
 
     const checkins = await this.checkinCollection.findMany({
-      filter: filters.length > 1 ? { $and: filters } : {},
+      filter: filters.length > 1 ? { $and: filters } : filters[0],
       sort: {
         field: 'createdAt',
         order: '$desc',
       },
-      options: new FindQueryOptions(10, 0),
     });
 
     return await checkins.toArray();

@@ -2,13 +2,21 @@
   import { formatDate, beerRating } from '@utils';
   import type { BreweryBeer } from '@app';
 
+  export let showBrewery = true;
   export let beer: BreweryBeer;
+
+  console.log(beer);
 </script>
 
 <article data-beer-id={beer.id} class="beer padding-base top-border">
   <div class="beer-stats">
     <p class="beer-name">
-      <a class="link" href={`/beer/${beer.slug}`}><strong>{beer.name}</strong></a>
+      <a class="link" href={`/beer/${beer.slug}`}>
+        {#if showBrewery}
+          <span class="brewery-name">{beer.brewery}</span>
+        {/if}
+        <span class="beer-name"><strong>{beer.name}</strong></span>
+      </a>
     </p>
     <p class="margin-top-xs fs-sm beer-style">{beer.style}</p>
     <p class="fs-sm beer-abv">{beer.abv}% ABV</p>

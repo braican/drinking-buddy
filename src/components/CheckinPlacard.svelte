@@ -28,6 +28,9 @@
         <span class="beer-name"><strong>{checkin.beer.name}</strong></span>
       </a>
     </p>
+    <p>
+      {checkin.beer.style}
+    </p>
   {/if}
 
   <p class:fw-bold={light} class:fs-xs={!light} class:color-opacity-50={!light}>

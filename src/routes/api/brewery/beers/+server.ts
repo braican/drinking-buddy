@@ -1,5 +1,5 @@
 import { TigrisClient } from '@lib';
-import { ApiResponse } from '@utils';
+import { ApiResponse, checkinsToBeers } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
@@ -8,38 +8,11 @@ export async function GET({ setHeaders, url }) {
     const tigris = await TigrisClient.create();
 
     const checkins = await tigris.getBreweryCheckins(slug);
-
-    let cumulative = 0;
-    const beers = {};
-
-    checkins.forEach(ch => {
-      const beer = ch.beer;
-      const checkinData = {
-        date: ch.createdAt,
-        rating: ch.rating,
-      };
-
-      if (ch.rating) {
-        cumulative += ch.rating;
-      }
-
-      if (!beers[beer.id]) {
-        beers[beer.id] = {
-          ...beer,
-          lastHad: ch.createdAt,
-          checkins: [checkinData],
-        };
-      } else {
-        beers[beer.id] = {
-          checkins: beers[beer.id].checkins.push(checkinData),
-          ...beers[beer.id],
-        };
-      }
-    });
+    const cumulativeRating = checkins.reduce((acc, ch) => (ch.rating ? acc + ch.rating : acc), 0);
 
     return ApiResponse.success({
-      rating: (cumulative / checkins.filter(ch => ch.rating).length).toFixed(2),
-      beers: Object.values(beers),
+      rating: (cumulativeRating / checkins.filter(ch => ch.rating).length).toFixed(2),
+      beers: checkinsToBeers(checkins),
       checkinCount: checkins.length,
       checkins,
     });
