@@ -13,6 +13,8 @@
 
   let checkins = [];
   let beers = [];
+  let breweries = [];
+
   let filtered = false;
   let loading = false;
 
@@ -22,7 +24,11 @@
     const req = new ApiRequest();
     loading = true;
 
-    const results = await req.get<{ checkins: Checkin[]; beers: BreweryBeer[] }>(
+    const results = await req.get<{
+      checkins: Checkin[];
+      beers: BreweryBeer[];
+      breweries: { slug: string; name: string; beers: number; averageRating: number }[];
+    }>(
       `filter?${new URLSearchParams({
         ...(style && { style }),
         ...(state && { state }),
@@ -36,6 +42,7 @@
     loading = false;
     checkins = results.checkins;
     beers = results.beers;
+    breweries = results.breweries;
   };
 </script>
 
@@ -96,7 +103,9 @@
       You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
       {filteredStyle} beer{beers.length === 1 ? '' : 's'}{filteredState
         ? ` from ${states[filteredState]}`
-        : ''}.
+        : ''}, from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
+        ? 'y'
+        : 'ies'}.
     </p>
 
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
@@ -112,10 +121,50 @@
       {:else if view === 'Beers'}
         <BeerList {beers} />
       {:else if view === 'Breweries'}
-        <p>Breweries here</p>
+        <ul>
+          {#each breweries as brewery}
+            <li>
+              <article class="brewery-listing padding-base">
+                <span class="fs-lg brewery-name">
+                  <a class="link" href={`/brewery/${brewery.slug}`}>{brewery.name}</a>
+                </span>
+                <div class="brewery-average">
+                  <span class="fs-lg ff-mono">{brewery.averageRating}</span>
+                  <p class="fs-sm">average rating</p>
+                </div>
+                <span class="fs-sm color-opacity-50 brewery-count">
+                  Total beers: {brewery.beers}
+                </span>
+              </article>
+            </li>
+          {/each}
+        </ul>
       {/if}
     </Tabs>
   {:else}
     <p>You've not had any {style} beers{state ? ` from ${states[state]}` : ''}</p>
   {/if}
 </main>
+
+<style lang="scss">
+  .brewery-listing {
+    display: grid;
+    grid-template:
+      'name average'
+      'count average' /
+      auto 100px;
+    gap: var(--spacing-sm);
+    border-top: 1px solid var(--color-white-15);
+  }
+
+  .brewery-name {
+    grid-area: name;
+  }
+  .brewery-average {
+    grid-area: average;
+    text-align: right;
+  }
+  .brewery-count {
+    grid-area: count;
+  }
+</style>
