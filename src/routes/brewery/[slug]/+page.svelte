@@ -7,7 +7,9 @@
 <header class="padding-bottom-lg">
   <h1>{data.brewery.name}</h1>
 
-  <p class="color-opacity-50 margin-top-sm">{data.brewery.city}, {data.brewery.state}</p>
+  <p class="color-opacity-50 margin-top-sm">
+    {data.brewery.city}, {data.brewery.state}, {data.brewery.country}
+  </p>
 
   {#await data.streamed.stats}
     <p class="margin-top-md">Loading...</p>
