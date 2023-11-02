@@ -53,9 +53,13 @@ h2 {
 
 button {
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
 }
 .button {
-  line-height: 1;
   border-radius: var(--border-radius);
   padding: var(--spacing-sm);
   font-size: var(--fs-sm);
@@ -87,6 +91,20 @@ button {
   }
 }
 
+.button-inline-icon {
+  display: flex;
+  align-items: center;
+
+  > .icon {
+    width: 24px;
+    margin-left: 0.5em;
+
+    svg {
+      display: block;
+    }
+  }
+}
+
 .link {
   &:hover {
     color: var(--color-primary-hover);
@@ -95,6 +113,9 @@ button {
 
 // Special components
 
+$list-header-dash-width: 1rem;
+$list-header-margin: 10px;
+
 .list-header {
   display: flex;
   align-items: flex-start;
@@ -102,12 +123,16 @@ button {
   &:before {
     content: '';
     display: block;
-    width: 1em;
+    width: $list-header-dash-width;
     height: 1px;
     margin-top: 0.5em;
-    margin-right: 10px;
+    margin-right: $list-header-margin;
     background-color: var(--color-primary);
   }
+}
+
+.list-header-subhead {
+  margin-left: calc($list-header-dash-width + $list-header-margin);
 }
 
 // Interactive
@@ -117,4 +142,8 @@ button {
   background-color: var(--color-white-alpha-06);
   color: transparent;
   font-weight: normal;
+}
+
+.block-label {
+  display: block;
 }

@@ -1,14 +1,21 @@
 <script lang="ts">
   import { formatDate, beerRating } from '@utils';
-  import type { BreweryBeer } from '@app';
+  import type { BeerRecord } from '@app';
 
-  export let beer: BreweryBeer;
+  export let showBrewery = true;
+  export let beer: BeerRecord;
+  export let sublist = false;
 </script>
 
-<article data-beer-id={beer.id} class="beer padding-base top-border">
+<article data-beer-id={beer.id} class="beer padding-base" class:top-border={!sublist}>
   <div class="beer-stats">
     <p class="beer-name">
-      <a class="link" href={`/beer/${beer.slug}`}><strong>{beer.name}</strong></a>
+      <a class="link" href={`/beer/${beer.slug}`}>
+        {#if showBrewery}
+          <span class="brewery-name">{beer.brewery}</span>
+        {/if}
+        <span class="beer-name"><strong>{beer.name}</strong></span>
+      </a>
     </p>
     <p class="margin-top-xs fs-sm beer-style">{beer.style}</p>
     <p class="fs-sm beer-abv">{beer.abv}% ABV</p>
@@ -28,5 +35,9 @@
     display: flex;
     gap: var(--spacing-sm);
     justify-content: space-between;
+  }
+
+  .beer-count {
+    white-space: nowrap;
   }
 </style>

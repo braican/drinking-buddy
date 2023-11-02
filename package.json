@@ -11,7 +11,8 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
     "update-tigris-schema": "node --loader ts-node/esm scripts/setup.ts",
-    "tigris-info": "node --loader ts-node/esm scripts/tigris-info.ts"
+    "tigris-info": "node --loader ts-node/esm scripts/tigris-info.ts",
+    "get-styles": "node --loader ts-node/esm scripts/get-styles.ts"
   },
   "repository": {
     "type": "git",
