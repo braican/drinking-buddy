@@ -23,8 +23,9 @@ export interface LatestCheckins {
   checkins: Checkin[];
 }
 
-export interface BreweryBeer extends Beer {
+export interface BeerRecord extends Beer {
   brewery: string;
+  breweryId: number;
   lastHad: Date;
   checkins: {
     date: Date;
@@ -32,8 +33,14 @@ export interface BreweryBeer extends Beer {
   }[];
 }
 
+export interface BreweryRecord extends Brewery {
+  beerCount?: number;
+  beers?: BeerRecord[];
+  checkins?: Checkin[];
+}
+
 export interface BreweryStats {
-  beers: BreweryBeer[];
+  beers: BeerRecord[];
   rating: number;
   checkinCount: number;
   checkins: Checkin[];

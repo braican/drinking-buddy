@@ -13,8 +13,12 @@
     <p class="margin-top-md">Loading...</p>
   {:then stats}
     <p class="margin-top-md">Rating: <strong>{stats.rating}</strong></p>
-    <p>{stats.checkinCount} checkin{stats.checkinCount > 1 ? 's' : ''}</p>
-    <p>{stats.beers.length} beer{stats.beers.length > 1 ? 's' : ''}</p>
+    <p>
+      {stats.beers.length} beer{stats.beers.length > 1 ? 's' : ''} / {stats.checkinCount} checkin{stats.checkinCount >
+      1
+        ? 's'
+        : ''}
+    </p>
   {/await}
 </header>
 

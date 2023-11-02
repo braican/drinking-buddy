@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { Checkin } from '@models';
-  import type { BreweryBeer } from '@app';
+  import type { Brewery, Checkin } from '@models';
+  import type { BeerRecord, BreweryRecord } from '@app';
   import { states, styles } from '@utils/constants';
-  import { ApiRequest, beerRating } from '@utils';
-  import { Tabs, BeerList, CheckinPlacard } from '@components';
+  import { ApiRequest } from '@utils';
+  import { Tabs, BeerList, CheckinPlacard, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
   let style = '';
   let state = '';
@@ -14,6 +14,7 @@
   let checkins = [];
   let beers = [];
   let breweries = [];
+  let filteredAverage = null;
 
   let filtered = false;
   let loading = false;
@@ -26,8 +27,9 @@
 
     const results = await req.get<{
       checkins: Checkin[];
-      beers: BreweryBeer[];
-      breweries: { slug: string; name: string; beers: number; averageRating: number }[];
+      beers: BeerRecord[];
+      breweries: BreweryRecord[];
+      filteredAverage: string;
     }>(
       `filter?${new URLSearchParams({
         ...(style && { style }),
@@ -40,9 +42,11 @@
 
     filtered = true;
     loading = false;
+
     checkins = results.checkins;
     beers = results.beers;
     breweries = results.breweries;
+    filteredAverage = results.filteredAverage;
   };
 </script>
 
@@ -103,9 +107,9 @@
       You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
       {filteredStyle} beer{beers.length === 1 ? '' : 's'}{filteredState
         ? ` from ${states[filteredState]}`
-        : ''}, from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
+        : ''} from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
         ? 'y'
-        : 'ies'}.
+        : 'ies'}. Your average rating of these is {filteredAverage}.
     </p>
 
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
@@ -121,21 +125,13 @@
       {:else if view === 'Beers'}
         <BeerList {beers} />
       {:else if view === 'Breweries'}
-        <ul>
+        <h2 class="list-header">{breweries.length} breweries</h2>
+        <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
+
+        <ul class="margin-top-lg">
           {#each breweries as brewery}
             <li>
-              <article class="brewery-listing padding-base">
-                <span class="fs-lg brewery-name">
-                  <a class="link" href={`/brewery/${brewery.slug}`}>{brewery.name}</a>
-                </span>
-                <div class="brewery-average">
-                  <span class="fs-lg ff-mono">{brewery.averageRating}</span>
-                  <p class="fs-sm">average rating</p>
-                </div>
-                <span class="fs-sm color-opacity-50 brewery-count">
-                  Total beers: {brewery.beers}
-                </span>
-              </article>
+              <BreweryPlacard {brewery} filtered={true} />
             </li>
           {/each}
         </ul>
@@ -145,26 +141,3 @@
     <p>You've not had any {style} beers{state ? ` from ${states[state]}` : ''}</p>
   {/if}
 </main>
-
-<style lang="scss">
-  .brewery-listing {
-    display: grid;
-    grid-template:
-      'name average'
-      'count average' /
-      auto 100px;
-    gap: var(--spacing-sm);
-    border-top: 1px solid var(--color-white-15);
-  }
-
-  .brewery-name {
-    grid-area: name;
-  }
-  .brewery-average {
-    grid-area: average;
-    text-align: right;
-  }
-  .brewery-count {
-    grid-area: count;
-  }
-</style>

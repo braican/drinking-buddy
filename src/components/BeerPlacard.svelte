@@ -1,12 +1,13 @@
 <script lang="ts">
   import { formatDate, beerRating } from '@utils';
-  import type { BreweryBeer } from '@app';
+  import type { BeerRecord } from '@app';
 
   export let showBrewery = true;
-  export let beer: BreweryBeer;
+  export let beer: BeerRecord;
+  export let sublist = false;
 </script>
 
-<article data-beer-id={beer.id} class="beer padding-base top-border">
+<article data-beer-id={beer.id} class="beer padding-base" class:top-border={!sublist}>
   <div class="beer-stats">
     <p class="beer-name">
       <a class="link" href={`/beer/${beer.slug}`}>

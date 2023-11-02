@@ -113,6 +113,9 @@ button {
 
 // Special components
 
+$list-header-dash-width: 1rem;
+$list-header-margin: 10px;
+
 .list-header {
   display: flex;
   align-items: flex-start;
@@ -120,12 +123,16 @@ button {
   &:before {
     content: '';
     display: block;
-    width: 1em;
+    width: $list-header-dash-width;
     height: 1px;
     margin-top: 0.5em;
-    margin-right: 10px;
+    margin-right: $list-header-margin;
     background-color: var(--color-primary);
   }
+}
+
+.list-header-subhead {
+  margin-left: calc($list-header-dash-width + $list-header-margin);
 }
 
 // Interactive

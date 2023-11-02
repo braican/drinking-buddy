@@ -1,5 +1,7 @@
 import type { Checkin } from '@models';
-export const checkinsToBeers = (checkins: Checkin[]) => {
+import type { BeerRecord } from '@app';
+
+export const checkinsToBeers = (checkins: Checkin[]): BeerRecord[] => {
   const beers = {};
 
   checkins.forEach(ch => {
@@ -12,6 +14,7 @@ export const checkinsToBeers = (checkins: Checkin[]) => {
     if (!beers[beer.id]) {
       beers[beer.id] = {
         brewery: ch.brewery.name,
+        breweryId: ch.brewery.id,
         ...beer,
         lastHad: ch.createdAt,
         checkins: [checkinData],
