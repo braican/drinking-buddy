@@ -61,7 +61,7 @@ export const states = {
  * @link https://www.craftbeer.com/beer-styles
  */
 export const styles = {
-  English: [
+  'English Ale': [
     'Bitter - Extra Special / Strong (ESB)',
     'Bitter - Session / Ordinary',
     'English Bitter',
@@ -97,8 +97,8 @@ export const styles = {
   Oktoberfest: ['Märzen', 'Festbier'],
   Schwarzbier: ['Schwarzbier'],
   Dunkelweizen: ['Dunkelweizen', 'Wheat Beer - Dunkelweizen'],
-  Hefeweizen: ['Hefeweizen', 'Wheat Beer - Hefeweizen'],
-  Weizens: ['Kristallweizen', 'Roggenbier'],
+  Hefeweizen: ['Hefeweizen', 'Wheat Beer - Hefeweizen', 'Kristallweizen'],
+  Roggenbier: ['Roggenbier'],
   Kellerbier: ['Kellerbier / Zwickelbier'],
   Dunkel: ['Lager - Munich Dunkel'],
 
@@ -148,7 +148,7 @@ export const styles = {
   'Blonde Ale': ['Blonde Ale', 'Golden Ale', 'Golden Ale - English', 'Golden Ale - Other'],
 
   // Sours and funk
-  Sours: [
+  Sour: [
     'Fruit Beer',
     'American Wild Ale',
     'Brett Beer',
@@ -190,7 +190,7 @@ export const styles = {
   ],
   'Dark Lager': ['Lager - Dark', 'Lager - Euro Dark'],
   'Export Lager': ['Lager - Dortmunder / Export'],
-  Helles: ['Lager - Helles'],
+  'Helles Lager': ['Lager - Helles'],
   IPL: ['Lager - IPL (India Pale Lager)'],
   'Japanese Lager': ['Lager - Japanese Rice'],
   'Mexican Lager': ['Lager - Mexican'],
@@ -247,10 +247,9 @@ export const styles = {
   'Strong Ale': ['Strong Ale - American', 'Strong Ale - English', 'Strong Ale - Other'],
 
   // Wheat beers
-  Wheat: [
+  'Wheat Beer': [
     'Wheat Beer - American Pale Wheat',
     'Wheat Beer - Other',
-
     'Wheat Beer - Witbier',
     'Wheat Beer - Witbier / Blanche',
   ],
@@ -273,14 +272,14 @@ export const styles = {
   Rye: ['Rye Beer'],
   Barleywine: ['Barleywine - American', 'Barleywine - English', 'Barleywine - Other', 'Rye Wine'],
   'Bière de Champagne': ['Bière de Champagne / Bière Brut'],
-  'Gluten-Free': ['Gluten-Free'],
+  'Gluten-Free Beer': ['Gluten-Free'],
   Kvass: ['Kvass'],
   'Historical Beer': ['Historical Beer - Adambier', 'Historical Beer - Kottbusser'],
   'Non-alcoholic': ['Non-Alcoholic Beer - Lager', 'Non-Alcoholic Beer - Other'],
 
   // Seasonals
-  Pumpkin: ['Pumpkin / Yam Beer'],
-  Winter: ['Winter Ale', 'Winter Warmer', 'Lager - Winter'],
+  'Pumpkin Beer': ['Pumpkin / Yam Beer'],
+  'Winter Beer': ['Winter Ale', 'Winter Warmer', 'Lager - Winter'],
 
   // Not beer
   Mead: ['Mead - Braggot'],
@@ -293,3 +292,93 @@ export const styles = {
   'Malt Liquor': ['Malt Liquor ', 'Malt Liquor'],
   'Hard Seltzer': ['Hard Seltzer'],
 };
+
+/**
+ * This map is used to organize and group the different styles into optgroups to
+ * to make the <select> dropdown easier to parse.
+ */
+export const styleOptGroups = [
+  {
+    group: 'Pale Lagers',
+    styles: [
+      'Lager',
+      'Pilsner',
+      'Amber Lager',
+      'Export Lager',
+      'Helles Lager',
+      'IPL',
+      'Japanese Lager',
+      'Mexican Lager',
+      'Vienna Lager',
+    ],
+  },
+  {
+    group: 'Dark Lagers',
+    styles: ['Dark Lager', 'Schwarzbier'],
+  },
+  {
+    group: 'Ales',
+    styles: ['IPA', 'Pale Ale', 'Blonde Ale', 'Brown Ale', 'Red Ale'],
+  },
+  {
+    group: 'Stouts and Porters',
+    styles: ['Stout', 'White Stout', 'Porter', 'Dark Ale'],
+  },
+  {
+    group: 'Sour and funk',
+    styles: ['Sour', 'Farmhouse', 'Lambic'],
+  },
+  {
+    group: 'Wheat Beers',
+    styles: ['Wheat Beer'],
+  },
+  {
+    group: 'Strong Styles',
+    styles: ['Strong Ale', 'Wheat Wine', 'Barleywine'],
+  },
+  {
+    group: 'Hybrid and Specialty styles',
+    styles: [
+      'Rye',
+      'Cream Ale',
+      'California Common',
+      'Spice Beer',
+      'Smoked Beer',
+      'Black & Tan',
+      'Shandy / Radler',
+      'Table Beer',
+      'Bière de Champagne',
+      'Kvass',
+      'Historical Beer',
+    ],
+  },
+  {
+    group: 'Seasonal Styles',
+    styles: ['Oktoberfest', 'Pumpkin Beer', 'Winter Beer'],
+  },
+  {
+    group: 'English Styles',
+    styles: ['English Ale'],
+  },
+  {
+    group: 'Belgian Styles',
+    styles: ['Belgian'],
+  },
+  {
+    group: 'German Styles',
+    styles: [
+      'Bock',
+      'Kölsch',
+      'Altbier',
+      'Dunkelweizen',
+      'Hefeweizen',
+      'Roggenbier',
+      'Kellerbier',
+      'Dunkel',
+    ],
+  },
+  {
+    group: 'Other Styles',
+    styles: ['Gluten-Free Beer', 'Non-alcoholic', 'Mead', 'Ciider', 'Malt Liquor', 'Hard Seltzer'],
+  },
+];

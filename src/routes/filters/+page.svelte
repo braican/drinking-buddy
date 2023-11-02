@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Brewery, Checkin } from '@models';
+  import type { Checkin } from '@models';
   import type { BeerRecord, BreweryRecord } from '@app';
-  import { states, styles } from '@utils/constants';
+  import { states, styles, styleOptGroups } from '@utils/constants';
   import { ApiRequest } from '@utils';
   import { Tabs, BeerList, CheckinPlacard, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
@@ -59,8 +59,12 @@
       <select bind:value={style} id="filter-style">
         <option value="">Choose Style</option>
 
-        {#each Object.keys(styles) as style}
-          <option value={style}>{style}</option>
+        {#each styleOptGroups as group}
+          <optgroup label={group.group}>
+            {#each group.styles as style}
+              <option value={style}>{style}</option>
+            {/each}
+          </optgroup>
         {/each}
       </select>
     </div>
@@ -84,9 +88,9 @@
         disabled={loading}
         class="button button-translucent button-inline-icon">
         {#if style && state}
-          Filter {style} beers from {states[state]}
+          Filter {style}s from {states[state]}
         {:else if style}
-          Filter {style} beers
+          Filter {style}s
         {:else if state}
           Filter beers from {states[state]}
         {/if}
@@ -105,7 +109,7 @@
   {:else if checkins.length > 0}
     <p class="margin-bottom-lg fs-sm">
       You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
-      {filteredStyle} beer{beers.length === 1 ? '' : 's'}{filteredState
+      {filteredStyle}{beers.length === 1 ? '' : 's'}{filteredState
         ? ` from ${states[filteredState]}`
         : ''} from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
         ? 'y'
