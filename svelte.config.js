@@ -16,6 +16,7 @@ const config = {
       '@components': './src/components/index.js',
       '@icons': './src/icons/index.js',
       '@utils': './src/utils/index.js',
+      '@utils/*': './src/utils/*',
       '@lib': './src/lib/index.js',
       '@lib/*': './src/lib/*',
       '@models': './db/models/index.js',

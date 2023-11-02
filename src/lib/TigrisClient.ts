@@ -1,4 +1,5 @@
 import { Tigris, FindQueryOptions, IndexedDoc } from '@tigrisdata/core';
+import { styles } from '@utils/constants';
 import type { DB, Collection } from '@tigrisdata/core';
 import type { Brewery, Checkin, User } from '../../db/models/index.js';
 
@@ -37,6 +38,29 @@ export default class TigrisClient {
       },
       options: new FindQueryOptions(1, 0),
     });
+  }
+
+  public async getStyles(): Promise<string[]> {
+    const checkins = await this.checkinCollection.findMany();
+
+    if (typeof process === 'object' && checkins) {
+      const checkinCount = await this.checkinCollection.count();
+      console.log(`${checkinCount} checkins fetched.`);
+    }
+
+    if (!checkins) {
+      return [];
+    }
+
+    const styles = [];
+
+    for await (const ch of checkins) {
+      if (!styles.includes(ch.beer.style)) {
+        styles.push(ch.beer.style);
+      }
+    }
+
+    return styles.sort((a, b) => (a > b ? 1 : -1));
   }
 
   public async getCheckinCount(): Promise<number> {
@@ -132,7 +156,7 @@ export default class TigrisClient {
     return await checkins.toArray();
   }
 
-  public async getBreweryCheckins(brewerySlug) {
+  public async getBreweryCheckins(brewerySlug): Promise<Checkin[]> {
     const checkins = await this.checkinCollection.findMany({
       filter: {
         'brewery.slug': {
@@ -167,9 +191,45 @@ export default class TigrisClient {
       hits.push(...result.hits);
     }
 
-    console.log(hits);
-
     return hits.map(({ document }) => document);
+  }
+
+  public async getFilteredCheckins(style, state): Promise<Checkin[] | []> {
+    const filters = [];
+
+    if (state) {
+      filters.push({
+        'brewery.state': state.toUpperCase(),
+      });
+    }
+
+    if (style) {
+      const mappedStyles = styles[style];
+
+      if (mappedStyles && mappedStyles.length > 1) {
+        filters.push({
+          $or: mappedStyles.map(s => ({ 'beer.style': s })),
+        });
+      } else if (mappedStyles) {
+        filters.push({
+          'beer.style': mappedStyles[0],
+        });
+      }
+    }
+
+    if (!filters) {
+      return [];
+    }
+
+    const checkins = await this.checkinCollection.findMany({
+      filter: filters.length > 1 ? { $and: filters } : filters[0],
+      sort: {
+        field: 'createdAt',
+        order: '$desc',
+      },
+    });
+
+    return await checkins.toArray();
   }
 
   // ----- Add

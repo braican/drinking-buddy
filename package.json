@@ -11,7 +11,8 @@
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
     "update-tigris-schema": "node --loader ts-node/esm scripts/setup.ts",
-    "tigris-info": "node --loader ts-node/esm scripts/tigris-info.ts"
+    "tigris-info": "node --loader ts-node/esm scripts/tigris-info.ts",
+    "get-styles": "node --loader ts-node/esm scripts/get-styles.ts"
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,7 @@
   "main": "index.js",
   "devDependencies": {
     "@sveltejs/adapter-auto": "^2.0.0",
-    "@sveltejs/kit": "^1.20.4",
+    "@sveltejs/kit": "^1.27.2",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "@upstatement/prettier-config": "^1.1.0",
