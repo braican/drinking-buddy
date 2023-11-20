@@ -9,7 +9,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write ."
+    "format": "prettier --plugin-search-dir . --write .",
+    "generate-db-types": "supabase gen types typescript --project-id oxcsxckyszouiiykmiyc > types/database.d.ts"
   },
   "repository": {
     "type": "git",
@@ -36,15 +37,16 @@
     "prettier": "^2.8.0",
     "prettier-plugin-svelte": "^2.10.1",
     "qs": "^6.11.2",
+    "supabase": "^1.113.2",
     "svelte": "^4.0.0",
     "svelte-check": "^3.4.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.1",
-    "typescript": "^5.0.0",
+    "typescript": "^5.3.2",
     "vite": "^4.3.6"
   },
   "dependencies": {
-    "@tigrisdata/core": "^1.2.3"
+    "@supabase/supabase-js": "^2.38.5"
   },
   "type": "module"
 }

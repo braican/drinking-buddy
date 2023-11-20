@@ -7,5 +7,5 @@ export interface User {
   badges: number;
   checkins: number;
   beers: number;
-  lastUpdated: Date;
+  lastUpdated?: Date;
 }

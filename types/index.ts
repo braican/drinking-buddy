@@ -1,3 +1,4 @@
+export * from './database';
 export * from './beer';
 export * from './brewery';
 export * from './checkin';

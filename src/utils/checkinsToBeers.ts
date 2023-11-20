@@ -1,4 +1,4 @@
-import type { Checkin } from '@models';
+import type { Checkin } from '@types';
 import type { BeerRecord } from '@app';
 
 export const checkinsToBeers = (checkins: Checkin[]): BeerRecord[] => {
