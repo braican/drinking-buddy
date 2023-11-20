@@ -3,8 +3,7 @@
   import { RefreshIcon } from '@icons';
   import { ApiRequest, formatDate } from '@utils';
   import { userStore as user, checkinStore, breweryStore } from '@stores';
-  import type { Checkin, User } from '@models';
-  import type { UntappdUser } from '@lib/UntappdClient';
+  import type { UntappdUser, User, Checkin } from '@types';
 
   let isRefreshing = false;
   let refreshButtonText = 'Refresh';
@@ -16,49 +15,49 @@
     refreshStatus = 'Starting to fetch...';
     console.log('Refreshing database with the latest from Untappd...');
 
-    try {
-      const req = new ApiRequest();
+    // try {
+    //   const req = new ApiRequest();
 
-      const { untappdUser, dbCheckins, lastDbCheckin } = await req.get<{
-        untappdUser: UntappdUser;
-        dbCheckins: number;
-        lastDbCheckin: Checkin;
-      }>('checkins/pre-fetch');
+    //   const { untappdUser, dbCheckins, lastDbCheckin } = await req.get<{
+    //     untappdUser: UntappdUser;
+    //     dbCheckins: number;
+    //     lastDbCheckin: Checkin;
+    //   }>('checkins/pre-fetch');
 
-      console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
-      console.log('Checkins in database:', dbCheckins);
+    //   console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
+    //   console.log('Checkins in database:', dbCheckins);
 
-      if (untappdUser.stats.total_checkins === dbCheckins) {
-        refreshStatus = 'All checkins are accounted for.';
-        refreshButtonText = 'Refresh';
-        isRefreshing = false;
-        setTimeout(() => (refreshStatus = ''), 2000);
-        return;
-      }
+    //   if (untappdUser.stats.total_checkins === dbCheckins) {
+    //     refreshStatus = 'All checkins are accounted for.';
+    //     refreshButtonText = 'Refresh';
+    //     isRefreshing = false;
+    //     setTimeout(() => (refreshStatus = ''), 2000);
+    //     return;
+    //   }
 
-      refreshStatus = `Fetching ${untappdUser.stats.total_checkins - dbCheckins} checkins...`;
+    //   refreshStatus = `Fetching ${untappdUser.stats.total_checkins - dbCheckins} checkins...`;
 
-      const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
-        lastDbCheckin,
-      });
+    //   const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
+    //     lastDbCheckin,
+    //   });
 
-      const [{ totalAdded }, { user: newUser }] = await Promise.all([
-        req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
-        req.post<{ user: User }>('user', { untappdUser }),
-      ]);
-      user.set(newUser);
-      await checkinStore.refresh();
-      await breweryStore.refresh();
-      refreshStatus = `Added ${totalAdded} checkins to database.`;
-      setTimeout(() => (refreshStatus = ''), 2000);
-    } catch (error) {
-      console.error('There was a problem fetching the data.', error);
-      refreshStatus = `There was a problem fetching the data.`;
-      setTimeout(() => (refreshStatus = ''), 2000);
-    }
+    //   const [{ totalAdded }, { user: newUser }] = await Promise.all([
+    //     req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
+    //     req.post<{ user: User }>('user', { untappdUser }),
+    //   ]);
+    //   user.set(newUser);
+    //   await checkinStore.refresh();
+    //   await breweryStore.refresh();
+    //   refreshStatus = `Added ${totalAdded} checkins to database.`;
+    //   setTimeout(() => (refreshStatus = ''), 2000);
+    // } catch (error) {
+    //   console.error('There was a problem fetching the data.', error);
+    //   refreshStatus = `There was a problem fetching the data.`;
+    //   setTimeout(() => (refreshStatus = ''), 2000);
+    // }
 
-    refreshButtonText = 'Refresh';
-    isRefreshing = false;
+    // refreshButtonText = 'Refresh';
+    // isRefreshing = false;
   };
 </script>
 
@@ -84,7 +83,7 @@
       <p class="fs-xs status-message">
         {#key refreshStatus}
           <span class="fade-transition" transition:fade
-            >{refreshStatus || `Last updated: ${formatDate($user.lastUpdated?.toString())}`}</span>
+            >{refreshStatus || `Last updated: ${formatDate($user.last_updated?.toString())}`}</span>
         {/key}
         &nbsp;
       </p>
