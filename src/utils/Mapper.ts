@@ -1,5 +1,4 @@
-import type { Checkin, User } from '../../db/models/index.js';
-import type { UntappdCheckinData, UntappdUser } from '../lib/UntappdClient.ts';
+import type { UntappdCheckinData, UntappdUser, Checkin, User } from '@types';
 
 export default class Mapper {
   static checkin(ch: UntappdCheckinData): Checkin {
@@ -41,7 +40,6 @@ export default class Mapper {
             lat: ch.venue.location.lat,
             lng: ch.venue.location.lng,
           },
-      raw: JSON.stringify(ch),
     };
   }
 
@@ -49,8 +47,8 @@ export default class Mapper {
     return {
       id: user.id,
       username: user.user_name,
-      firstName: user.first_name,
-      lastName: user.last_name,
+      firstname: user.first_name,
+      lastname: user.last_name,
       avatar: user.user_avatar_hd,
       badges: user.stats.total_badges,
       checkins: user.stats.total_checkins,
