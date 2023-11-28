@@ -17,6 +17,7 @@ export interface Database {
           hads: number | null
           id: number
           label: string | null
+          last_had: string | null
           name: string | null
           slug: string | null
           style: string | null
@@ -29,6 +30,7 @@ export interface Database {
           hads?: number | null
           id?: number
           label?: string | null
+          last_had?: string | null
           name?: string | null
           slug?: string | null
           style?: string | null
@@ -41,6 +43,7 @@ export interface Database {
           hads?: number | null
           id?: number
           label?: string | null
+          last_had?: string | null
           name?: string | null
           slug?: string | null
           style?: string | null
@@ -195,36 +198,45 @@ export interface Database {
       venues: {
         Row: {
           address: string | null
+          average: number | null
           city: string | null
           country: string | null
+          hads: number | null
           id: number
           lat: number | null
           lng: number | null
           name: string | null
           slug: string | null
           state: string | null
+          total_rating: number | null
         }
         Insert: {
           address?: string | null
+          average?: number | null
           city?: string | null
           country?: string | null
+          hads?: number | null
           id?: number
           lat?: number | null
           lng?: number | null
           name?: string | null
           slug?: string | null
           state?: string | null
+          total_rating?: number | null
         }
         Update: {
           address?: string | null
+          average?: number | null
           city?: string | null
           country?: string | null
+          hads?: number | null
           id?: number
           lat?: number | null
           lng?: number | null
           name?: string | null
           slug?: string | null
           state?: string | null
+          total_rating?: number | null
         }
         Relationships: []
       }
