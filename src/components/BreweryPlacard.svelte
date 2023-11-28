@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { BreweryRecord } from '@app';
+  import type { Brewery } from '@types';
   import { DownArrowIcon } from '@icons';
   import { BeerPlacard } from '@components';
 
-  export let brewery: BreweryRecord;
+  export let brewery: Brewery;
   export let filtered = false;
 
   let expandedBeers = false;
@@ -28,7 +28,7 @@
         Checkin{brewery.beerCount > 1 ? 's' : ''}
       </button>
     {:else}
-      Total beers: {brewery.checkinCount?.toLocaleString()}
+      Total beers: {brewery.hads?.toLocaleString()}
     {/if}
   </p>
 

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { ApiRequest } from '@utils';
-import type { Brewery } from '@models';
+import type { Brewery } from '@types';
 
 const bestBreweries = writable<Brewery[]>();
 const popularBreweries = writable<Brewery[]>();

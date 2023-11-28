@@ -13,9 +13,9 @@
 
   <Nav />
 
-  <!-- <main class="padding-base">
+  <main class="padding-base">
     <slot />
-  </main> -->
+  </main>
 </div>
 
 <style lang="scss">

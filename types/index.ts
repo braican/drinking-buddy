@@ -1,3 +1,4 @@
+export * from './api';
 export * from './database';
 export * from './beer';
 export * from './brewery';
