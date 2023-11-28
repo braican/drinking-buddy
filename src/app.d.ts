@@ -1,7 +1,5 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Checkin, Brewery, Beer } from '@models';
-
 // for information about these interfaces
 declare global {
   namespace App {

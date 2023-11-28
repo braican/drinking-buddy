@@ -48,7 +48,10 @@ create table venues (
   state text,
   country text,
   lat numeric,
-  lng numeric
+  lng numeric,
+  hads int,
+  total_rating numeric,
+  average numeric
 );
 
 create table checkins (

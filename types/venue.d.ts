@@ -8,4 +8,7 @@ export interface Venue {
   country: string;
   lat: number;
   lng: number;
+  hads?: number;
+  total_rating?: number;
+  average?: number;
 }

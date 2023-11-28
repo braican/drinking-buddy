@@ -5,4 +5,8 @@ export interface Beer {
   label: string;
   style: string;
   abv: number;
+  brewery: number;
+  hads?: number;
+  total_rating?: number;
+  average?: number;
 }

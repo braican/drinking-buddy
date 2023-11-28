@@ -10,7 +10,8 @@
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { UntappdClient, SupabaseClient } from '../src/lib/index.js';
-import { Mapper } from '../src/utils/index.js';
+import { Mapper, incrementRecord } from '../src/utils/index.js';
+import type { Beer, Brewery, Venue } from '../types/index.js';
 
 const DATA_FILE_PATH = './data/checkins-trunc.json';
 
@@ -18,6 +19,7 @@ dotenv.config();
 
 (async () => {
   const supabase = new SupabaseClient();
+
   const seedUser = async () => {
     const client = new UntappdClient();
     client.setToken(process.env.UNTAPPD_ACCESS_TOKEN);
@@ -28,35 +30,59 @@ dotenv.config();
     console.log('User added.');
   };
 
-  // const seedCheckins = async () => {
-  //   await fs.readFile(DATA_FILE_PATH, async (err, data) => {
-  //     if (err) {
-  //       console.error(err);
-  //       return;
-  //     }
+  const seedCheckins = async () => {
+    await fs.readFile(DATA_FILE_PATH, async (err, data) => {
+      if (err) {
+        throw new Error(err.message);
+      }
 
-  //     const json = JSON.parse(data.toString());
-  //     const checkins = json?.checkins;
+      const json = JSON.parse(data.toString());
+      const checkinData = json?.checkins;
 
-  //     if (!checkins) {
-  //       console.log('No checkins to add.');
-  //       return;
-  //     }
+      if (!checkinData) {
+        console.log('No checkins to add.');
+        return;
+      }
 
-  //     const mappedCheckins = checkins.map(Mapper.checkin);
-  //     console.log(`Adding ${mappedCheckins.length} checkins...`);
+      const checkins = [];
+      const beers: { [id: number]: Beer } = {};
+      const breweries: { [id: number]: Brewery } = {};
+      const venues: { [id: number]: Venue } = {};
 
-  //     // const totalAdded = await tigris.addCheckins(mappedCheckins);
-  //     // console.log(`${totalAdded} checkins added.`);
+      checkinData.forEach(ch => {
+        const checkin = Mapper.checkin(ch);
+        checkins.push(checkin);
 
-  //     // const addedBreweries = await tigris.updateBreweries();
-  //     // console.log(`${addedBreweries} breweries added.`);
-  //   });
-  // };
+        const beer = Mapper.beer(ch);
+        const brewery = Mapper.brewery(ch);
+        const venue = Mapper.venue(ch);
+
+        beers[beer.id] = incrementRecord<Beer>(beers[beer.id], beer, checkin);
+        breweries[brewery.id] = incrementRecord<Brewery>(breweries[brewery.id], brewery, checkin);
+
+        if (venue) {
+          venues[venue.id] = incrementRecord<Venue>(venues[venue.id], venue, checkin);
+        }
+      });
+
+      console.log(venues);
+
+      // const mappedCheckins = checkinData.map(Mapper.checkin);
+      // console.log(`Adding ${mappedCheckins.length} checkins...`);
+
+      // console.log(mappedCheckins);
+
+      // const totalAdded = await tigris.addCheckins(mappedCheckins);
+      // console.log(`${totalAdded} checkins added.`);
+
+      // const addedBreweries = await tigris.updateBreweries();
+      // console.log(`${addedBreweries} breweries added.`);
+    });
+  };
 
   try {
-    await seedUser();
-    // await seedCheckins();
+    // await seedUser();
+    await seedCheckins();
   } catch (error) {
     console.error('[Error in scripts/seed.ts]', error);
   }

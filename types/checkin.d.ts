@@ -1,13 +1,10 @@
-import type { Beer } from './beer';
-import type { Brewery } from './brewery';
-import type { Venue } from './venue';
-
+// Checkin schema for database.
 export interface Checkin {
   id: number;
-  createdAt: Date;
+  created_at: Date;
   comment?: string;
   rating?: number;
-  beer: Beer;
-  brewery: Brewery;
-  venue?: Venue;
+  beer: number;
+  brewery: number;
+  venue?: number;
 }
