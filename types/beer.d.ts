@@ -6,6 +6,7 @@ export interface Beer {
   style: string;
   abv: number;
   brewery: number;
+  last_had?: Date;
   hads?: number;
   total_rating?: number;
   average?: number;

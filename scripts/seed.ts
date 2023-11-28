@@ -58,6 +58,11 @@ dotenv.config();
         const venue = Mapper.venue(ch);
 
         beers[beer.id] = incrementRecord<Beer>(beers[beer.id], beer, checkin);
+
+        if (!beers[beer.id].last_had || beers[beer.id].last_had < checkin.created_at) {
+          beers[beer.id].last_had = checkin.created_at;
+        }
+
         breweries[brewery.id] = incrementRecord<Brewery>(breweries[brewery.id], brewery, checkin);
 
         if (venue) {
@@ -65,18 +70,19 @@ dotenv.config();
         }
       });
 
-      console.log(venues);
+      console.log(`Adding ${checkins.length} checkins...`);
 
-      // const mappedCheckins = checkinData.map(Mapper.checkin);
-      // console.log(`Adding ${mappedCheckins.length} checkins...`);
+      await supabase.addBreweries(Object.values(breweries));
+      console.log(`${Object.values(breweries).length} breweries added.`);
 
-      // console.log(mappedCheckins);
+      await supabase.addVenues(Object.values(venues));
+      console.log(`${Object.values(venues).length} venues added.`);
 
-      // const totalAdded = await tigris.addCheckins(mappedCheckins);
-      // console.log(`${totalAdded} checkins added.`);
+      await supabase.addBeers(Object.values(beers));
+      console.log(`${Object.values(beers).length} beers added.`);
 
-      // const addedBreweries = await tigris.updateBreweries();
-      // console.log(`${addedBreweries} breweries added.`);
+      await supabase.addCheckins(checkins);
+      console.log(`${checkins.length} checkins added.`);
     });
   };
 

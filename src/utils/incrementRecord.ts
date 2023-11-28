@@ -5,7 +5,7 @@ import type { Checkin } from '@types';
  *
  * @param record The record to increment.
  * @param newItem The new item to add to the record.
- * @param checkin The checkin to use for the increment.
+ * @param {Checkin} checkin The checkin to use for the increment.
  *
  * @return The incremented record.
  */

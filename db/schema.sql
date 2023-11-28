@@ -34,6 +34,7 @@ create table beers (
   style text,
   abv numeric,
   brewery bigint references breweries,
+  last_had timestamp with time zone,
   hads int,
   total_rating numeric,
   average numeric
