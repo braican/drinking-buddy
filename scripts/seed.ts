@@ -58,7 +58,6 @@ dotenv.config();
         const venue = Mapper.venue(ch);
 
         beers[beer.id] = incrementRecord<Beer>(beers[beer.id], beer, checkin);
-
         if (!beers[beer.id].last_had || beers[beer.id].last_had < checkin.created_at) {
           beers[beer.id].last_had = checkin.created_at;
         }

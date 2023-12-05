@@ -1,4 +1,11 @@
-export const formatDate = (date: string): string => {
+/**
+ * Format the date consistently.
+ *
+ * @param {string|Date} date Date to format.
+ *
+ * @return string
+ */
+export const formatDate = (date: string | Date): string => {
   if (date === undefined) {
     return '';
   }

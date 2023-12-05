@@ -13,6 +13,8 @@ export type DbResultErr = PostgrestError;
 export default class SupabaseClient {
   supabase: SupabaseClientType;
 
+  checkinsWithDataQuery;
+
   constructor() {
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_KEY;
@@ -22,6 +24,21 @@ export default class SupabaseClient {
     }
 
     this.supabase = createClient<Database>(url, key);
+
+    this.checkinsWithDataQuery = this.supabase
+      .from('checkins')
+      .select(
+        `
+      id,
+      created_at,
+      comment,
+      rating,
+      beer(name, slug, style),
+      brewery(name),
+      venue(name)
+    `,
+      )
+      .order('created_at', { ascending: true });
   }
 
   // ==============================
@@ -146,28 +163,61 @@ export default class SupabaseClient {
    * @return Checkin[]
    */
   public async getLatestCheckins(): Promise<Checkin[]> {
-    const checkinsWithDataQuery = await this.supabase
-      .from('checkins')
-      .select(
-        `
-        id,
-        created_at,
-        comment,
-        rating,
-        beer(name, slug, style),
-        brewery(name),
-        venue(name)
-      `,
-      )
-      .order('created_at', { ascending: true })
-      .limit(10);
-
-    type CheckinsWithData = DbResultOk<typeof checkinsWithDataQuery>;
-
-    const { data, error } = await checkinsWithDataQuery;
+    const { data, error } = await this.checkinsWithDataQuery.limit(10);
 
     if (error) throw error;
 
-    return data as CheckinsWithData;
+    return data;
+  }
+
+  /**
+   * Gets a brewery by slug.
+   *
+   * @param {string} slug Brewery slug.
+   *
+   * @return Brewery
+   */
+  public async getBrewery(slug: string): Promise<Brewery> {
+    const { data, error } = await this.supabase
+      .from('breweries')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (error) {
+      return null;
+    }
+
+    return data;
+  }
+
+  /**
+   * Gets all beers from a brewery.
+   *
+   * @param {string} id Brewery ID.
+   *
+   * @return Beer[]
+   */
+  public async getBreweryBeers(id: string): Promise<Beer[]> {
+    const { data, error } = await this.supabase.from('beers').select('*').eq('brewery', id);
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  /**
+   * Gets all checkins from a brewery.
+   *
+   * @param {string} id Brewery ID.
+   *
+   * @return Checkin[]
+   */
+  public async getBreweryCheckins(id: string): Promise<Checkin[]> {
+    const { data, error } = await this.checkinsWithDataQuery.eq('brewery', id).limit(10);
+
+    if (error) throw error;
+
+    return data;
   }
 }
