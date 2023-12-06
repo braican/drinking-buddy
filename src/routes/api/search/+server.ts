@@ -5,8 +5,15 @@ import { ApiResponse } from '@utils';
 export async function GET({ setHeaders, url }): Promise<Response> {
   try {
     const query = url.searchParams.get('query');
+    const supabase = new SupabaseClient();
+    const results = await supabase.search(query);
     // @TODO.
-    return ApiResponse.success({});
+
+    console.log(results);
+
+    return ApiResponse.success({
+      results: [],
+    });
   } catch (error) {
     console.error('[Error in GET api/breweries/search]', error);
     return ApiResponse.error(error.message);

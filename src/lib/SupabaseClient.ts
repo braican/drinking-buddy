@@ -240,6 +240,23 @@ export default class SupabaseClient {
     return data as QueryResult<Beer>;
   }
 
+  /**
+   * Do a full-text search of the database.
+   *
+   * @param {string} query Search query.
+   *
+   * @return
+   */
+  public async search(query: string) {
+    const { data, error } = await this.supabase.rpc('search_beers_and_breweries', {
+      query_text: query,
+    });
+
+    if (error) throw error;
+
+    return data;
+  }
+
   // ==============================
   // Helpers
 

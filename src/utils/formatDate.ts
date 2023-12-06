@@ -13,7 +13,7 @@ export const formatDate = (date: string | Date): string => {
   try {
     const dateObj = new Date(date);
     const formattedDate = dateObj.toLocaleDateString('en-US', {
-      month: 'numeric',
+      month: 'long',
       day: 'numeric',
       year: 'numeric',
     });

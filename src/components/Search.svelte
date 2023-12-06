@@ -4,13 +4,11 @@
   import { fade } from 'svelte/transition';
   import { CloseIcon, RightArrowIcon } from '@icons';
   import { ApiRequest } from '@utils';
-  import type { Brewery } from '@models';
-  import type { BrewerySearchResults } from '@app';
 
   let query = '';
   let input = null;
   let loading = false;
-  let results: Brewery[] = [];
+  let results = [];
 
   let timer;
   let controller;
@@ -44,7 +42,7 @@
 
       timer = setTimeout(() => {
         req
-          .get<BrewerySearchResults>(`breweries/search?query=${query}`, { signal })
+          .get<{ results: [] }>(`search?query=${query}`, { signal })
           .then(r => {
             results = r.results;
             loading = false;
