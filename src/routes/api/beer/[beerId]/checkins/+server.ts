@@ -4,13 +4,13 @@ import { ApiResponse } from '@utils';
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, params }) {
   try {
-    const breweryId = params.breweryId;
+    const beerId = params.beerId;
     const supabase = new SupabaseClient();
-    const checkins = await supabase.getBreweryCheckins(breweryId);
+    const checkins = await supabase.getBeerCheckins(beerId);
 
     return ApiResponse.success({ checkins });
   } catch (error) {
-    console.error('[Error in GET api/brewery/<breweryId>/checkins]', error);
+    console.error('[Error in GET api/beer/<beerId>/checkins]', error);
     return ApiResponse.error(error.message, error.status);
   }
 }

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { ApiRequest } from '@utils';
-import type { Brewery, Beer, Checkin } from '@types';
+import type { Brewery, Beer, CheckinWithData } from '@types';
 
 export async function load({ fetch, params }) {
   try {
@@ -12,7 +12,9 @@ export async function load({ fetch, params }) {
     }
 
     const { beers } = await req.get<{ beers: Beer[] }>(`brewery/${brewery.id}/beers`);
-    const { checkins } = await req.get<{ checkins: Checkin[] }>(`brewery/${brewery.id}/checkins`);
+    const { checkins } = await req.get<{ checkins: CheckinWithData[] }>(
+      `brewery/${brewery.id}/checkins`,
+    );
 
     return { brewery, beers, checkins };
   } catch (err) {

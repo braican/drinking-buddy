@@ -11,7 +11,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { UntappdClient, SupabaseClient } from '../src/lib/index.js';
 import { Mapper, incrementRecord } from '../src/utils/index.js';
-import type { Beer, Brewery, Venue } from '../types/index.js';
+import type { Brewery, Beer, Venue } from '../types/index.js';
 
 const DATA_FILE_PATH = './data/checkins-trunc.json';
 

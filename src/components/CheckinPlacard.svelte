@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { Checkin } from '@types';
+  import type { CheckinWithData } from '@types';
   import { formatDate } from '@utils';
   import { BuildingIcon } from '@icons';
 
-  export let checkin: Checkin;
+  export let checkin: CheckinWithData;
   export let light: boolean = false;
 
   $: ratingClasses = new Array(5).fill('').map((v, i) => {

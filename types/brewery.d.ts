@@ -1,3 +1,4 @@
+// Checkin schema for database.
 export interface Brewery {
   id: number;
   name: string;

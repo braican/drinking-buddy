@@ -10,7 +10,7 @@ export async function GET({ setHeaders, params }) {
 
     return ApiResponse.success({ beers });
   } catch (error) {
-    console.error('[Error in GET api/brewery/beers]', error);
+    console.error('[Error in GET api/brewery/<breweryId>/beers]', error);
     return ApiResponse.error(error.message, error.status);
   }
 }

@@ -1,19 +1,13 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-import type { PostgrestError } from '@supabase/supabase-js';
+import type { QueryResult } from '@supabase/supabase-js';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
-import type { User, Database, Checkin, Brewery, Beer, Venue } from '@types';
+import type { User, Database, Checkin, CheckinWithData, Brewery, Beer, Venue } from '@types';
 
 dotenv.config();
 
-export type DbResult<T> = T extends PromiseLike<infer U> ? U : never;
-export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U, null> : never;
-export type DbResultErr = PostgrestError;
-
 export default class SupabaseClient {
   supabase: SupabaseClientType;
-
-  checkinsWithDataQuery;
 
   constructor() {
     const url = process.env.SUPABASE_URL;
@@ -24,21 +18,6 @@ export default class SupabaseClient {
     }
 
     this.supabase = createClient<Database>(url, key);
-
-    this.checkinsWithDataQuery = this.supabase
-      .from('checkins')
-      .select(
-        `
-      id,
-      created_at,
-      comment,
-      rating,
-      beer(name, slug, style),
-      brewery(name),
-      venue(name)
-    `,
-      )
-      .order('created_at', { ascending: true });
   }
 
   // ==============================
@@ -160,14 +139,14 @@ export default class SupabaseClient {
   /**
    * Gets the most recent checkins.
    *
-   * @return Checkin[]
+   * @return CheckinWithData[]
    */
-  public async getLatestCheckins(): Promise<Checkin[]> {
-    const { data, error } = await this.checkinsWithDataQuery.limit(10);
+  public async getLatestCheckins(): Promise<CheckinWithData[]> {
+    const { data, error } = await this.checkinsWithDataQuery().limit(10);
 
     if (error) throw error;
 
-    return data;
+    return data as QueryResult<CheckinWithData[]>;
   }
 
   /**
@@ -178,14 +157,18 @@ export default class SupabaseClient {
    * @return Brewery
    */
   public async getBrewery(slug: string): Promise<Brewery> {
-    const { data, error } = await this.supabase
+    const { data, error, status } = await this.supabase
       .from('breweries')
       .select('*')
       .eq('slug', slug)
       .single();
 
     if (error) {
-      return null;
+      if (status === 406) {
+        return null;
+      }
+
+      throw error;
     }
 
     return data;
@@ -207,17 +190,98 @@ export default class SupabaseClient {
   }
 
   /**
-   * Gets all checkins from a brewery.
+   * Gets all checkins of beers from a specific brewery.
    *
    * @param {string} id Brewery ID.
    *
-   * @return Checkin[]
+   * @return CheckinWithData[]
    */
-  public async getBreweryCheckins(id: string): Promise<Checkin[]> {
-    const { data, error } = await this.checkinsWithDataQuery.eq('brewery', id).limit(10);
+  public async getBreweryCheckins(id: string): Promise<CheckinWithData[]> {
+    const { data, error } = await this.checkinsWithDataQuery().eq('brewery', id).limit(10);
 
     if (error) throw error;
 
-    return data;
+    return data as QueryResult<CheckinWithData[]>;
+  }
+
+  /**
+   * Gets all checkins for a beer.
+   *
+   * @param {string} id Beer ID.
+   *
+   * @return CheckinWithData[]
+   */
+  public async getBeerCheckins(id: string): Promise<CheckinWithData[]> {
+    const { data, error } = await this.checkinsWithDataQuery().eq('beer', id).limit(10);
+
+    if (error) throw error;
+
+    return data as QueryResult<CheckinWithData[]>;
+  }
+
+  /**
+   * Gets an individual beer by slug.
+   *
+   * @param {string} slug Beer slug.
+   *
+   * @return Beer
+   */
+  public async getBeer(slug: string): Promise<Beer> {
+    const { data, error, status } = await this.beersWithDataQuery().eq('slug', slug).single();
+
+    if (error) {
+      if (status === 406) {
+        return null;
+      }
+
+      throw error;
+    }
+
+    return data as QueryResult<Beer>;
+  }
+
+  // ==============================
+  // Helpers
+
+  /**
+   * Kick off a checkin query, complete with beer, brewery, and venue data.
+   *
+   * @return QueryResult
+   */
+  private checkinsWithDataQuery() {
+    return this.supabase
+      .from('checkins')
+      .select(
+        `
+          id,
+          created_at,
+          comment,
+          rating,
+          beer(name, slug, style),
+          brewery(name),
+          venue(name)
+        `,
+      )
+      .order('created_at', { ascending: true });
+  }
+
+  /**
+   * Kick off a beer query, complete with brewery data.
+   *
+   * @return QueryResult
+   */
+  private beersWithDataQuery() {
+    return this.supabase.from('beers').select(`
+      id,
+      name,
+      slug,
+      label,
+      style,
+      abv,
+      last_had,
+      hads,
+      average,
+      brewery(name, slug)
+    `);
   }
 }
