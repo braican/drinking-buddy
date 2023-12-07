@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CheckinPlacard } from '@components';
+  import { CheckinList } from '@components';
   export let data;
 </script>
 
@@ -27,17 +27,15 @@
 </header>
 
 <section class="list-section">
-  <h2 class="list-header">Checkins</h2>
-
-  {#if data.checkins.length > 0}
-    <ul class="margin-top-lg">
-      {#each data.checkins as checkin}
-        <li><CheckinPlacard {checkin} light /></li>
-      {/each}
-    </ul>
-  {:else}
-    <p class="margin-top-lg">No checkins</p>
-  {/if}
+  {#await data.streamed.checkins}
+    <p>Loading</p>
+  {:then paginatedCheckins}
+    {#if paginatedCheckins.checkins.length > 0}
+      <CheckinList checkinData={paginatedCheckins} beerId={data.beer.id} />
+    {:else}
+      <p class="margin-top-lg">No checkins</p>
+    {/if}
+  {/await}
 </section>
 
 <style lang="scss">

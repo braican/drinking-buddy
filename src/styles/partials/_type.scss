@@ -116,6 +116,12 @@ button {
   }
 }
 
+.button-full {
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
 // Special components
 
 $list-header-dash-width: 1rem;

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { ApiRequest } from '@utils';
-import type { BeerWithData, CheckinWithData } from '@types';
+import type { BeerWithData, PaginatedCheckins } from '@types';
 
 export async function load({ fetch, params }) {
   try {
@@ -11,12 +11,12 @@ export async function load({ fetch, params }) {
       throw error(404);
     }
 
-    const { checkins } = await req.get<{ checkins: CheckinWithData[] }>(`beer/${beer.id}/checkins`);
-
     return {
       slug: params.slug,
       beer,
-      checkins,
+      streamed: {
+        checkins: await req.get<PaginatedCheckins>(`beer/${beer.id}/checkins`),
+      },
     };
   } catch (err) {
     if (err.status === 404) {

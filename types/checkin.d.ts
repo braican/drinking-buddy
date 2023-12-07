@@ -23,3 +23,8 @@ export interface CheckinWithData extends Checkin {
     name: string;
   };
 }
+
+export interface PaginatedCheckins {
+  checkins: CheckinWithData[];
+  count: number;
+}

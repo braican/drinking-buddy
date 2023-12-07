@@ -2,9 +2,20 @@ import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import type { QueryResult } from '@supabase/supabase-js';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
-import type { User, Database, Checkin, CheckinWithData, Brewery, Beer, Venue } from '@types';
+import type {
+  User,
+  Database,
+  Checkin,
+  CheckinWithData,
+  PaginatedCheckins,
+  Brewery,
+  Beer,
+  Venue,
+} from '@types';
 
 dotenv.config();
+
+const CHECKINS_PER_PAGE = 32;
 
 export default class SupabaseClient {
   supabase: SupabaseClientType;
@@ -196,12 +207,15 @@ export default class SupabaseClient {
    *
    * @return CheckinWithData[]
    */
-  public async getBreweryCheckins(id: string): Promise<CheckinWithData[]> {
-    const { data, error } = await this.checkinsWithDataQuery().eq('brewery', id).limit(10);
+  public async getBreweryCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
+    const { data, error, count } = await this.checkinsWithDataQuery(page).eq('brewery', id);
 
     if (error) throw error;
 
-    return data as QueryResult<CheckinWithData[]>;
+    return {
+      checkins: data as QueryResult<CheckinWithData[]>,
+      count,
+    };
   }
 
   /**
@@ -211,12 +225,15 @@ export default class SupabaseClient {
    *
    * @return CheckinWithData[]
    */
-  public async getBeerCheckins(id: string): Promise<CheckinWithData[]> {
-    const { data, error } = await this.checkinsWithDataQuery().eq('beer', id).limit(10);
+  public async getBeerCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
+    const { data, error, count } = await this.checkinsWithDataQuery(page).eq('beer', id);
 
     if (error) throw error;
 
-    return data as QueryResult<CheckinWithData[]>;
+    return {
+      checkins: data as QueryResult<CheckinWithData[]>,
+      count,
+    };
   }
 
   /**
@@ -265,7 +282,10 @@ export default class SupabaseClient {
    *
    * @return QueryResult
    */
-  private checkinsWithDataQuery() {
+  private checkinsWithDataQuery(page = 1) {
+    const rangeStart = (page - 1) * CHECKINS_PER_PAGE;
+    const rangeEnd = rangeStart + CHECKINS_PER_PAGE - 1;
+
     return this.supabase
       .from('checkins')
       .select(
@@ -278,8 +298,12 @@ export default class SupabaseClient {
           brewery(name),
           venue(name)
         `,
+        {
+          count: 'exact',
+        },
       )
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false })
+      .range(rangeStart, rangeEnd);
   }
 
   /**

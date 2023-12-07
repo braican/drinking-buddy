@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tabs, BeerList, CheckinPlacard } from '@components';
+  import { Tabs, BeerList, CheckinList } from '@components';
 
   export let data;
 </script>
@@ -23,16 +23,15 @@
     <BeerList beers={data.beers} showBreweries={false} />
   {:else if view === 'Checkins'}
     <section class="list-section">
-      {#if data.checkins}
-        <h2 class="list-header">{data.checkins.length} Checkins</h2>
-        <ul class="margin-top-lg">
-          {#each data.checkins as checkin}
-            <li><CheckinPlacard {checkin} /></li>
-          {/each}
-        </ul>
-      {:else}
-        <p class="margin-top-lg">No checkins</p>
-      {/if}
+      {#await data.streamed.checkins}
+        <p>Loading</p>
+      {:then paginatedCheckins}
+        {#if paginatedCheckins.checkins.length > 0}
+          <CheckinList checkinData={paginatedCheckins} breweryId={data.brewery.id} />
+        {:else}
+          <p class="margin-top-lg">No checkins</p>
+        {/if}
+      {/await}
     </section>
   {/if}
 </Tabs>
