@@ -8,7 +8,8 @@
   let query = '';
   let input = null;
   let loading = false;
-  let results = [];
+  let breweryResults = [];
+  let beerResults = [];
 
   let timer;
   let controller;
@@ -33,7 +34,8 @@
 
     if (query.length < 2) {
       loading = false;
-      results = [];
+      breweryResults = [];
+      beerResults = [];
     } else {
       loading = true;
       controller = new AbortController();
@@ -42,9 +44,10 @@
 
       timer = setTimeout(() => {
         req
-          .get<{ results: [] }>(`search?query=${query}`, { signal })
+          .get<{ breweryResults: []; beerResults: [] }>(`search?query=${query}`, { signal })
           .then(r => {
-            results = r.results;
+            beerResults = r.beerResults;
+            breweryResults = r.breweryResults;
             loading = false;
           })
           .catch(error => {
@@ -69,33 +72,50 @@
     type="text"
     bind:this={input}
     bind:value={query}
-    placeholder="Search for a brewery..." />
+    placeholder="Search for a brewery or beer..." />
 
   <div>
     {#if loading}
       <p class="loading margin-top-lg color-opacity-50">Loading...</p>
-    {:else if results.length === 0 && query.length > 2}
-      <p class="margin-top-lg">No breweries match your search.</p>
+    {:else if beerResults.length === 0 && breweryResults.length === 0 && query.length > 2}
+      <p class="margin-top-lg fs-lg">No breweries or beers match your search.</p>
     {:else}
-      <ul class="margin-top-lg">
-        {#each results as result}
-          <li class="top-border">
-            <a
-              class="brewery-link padding-base fs-lg"
-              href={`/brewery/${result.slug}`}
-              on:click={viewStore.hideSearch}>
-              {#each result.name.split(' ') as word, i}
-                <span>
-                  {word}
-                  {#if i === result.name.split(' ').length - 1}
-                    <RightArrowIcon />
-                  {/if}
-                </span>
-              {/each}
-            </a>
-          </li>
-        {/each}
-      </ul>
+      {#if breweryResults.length > 0}
+        <div class="margin-top-lg">
+          <p class="padding-top-bottom-base fs-sm tt-uppercase"><strong>Breweries</strong></p>
+
+          <ul>
+            {#each breweryResults as brewery}
+              <li class="top-border">
+                <a
+                  class="result-link padding-base fs-lg"
+                  href={`/brewery/${brewery.slug}`}
+                  on:click={viewStore.hideSearch}>
+                  {brewery.name}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
+
+      {#if beerResults.length > 0}
+        <div class="margin-top-lg">
+          <p class="padding-top-bottom-base fs-sm tt-uppercase"><strong>Beers</strong></p>
+          <ul>
+            {#each beerResults as beer}
+              <li class="top-border">
+                <a
+                  class="result-link padding-base fs-lg"
+                  href={`/beer/${beer.slug}`}
+                  on:click={viewStore.hideSearch}
+                  >{beer.name}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
     {/if}
   </div>
 </div>
@@ -142,22 +162,11 @@
     opacity: 0.3;
   }
 
-  .brewery-link {
+  .result-link {
     display: block;
 
     &:hover {
       color: var(--color-primary);
-    }
-
-    > span:last-child {
-      white-space: nowrap;
-    }
-
-    :global(svg) {
-      display: inline-block;
-      vertical-align: middle;
-      width: 20px;
-      opacity: 0.2;
     }
   }
 </style>
