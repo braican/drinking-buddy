@@ -170,20 +170,14 @@ export default class SupabaseClient {
    *
    * @return Brewery
    */
-  public async getBrewery(slug: string): Promise<Brewery> {
-    const { data, error, status } = await this.supabase
+  public async getBrewery(slug: string): Promise<Brewery | null> {
+    const { data, error } = await this.supabase
       .from('breweries')
       .select('*')
       .eq('slug', slug)
-      .single();
+      .maybeSingle();
 
-    if (error) {
-      if (status === 406) {
-        return null;
-      }
-
-      throw error;
-    }
+    if (error) throw error;
 
     return data;
   }
@@ -250,19 +244,13 @@ export default class SupabaseClient {
    *
    * @return Beer
    */
-  public async getBeer(slug: string): Promise<Beer> {
-    const { data, error, status } = await this.beersWithDataQuery()
+  public async getBeer(slug: string): Promise<Beer | null> {
+    const { data, error } = await this.beersWithDataQuery()
       .eq('slug', slug)
       .returns<Beer>()
-      .single();
+      .maybeSingle();
 
-    if (error) {
-      if (status === 406) {
-        return null;
-      }
-
-      throw error;
-    }
+    if (error) throw error;
 
     return data;
   }
@@ -340,6 +328,39 @@ export default class SupabaseClient {
       checkins: data,
       count,
     };
+  }
+
+  /**
+   * Get the date of the last checkin.
+   *
+   * @return number
+   */
+  public async getLastCheckin(): Promise<number | null> {
+    const { data, error } = await this.supabase
+      .from('checkins')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+
+    return data.id ?? null;
+  }
+
+  /**
+   * Get the number of checkin rows in the database.
+   *
+   * @return number
+   */
+  public async getCheckinCount(): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('checkins')
+      .select('id', { count: 'exact', head: true });
+
+    if (error) throw error;
+
+    return count;
   }
 
   // ==============================

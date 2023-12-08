@@ -16,8 +16,8 @@ export async function GET({ setHeaders }) {
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ setHeaders, request }) {
   // try {
-  //   const { untappdUser } = await request.json();
-  //   const tigris = await TigrisClient.create();
+  // const { untappdUser } = await request.json();
+  // const tigris = await TigrisClient.create();
   //   const newDbUser = Mapper.user(untappdUser);
   //   newDbUser.lastUpdated = new Date();
   //   await tigris.addUser(newDbUser);

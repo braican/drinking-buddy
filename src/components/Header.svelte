@@ -3,7 +3,9 @@
   import { RefreshIcon } from '@icons';
   import { ApiRequest, formatDate } from '@utils';
   import { userStore as user, checkinStore, breweryStore } from '@stores';
-  import type { UntappdUser, User, Checkin } from '@types';
+  import type { UntappdUser, Checkin } from '@types';
+
+  import t from '../../data/checkins-trunc-refresh.json';
 
   let isRefreshing = false;
   let refreshButtonText = 'Refresh';
@@ -15,49 +17,51 @@
     refreshStatus = 'Starting to fetch...';
     console.log('Refreshing database with the latest from Untappd...');
 
-    // try {
-    //   const req = new ApiRequest();
+    try {
+      const req = new ApiRequest();
+      const { untappdUser, dbCheckinCount, lastDbCheckin } = await req.get<{
+        untappdUser: UntappdUser;
+        dbCheckinCount: number;
+        lastDbCheckin: number;
+      }>('checkins/pre-fetch');
 
-    //   const { untappdUser, dbCheckins, lastDbCheckin } = await req.get<{
-    //     untappdUser: UntappdUser;
-    //     dbCheckins: number;
-    //     lastDbCheckin: Checkin;
-    //   }>('checkins/pre-fetch');
+      console.log(dbCheckinCount, lastDbCheckin);
 
-    //   console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
-    //   console.log('Checkins in database:', dbCheckins);
+      // console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
+      console.log('Realtime user checkins (from Untappd):', 53);
+      console.log('Checkins in database:', dbCheckinCount);
+      // if (untappdUser.stats.total_checkins === dbCheckinCount) {
+      //   refreshStatus = 'All checkins are accounted for.';
+      //   refreshButtonText = 'Refresh';
+      //   isRefreshing = false;
+      //   setTimeout(() => (refreshStatus = ''), 2000);
+      //   return;
+      // }
+      // refreshStatus = `Fetching ${untappdUser.stats.total_checkins - dbCheckinCount} checkins...`;
+      refreshStatus = `Fetching ${53 - dbCheckinCount} checkins...`;
 
-    //   if (untappdUser.stats.total_checkins === dbCheckins) {
-    //     refreshStatus = 'All checkins are accounted for.';
-    //     refreshButtonText = 'Refresh';
-    //     isRefreshing = false;
-    //     setTimeout(() => (refreshStatus = ''), 2000);
-    //     return;
-    //   }
+      console.log(t);
 
-    //   refreshStatus = `Fetching ${untappdUser.stats.total_checkins - dbCheckins} checkins...`;
+      //   const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
+      //     lastDbCheckin,
+      //   });
+      // const newCheckins =
+      //   const [{ totalAdded }, { user: newUser }] = await Promise.all([
+      //     req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
+      //     req.post<{ user: User }>('user', { untappdUser }),
+      //   ]);
+      //   user.set(newUser);
+      //   await checkinStore.refresh();
+      //   await breweryStore.refresh();
+      //   refreshStatus = `Added ${totalAdded} checkins to database.`;
+    } catch (error) {
+      console.error('There was a problem fetching the data.', error);
+      refreshStatus = `There was a problem fetching the data.`;
+    }
 
-    //   const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
-    //     lastDbCheckin,
-    //   });
-
-    //   const [{ totalAdded }, { user: newUser }] = await Promise.all([
-    //     req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
-    //     req.post<{ user: User }>('user', { untappdUser }),
-    //   ]);
-    //   user.set(newUser);
-    //   await checkinStore.refresh();
-    //   await breweryStore.refresh();
-    //   refreshStatus = `Added ${totalAdded} checkins to database.`;
-    //   setTimeout(() => (refreshStatus = ''), 2000);
-    // } catch (error) {
-    //   console.error('There was a problem fetching the data.', error);
-    //   refreshStatus = `There was a problem fetching the data.`;
-    //   setTimeout(() => (refreshStatus = ''), 2000);
-    // }
-
-    // refreshButtonText = 'Refresh';
-    // isRefreshing = false;
+    setTimeout(() => (refreshStatus = ''), 2000);
+    refreshButtonText = 'Refresh';
+    isRefreshing = false;
   };
 </script>
 

@@ -1,25 +1,35 @@
-import { UntappdClient, TigrisClient } from '@lib';
+import { UntappdClient, SupabaseClient } from '@lib';
 import { ApiResponse } from '@utils';
 import { UNTAPPD_ACCESS_TOKEN } from '$env/static/private';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
   try {
-    const tigris = await TigrisClient.create();
+    const supabase = new SupabaseClient();
     const untappd = new UntappdClient();
 
     untappd.setToken(UNTAPPD_ACCESS_TOKEN);
 
-    const [user, lastDbCheckin, dbCheckinCount] = await Promise.all([
-      untappd.getUser(),
-      tigris.getLastCheckin(),
-      tigris.getCheckinCount(),
+    const [
+      // user,
+      lastDbCheckin,
+      dbCheckinCount,
+    ] = await Promise.all([
+      // untappd.getUser(),
+      supabase.getLastCheckin(),
+      supabase.getCheckinCount(),
     ]);
 
+    // return ApiResponse.success({
+    //   untappdUser: user,
+    //   dbCheckins: dbCheckinCount,
+    //   lastDbCheckin,
+    // });
     return ApiResponse.success({
-      untappdUser: user,
-      dbCheckins: dbCheckinCount,
+      // untappdUser: user,
+      // dbCheckins: dbCheckinCount,
       lastDbCheckin,
+      dbCheckinCount,
     });
   } catch (error) {
     console.error('[Error in GET api/checkins/pre-fetch]', error);
