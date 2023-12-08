@@ -12,7 +12,6 @@ const config = {
     adapter: adapter(),
 
     alias: {
-      '@app': './src/app.d.ts',
       '@types': './types',
       '@components': './src/components/index.js',
       '@icons': './src/icons/index.js',
