@@ -1,19 +1,18 @@
 <script lang="ts">
-  import type { Checkin } from '@models';
-  import type { BeerRecord, BreweryRecord } from '@app';
-  import { states, styles, styleOptGroups } from '@utils/constants';
+  import { states, styleOptGroups } from '@utils/constants';
   import { ApiRequest } from '@utils';
   import { Tabs, BeerList, CheckinPlacard, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
+  import type { BeerWithData, Brewery, CheckinWithData } from '@types';
   let style = '';
   let state = '';
 
   let filteredStyle = '';
   let filteredState = '';
 
-  let checkins = [];
-  let beers = [];
-  let breweries = [];
+  let checkins: CheckinWithData[] = [];
+  let beers: BeerWithData[] = [];
+  let breweries: (Brewery & { beers: BeerWithData[] })[] = [];
   let filteredAverage = null;
 
   let filtered = false;
@@ -21,14 +20,13 @@
 
   const filter = async () => {
     if (style === filteredStyle && state === filteredState) return;
-
     const req = new ApiRequest();
     loading = true;
 
     const results = await req.get<{
-      checkins: Checkin[];
-      beers: BeerRecord[];
-      breweries: BreweryRecord[];
+      checkins: CheckinWithData[];
+      beers: BeerWithData[];
+      breweries: (Brewery & { beers: BeerWithData[] })[];
       filteredAverage: string;
     }>(
       `filter?${new URLSearchParams({
@@ -39,10 +37,8 @@
 
     filteredStyle = style;
     filteredState = state;
-
     filtered = true;
     loading = false;
-
     checkins = results.checkins;
     beers = results.beers;
     breweries = results.breweries;

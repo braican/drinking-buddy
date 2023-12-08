@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-import type { QueryResult } from '@supabase/supabase-js';
+import { styles } from '@utils/constants';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
   User,
@@ -11,6 +11,7 @@ import type {
   Brewery,
   Beer,
   Venue,
+  SearchResult,
 } from '@types';
 
 dotenv.config();
@@ -153,11 +154,13 @@ export default class SupabaseClient {
    * @return CheckinWithData[]
    */
   public async getLatestCheckins(): Promise<CheckinWithData[]> {
-    const { data, error } = await this.checkinsWithDataQuery().limit(10);
+    const { data, error } = await this.checkinsWithDataQuery()
+      .limit(10)
+      .returns<CheckinWithData[]>();
 
     if (error) throw error;
 
-    return data as QueryResult<CheckinWithData[]>;
+    return data;
   }
 
   /**
@@ -208,12 +211,14 @@ export default class SupabaseClient {
    * @return CheckinWithData[]
    */
   public async getBreweryCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
-    const { data, error, count } = await this.checkinsWithDataQuery(page).eq('brewery', id);
+    const { data, error, count } = await this.checkinsWithDataQuery(page)
+      .eq('brewery', id)
+      .returns<CheckinWithData[]>();
 
     if (error) throw error;
 
     return {
-      checkins: data as QueryResult<CheckinWithData[]>,
+      checkins: data,
       count,
     };
   }
@@ -226,12 +231,14 @@ export default class SupabaseClient {
    * @return CheckinWithData[]
    */
   public async getBeerCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
-    const { data, error, count } = await this.checkinsWithDataQuery(page).eq('beer', id);
+    const { data, error, count } = await this.checkinsWithDataQuery(page)
+      .eq('beer', id)
+      .returns<CheckinWithData[]>();
 
     if (error) throw error;
 
     return {
-      checkins: data as QueryResult<CheckinWithData[]>,
+      checkins: data,
       count,
     };
   }
@@ -244,7 +251,10 @@ export default class SupabaseClient {
    * @return Beer
    */
   public async getBeer(slug: string): Promise<Beer> {
-    const { data, error, status } = await this.beersWithDataQuery().eq('slug', slug).single();
+    const { data, error, status } = await this.beersWithDataQuery()
+      .eq('slug', slug)
+      .returns<Beer>()
+      .single();
 
     if (error) {
       if (status === 406) {
@@ -254,7 +264,7 @@ export default class SupabaseClient {
       throw error;
     }
 
-    return data as QueryResult<Beer>;
+    return data;
   }
 
   /**
@@ -262,9 +272,9 @@ export default class SupabaseClient {
    *
    * @param {string} query Search query.
    *
-   * @return
+   * @return SearchResult[]
    */
-  public async search(query: string) {
+  public async search(query: string): Promise<SearchResult[]> {
     const { data, error } = await this.supabase.rpc('search_beers_and_breweries', {
       query_text: query,
     });
@@ -274,13 +284,71 @@ export default class SupabaseClient {
     return data;
   }
 
+  /**
+   * Gets filtered checkins.
+   *
+   * @param {object} filters Filters to apply.
+   *
+   * @return CheckinWithData[]
+   */
+  public async getFilteredCheckins(
+    filters: { style?: string; state?: string } = {},
+    page = 1,
+  ): Promise<PaginatedCheckins> {
+    if (!filters.style && !filters.state) {
+      return {
+        checkins: [],
+        count: 0,
+      };
+    }
+
+    const rangeStart = (page - 1) * 3;
+    const rangeEnd = rangeStart + 3 - 1;
+
+    let query = this.supabase.from('checkins').select(
+      `
+          id,
+          created_at,
+          comment,
+          rating,
+          beer!inner(name, slug, style, hads, average, abv),
+          brewery!inner(name, state, slug),
+          venue(name)
+        `,
+      {
+        count: 'exact',
+      },
+    );
+
+    if (filters.style) {
+      const mappedStyles = styles[filters.style];
+      if (mappedStyles) {
+        const orClaue = mappedStyles.map(s => `style.eq.${s}`).join(',');
+        query = query.or(orClaue, { referencedTable: 'beer' });
+      }
+    }
+    if (filters.state) query = query.eq('brewery.state', filters.state.toUpperCase());
+
+    const { data, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(rangeStart, rangeEnd)
+      .returns<CheckinWithData[]>();
+
+    if (error) throw error;
+
+    return {
+      checkins: data,
+      count,
+    };
+  }
+
   // ==============================
   // Helpers
 
   /**
    * Kick off a checkin query, complete with beer, brewery, and venue data.
    *
-   * @return QueryResult
+   * @return PostgresFilterBuilder
    */
   private checkinsWithDataQuery(page = 1) {
     const rangeStart = (page - 1) * CHECKINS_PER_PAGE;
@@ -309,7 +377,7 @@ export default class SupabaseClient {
   /**
    * Kick off a beer query, complete with brewery data.
    *
-   * @return QueryResult
+   * @return PostgresFilterBuilder
    */
   private beersWithDataQuery() {
     return this.supabase.from('beers').select(`

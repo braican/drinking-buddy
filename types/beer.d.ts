@@ -18,4 +18,8 @@ export interface BeerWithData extends Beer {
     name: string;
     slug: string;
   };
+  checkins?: {
+    date: Date;
+    rating: number;
+  }[];
 }

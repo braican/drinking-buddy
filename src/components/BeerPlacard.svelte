@@ -1,9 +1,9 @@
 <script lang="ts">
   import { formatDate } from '@utils';
-  import type { Beer } from '@types';
+  import type { BeerWithData } from '@types';
 
   export let showBrewery = true;
-  export let beer: Beer;
+  export let beer: BeerWithData;
   export let sublist = false;
 </script>
 
@@ -12,7 +12,7 @@
     <p class="beer-name">
       <a class="link" href={`/beer/${beer.slug}`}>
         {#if showBrewery}
-          <span class="brewery-name">{beer.brewery}</span>
+          <span class="brewery-name">{beer.brewery.name}</span>
         {/if}
         <span class="beer-name"><strong>{beer.name}</strong></span>
       </a>

@@ -1,3 +1,6 @@
+import type { Beer } from './beer';
+import type { Brewery } from './brewery';
+
 // Checkin schema for database.
 export interface Checkin {
   id: number;
@@ -11,14 +14,8 @@ export interface Checkin {
 
 // Type for the return of a checkin query.
 export interface CheckinWithData extends Checkin {
-  beer: {
-    name: string;
-    slug: string;
-    style: string;
-  };
-  brewery: {
-    name: string;
-  };
+  beer: Partial<Beer>;
+  brewery: Partial<Brewery>;
   venue?: {
     name: string;
   };
