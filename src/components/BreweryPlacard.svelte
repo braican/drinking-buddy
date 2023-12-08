@@ -24,8 +24,8 @@
     {#if filtered}
       <button class="expand-beers" on:click={() => (expandedBeers = !expandedBeers)}>
         <span class="expand-beers-icon" class:flipped={expandedBeers}><DownArrowIcon /></span>
-        {brewery.beers.length?.toLocaleString()} Beer{brewery.beers.length > 1 ? 's' : ''}, {brewery.beerCount?.toLocaleString()}
-        Checkin{brewery.beerCount > 1 ? 's' : ''}
+        {brewery.beers.length?.toLocaleString()} beer{brewery.beers.length > 1 ? 's' : ''},
+        {brewery.hads?.toLocaleString()} checkin{brewery.hads > 1 ? 's' : ''}
       </button>
     {:else}
       Total beers: {brewery.hads?.toLocaleString()}

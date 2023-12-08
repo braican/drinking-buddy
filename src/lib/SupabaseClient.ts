@@ -311,8 +311,8 @@ export default class SupabaseClient {
           created_at,
           comment,
           rating,
-          beer!inner(name, slug, style, hads, average, abv),
-          brewery!inner(name, state, slug),
+          beer!inner(id, name, slug, style, hads, average, abv),
+          brewery!inner(id, name, state, slug),
           venue(name)
         `,
       {

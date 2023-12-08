@@ -23,55 +23,52 @@ export async function GET({ setHeaders, url }) {
     }
 
     const ratedCheckins = checkins.filter(ch => ch.rating);
-    const uniqueBeers: { [id: number]: Partial<BeerWithData> } = {};
-    const breweryMap: { [slug: string]: Partial<Brewery> } = {};
+    const beerMap: { [id: number]: Partial<BeerWithData> } = {};
+    const breweryMap: { [slug: string]: Partial<Brewery> & { rated_hads: number } } = {};
 
-    ratedCheckins.forEach(ch => {
-      const beer = ch.beer;
+    checkins.forEach(ch => {
+      const { beer, brewery } = ch;
+
       const checkinData: BeerWithData['checkins'][0] = {
         date: ch.created_at,
         rating: ch.rating,
       };
 
-      if (!uniqueBeers[ch.id]) {
-        uniqueBeers[ch.id] = {
+      // Beer map.
+      if (!beerMap[beer.id]) {
+        beerMap[beer.id] = {
           ...beer,
-          brewery: {
-            name: ch.brewery.name,
-            slug: ch.brewery.slug,
-          },
+          brewery,
           last_had: ch.created_at,
           checkins: [checkinData],
         };
       } else {
-        uniqueBeers[ch.id] = {
-          checkins: [...uniqueBeers[ch.id].checkins, checkinData],
-          ...uniqueBeers[ch.id],
-        };
+        beerMap[beer.id].checkins = [...beerMap[beer.id].checkins, checkinData].sort((a, b) =>
+          a.date > b.date ? -1 : 1,
+        );
       }
-    });
 
-    ratedCheckins.forEach(ch => {
-      const brewery = ch.brewery;
-
-      if (!breweryMap[brewery.slug]) {
-        breweryMap[brewery.slug] = {
+      // Brewery map
+      if (!breweryMap[brewery.id]) {
+        breweryMap[brewery.id] = {
           ...brewery,
           hads: 1,
+          rated_hads: ch.rating ? 1 : 0,
           total_rating: ch.rating,
         };
       } else {
-        breweryMap[brewery.slug].hads += 1;
-        breweryMap[brewery.slug].total_rating += ch.rating;
+        breweryMap[brewery.id].hads += 1;
+        breweryMap[brewery.id].rated_hads += ch.rating ? 1 : 0;
+        breweryMap[brewery.id].total_rating += ch.rating;
       }
     });
 
-    const beers = Object.values(uniqueBeers).sort((a, b) => b.average - a.average);
+    const beers = Object.values(beerMap).sort((a, b) => b.average - a.average);
     const breweries = Object.values(breweryMap)
       .map(brewery => ({
         ...brewery,
-        beers: beers.filter(beer => beer.brewery.slug === brewery.slug),
-        average: parseFloat((brewery.total_rating / brewery.hads).toFixed(2)),
+        beers: beers.filter(beer => beer.brewery.id === brewery.id),
+        average: parseFloat((brewery.total_rating / brewery.rated_hads).toFixed(2)),
       }))
       .sort((a, b) => b.average - a.average);
 

@@ -1,3 +1,5 @@
+import type { BeerWithData } from './beer';
+
 // Checkin schema for database.
 export interface Brewery {
   id: number;
@@ -13,4 +15,5 @@ export interface Brewery {
   hads?: number;
   total_rating?: number;
   average?: number;
+  beers?: BeerWithData[];
 }

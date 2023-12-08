@@ -1,3 +1,5 @@
+import type { Brewery } from './brewery';
+
 // Beer schema for database.
 export interface Beer {
   id: number;
@@ -14,10 +16,7 @@ export interface Beer {
 }
 
 export interface BeerWithData extends Beer {
-  brewery: {
-    name: string;
-    slug: string;
-  };
+  brewery: Partial<Brewery>;
   checkins?: {
     date: Date;
     rating: number;
