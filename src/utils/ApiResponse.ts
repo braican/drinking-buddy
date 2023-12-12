@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import type { ApiResponse as ApiResponseObject } from '@app';
+import type { ApiResponse as ApiResponseObject } from '@types';
 
 export default class ApiResponse {
   static success(data) {

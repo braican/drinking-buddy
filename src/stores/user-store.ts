@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { User } from '../../db/models/index.js';
+import type { User } from '@types';
 
 const userStore = writable<User>();
 

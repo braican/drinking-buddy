@@ -1,78 +1,42 @@
 <script lang="ts">
-  import { CheckinPlacard } from '@components';
+  import { CheckinList } from '@components';
   export let data;
-
-  let checkinsLoaded = false;
-  let rating = null;
-  let hads = 0;
-
-  data.streamed.checkinData
-    .then(response => {
-      const ch = response.checkins;
-      const ratedCheckins = ch.filter(ch => ch.rating !== 0);
-      checkinsLoaded = true;
-
-      hads = ch.length;
-
-      rating = (
-        ratedCheckins.reduce((acc, curr) => acc + curr.rating, 0) / ratedCheckins.length
-      ).toFixed(2);
-    })
-    .catch(e => console.error(e));
 </script>
 
 <header class="padding-bottom-lg">
-  {#await data.streamed.beerData}
-    <h1 class="loading-name">{data.slug}</h1>
-  {:then beerData}
-    <div class="beer-header">
-      <p class="brewery-name">
-        <a class="link" href={`/brewery/${beerData.brewery.slug}`}
-          >&larr; {beerData.brewery.name}</a>
-      </p>
+  <div class="beer-header">
+    <p class="brewery-name">
+      <a class="link" href={`/brewery/${data.beer.brewery.slug}`}
+        >&larr; {data.beer.brewery.name}</a>
+    </p>
 
-      <div>
-        <h1>{beerData.beer.name}</h1>
-        <p class="fs-sm color-opacity-50 margin-top-sm">{beerData.beer.abv}% ABV</p>
-        <p class="fs-sm color-opacity-50">{beerData.beer.style}</p>
-
-        {#if checkinsLoaded}
-          <p class="margin-top-sm">Rating: <strong>{rating}</strong></p>
-          <p>Hads: <strong>{hads}</strong></p>
-        {/if}
-      </div>
-
-      {#if beerData.beer.label}
-        <img
-          src={beerData.beer.label.replace('untappd.akamaized.net', 'assets.untappd.com')}
-          alt={beerData.beer.name} />
-      {/if}
+    <div>
+      <h1>{data.beer.name}</h1>
+      <p class="fs-sm color-opacity-50 margin-top-sm">{data.beer.abv}% ABV</p>
+      <p class="fs-sm color-opacity-50">{data.beer.style}</p>
+      <p class="margin-top-sm">Rating: <strong>{data.beer.average.toFixed(2)}</strong></p>
+      <p>Hads: <strong>{data.beer.hads}</strong></p>
     </div>
-  {:catch}
-    <h1>No beer here.</h1>
-    <p class="margin-top-sm">The requested beer doesn't exist, or you've never had it.</p>
-  {/await}
+
+    {#if data.beer.label}
+      <img
+        src={data.beer.label.replace('untappd.akamaized.net', 'assets.untappd.com')}
+        alt={data.beer.name} />
+    {/if}
+  </div>
 </header>
 
-{#await data.streamed.beerData then}
-  {#await data.streamed.checkinData}
-    <p class="margin-top-lg">Loading...</p>
-  {:then checkinData}
-    <section class="list-section">
-      <h2 class="list-header">Checkins</h2>
-
-      {#if checkinData.checkins.length > 0}
-        <ul class="margin-top-lg">
-          {#each checkinData.checkins as checkin}
-            <li><CheckinPlacard {checkin} light /></li>
-          {/each}
-        </ul>
-      {:else}
-        <p class="margin-top-lg">No checkins</p>
-      {/if}
-    </section>
+<section class="list-section">
+  {#await data.streamed.checkins}
+    <p>Loading</p>
+  {:then paginatedCheckins}
+    {#if paginatedCheckins.checkins.length > 0}
+      <CheckinList checkinData={paginatedCheckins} beerId={data.beer.id} />
+    {:else}
+      <p class="margin-top-lg">No checkins</p>
+    {/if}
   {/await}
-{/await}
+</section>
 
 <style lang="scss">
   .beer-header {

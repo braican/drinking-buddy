@@ -1,4 +1,11 @@
-export const formatDate = (date: string): string => {
+/**
+ * Format the date consistently.
+ *
+ * @param {string|Date} date Date to format.
+ *
+ * @return string
+ */
+export const formatDate = (date: string | Date): string => {
   if (date === undefined) {
     return '';
   }
@@ -6,7 +13,7 @@ export const formatDate = (date: string): string => {
   try {
     const dateObj = new Date(date);
     const formattedDate = dateObj.toLocaleDateString('en-US', {
-      month: 'numeric',
+      month: 'long',
       day: 'numeric',
       year: 'numeric',
     });
