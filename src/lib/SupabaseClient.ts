@@ -128,9 +128,10 @@ export default class SupabaseClient {
     const { data, error } = await this.supabase
       .from('breweries')
       .select('*')
+      .gte('hads', 5)
       .order('average', { ascending: false })
       .order('hads', { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (error) throw error;
 
@@ -148,7 +149,7 @@ export default class SupabaseClient {
       .select('*')
       .order('hads', { ascending: false })
       .order('average', { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (error) throw error;
 
