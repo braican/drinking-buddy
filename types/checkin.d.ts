@@ -1,5 +1,6 @@
 import type { Beer } from './beer';
 import type { Brewery } from './brewery';
+import type { Venue } from './venue';
 
 // Checkin schema for database.
 export interface Checkin {
@@ -16,9 +17,7 @@ export interface Checkin {
 export interface CheckinWithData extends Checkin {
   beer: Partial<Beer>;
   brewery: Partial<Brewery>;
-  venue?: {
-    name: string;
-  };
+  venue?: Partial<Venue>;
 }
 
 export interface PaginatedCheckins {

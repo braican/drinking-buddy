@@ -1,9 +1,9 @@
 <script lang="ts">
   import { formatDate } from '@utils';
-  import type { BeerWithData } from '@types';
+  import type { BeerWithData, Beer } from '@types';
 
   export let showBrewery = true;
-  export let beer: BeerWithData;
+  export let beer: BeerWithData | Beer;
   export let sublist = false;
 </script>
 
@@ -11,7 +11,7 @@
   <div class="beer-stats">
     <p class="beer-name">
       <a class="link" href={`/beer/${beer.slug}`}>
-        {#if showBrewery}
+        {#if showBrewery && typeof beer.brewery === 'object'}
           <span class="brewery-name">{beer.brewery.name}</span>
         {/if}
         <span class="beer-name"><strong>{beer.name}</strong></span>
@@ -23,7 +23,7 @@
   </div>
 
   <div class="text-align-right">
-    <p class="beer-rating fs-lg ff-mono">{beer.average}</p>
+    <p class="beer-rating fs-lg ff-mono">{beer.average.toFixed(2)}</p>
     <p class="margin-top-xs beer-count fs-sm">
       {beer.hads} had{beer.hads > 1 ? 's' : ''}
     </p>
