@@ -1,8 +1,8 @@
 <script lang="ts">
   import { BeerPlacard } from '@components';
-  import type { BeerWithData } from '@types';
+  import type { BeerWithData, Beer } from '@types';
 
-  export let beers: BeerWithData[];
+  export let beers: BeerWithData[] | Beer[];
   export let showBreweries = true;
   let sort = 'Alphabetical';
 

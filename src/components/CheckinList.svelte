@@ -6,6 +6,7 @@
   export let checkinData: PaginatedCheckins;
   export let breweryId: number = null;
   export let beerId: number = null;
+  export let venueId: number = null;
 
   let { checkins } = checkinData;
   const totalPages = Math.ceil(checkinData.count / checkins.length);
@@ -23,6 +24,8 @@
       endpoint = `brewery/${breweryId}/checkins?page=${currentPage + 1}`;
     } else if (beerId) {
       endpoint = `beer/${beerId}/checkins?page=${currentPage + 1}`;
+    } else if (venueId) {
+      endpoint = `venue/${venueId}/checkins?page=${currentPage + 1}`;
     }
 
     const newCheckins = await req.get<PaginatedCheckins>(endpoint);
@@ -36,11 +39,11 @@
   };
 </script>
 
-<h2 class="list-header">{checkinData.count} Checkins</h2>
+<h2 class="list-header">{checkinData.count} Checkin{checkinData.count !== 1 ? 's' : ''}</h2>
 
 <ul class="margin-top-lg">
   {#each checkins as checkin}
-    <li><CheckinPlacard {checkin} /></li>
+    <li><CheckinPlacard {checkin} showVenue={venueId === null} /></li>
   {/each}
 </ul>
 

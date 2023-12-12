@@ -163,7 +163,7 @@ export default class SupabaseClient {
    */
   public async getLatestCheckins(): Promise<CheckinWithData[]> {
     const { data, error } = await this.checkinsWithDataQuery()
-      .limit(10)
+      .limit(20)
       .returns<CheckinWithData[]>();
 
     if (error) throw error;
@@ -217,7 +217,11 @@ export default class SupabaseClient {
    * @return Beer[]
    */
   public async getBreweryBeers(id: string): Promise<Beer[]> {
-    const { data, error } = await this.supabase.from('beers').select('*').eq('brewery', id);
+    const { data, error } = await this.supabase
+      .from('beers')
+      .select('*')
+      .eq('brewery', id)
+      .returns<Beer[]>();
 
     if (error) throw error;
 
@@ -254,6 +258,26 @@ export default class SupabaseClient {
   public async getBeerCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
     const { data, error, count } = await this.checkinsWithDataQuery(page)
       .eq('beer', id)
+      .returns<CheckinWithData[]>();
+
+    if (error) throw error;
+
+    return {
+      checkins: data,
+      count,
+    };
+  }
+
+  /**
+   * Gets all checkins for a venue.
+   *
+   * @param {string} id Venue ID.
+   *
+   * @return CheckinWithData[]
+   */
+  public async getVenueCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
+    const { data, error, count } = await this.checkinsWithDataQuery(page)
+      .eq('venue', id)
       .returns<CheckinWithData[]>();
 
     if (error) throw error;
@@ -411,11 +435,28 @@ export default class SupabaseClient {
   }
 
   /**
+   * Gets a single venue by slug.
+   *
+   * @return Venue|null
+   */
+  public async getVenue(slug: string): Promise<Venue | null> {
+    const { data, error } = await this.supabase
+      .from('venues')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  /**
    * Gets a venue by ID.
    *
    * @param {number[]} ids Venue IDs.
    *
-   * @return Venue|null
+   * @return Venue[]
    */
   public async getVenuesById(ids: number[]): Promise<Venue[]> {
     const { data, error } = await this.supabase
@@ -451,7 +492,7 @@ export default class SupabaseClient {
           rating,
           beer(name, slug, style),
           brewery(name),
-          venue(name)
+          venue(name, slug)
         `,
         {
           count: 'exact',

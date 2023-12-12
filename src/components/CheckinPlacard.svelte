@@ -5,6 +5,7 @@
 
   export let checkin: CheckinWithData;
   export let light: boolean = false;
+  export let showVenue: boolean = true;
 
   $: ratingClasses = new Array(5).fill('').map((v, i) => {
     const diff = checkin.rating - i;
@@ -41,8 +42,10 @@
     <p>{checkin.comment}</p>
   {/if}
 
-  {#if checkin.venue}
-    <p class="fs-sm venue"><BuildingIcon />{checkin.venue.name}</p>
+  {#if checkin.venue && showVenue}
+    <p class="fs-sm venue">
+      <BuildingIcon /><a href={`/venue/${checkin.venue.slug}`}>{checkin.venue.name}</a>
+    </p>
   {/if}
 
   <div class="rating margin-top-sm">
