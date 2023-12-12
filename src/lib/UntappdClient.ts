@@ -6,7 +6,7 @@ import type {
   UntappdUser,
   UntappdUserInfoResponse,
   UntappdUserCheckinsResponse,
-  Checkin,
+  UntappdCheckinData,
 } from '@types';
 
 export default class UntappdClient {
@@ -48,7 +48,7 @@ export default class UntappdClient {
     return data.response.user;
   }
 
-  async getCheckins(lastDbCheckin: number = null): Promise<Checkin[]> {
+  async getCheckins(lastDbCheckin: number = null): Promise<UntappdCheckinData[]> {
     const newCheckins = [];
     let checkinPointer = null;
 
@@ -77,7 +77,7 @@ export default class UntappdClient {
         }
 
         checkinPointer = ch.checkin_id;
-        newCheckins.push(Mapper.checkin(ch));
+        newCheckins.push(ch);
       }
     }
 

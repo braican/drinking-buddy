@@ -12,7 +12,7 @@ export default class Mapper {
       rating: ch.rating_score,
       beer: ch.beer.bid,
       brewery: ch.brewery.brewery_id,
-      venue: Array.isArray(ch.venue) ? null : ch.venue.venue_id,
+      venue: Array.isArray(ch.venue) ? null : ch.venue?.venue_id,
     };
   }
 
@@ -29,6 +29,9 @@ export default class Mapper {
   }
 
   static brewery(ch: UntappdCheckinData): Brewery {
+    if (!ch.brewery.location) {
+      console.log(ch);
+    }
     return {
       id: ch.brewery.brewery_id,
       name: ch.brewery.brewery_name,
@@ -44,7 +47,8 @@ export default class Mapper {
   }
 
   static venue(ch: UntappdCheckinData): Venue | null {
-    if (Array.isArray(ch.venue)) return null;
+    if (!ch.venue || Array.isArray(ch.venue)) return null;
+
     return {
       id: ch.venue.venue_id,
       name: ch.venue.venue_name,

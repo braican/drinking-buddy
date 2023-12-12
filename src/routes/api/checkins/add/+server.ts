@@ -1,11 +1,11 @@
 import { SupabaseClient } from '@lib';
 import { Mapper, ApiResponse, incrementRecord } from '@utils';
-import type { Beer, Brewery, Venue } from '@types';
+import type { Beer, Brewery, UntappdCheckinData, Venue } from '@types';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
   try {
-    const { newCheckins } = await request.json();
+    const { newCheckins }: { newCheckins: UntappdCheckinData[] } = await request.json();
     const supabase = new SupabaseClient();
 
     if (!newCheckins || !newCheckins.length) {

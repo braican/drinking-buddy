@@ -3,7 +3,7 @@
   import { RefreshIcon } from '@icons';
   import { ApiRequest, formatDate } from '@utils';
   import { userStore as user, checkinStore, breweryStore } from '@stores';
-  import type { UntappdUser, Checkin, User } from '@types';
+  import type { UntappdUser, UntappdCheckinData, User } from '@types';
 
   let isRefreshing = false;
   let refreshButtonText = 'Refresh';
@@ -44,9 +44,9 @@
       }
 
       refreshStatus = `Fetching ${untappdUser.stats?.total_checkins - dbCheckinCount} checkins...`;
-      const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
-        lastDbCheckin,
-      });
+      const { newCheckins } = await req.post<{
+        newCheckins: UntappdCheckinData[];
+      }>('checkins/fetch', { lastDbCheckin });
 
       const [{ totalAdded }, { user: newUser }] = await Promise.all([
         req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),

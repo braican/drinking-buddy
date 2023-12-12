@@ -10,6 +10,7 @@ import type {
   PaginatedCheckins,
   Brewery,
   Beer,
+  BeerWithData,
   Venue,
   SearchResult,
 } from '@types';
@@ -269,10 +270,10 @@ export default class SupabaseClient {
    *
    * @return Beer
    */
-  public async getBeer(slug: string): Promise<Beer | null> {
+  public async getBeer(slug: string): Promise<BeerWithData | null> {
     const { data, error } = await this.beersWithDataQuery()
       .eq('slug', slug)
-      .returns<Beer>()
+      .returns<BeerWithData>()
       .maybeSingle();
 
     if (error) throw error;
@@ -288,7 +289,11 @@ export default class SupabaseClient {
    * @return Beer[]
    */
   public async getBeersById(ids: number[]): Promise<Beer[]> {
-    const { data, error } = await this.beersWithDataQuery().in('id', ids).returns<Beer[]>();
+    const { data, error } = await this.supabase
+      .from('beers')
+      .select('*')
+      .in('id', ids)
+      .returns<Beer[]>();
 
     if (error) throw error;
 
@@ -472,7 +477,7 @@ export default class SupabaseClient {
       hads,
       total_rating,
       average,
-      brewery(name, slug)
+      brewery(name, slug, id)
     `);
   }
 }
