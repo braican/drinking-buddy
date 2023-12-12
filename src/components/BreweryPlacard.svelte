@@ -80,7 +80,7 @@
     width: 18px;
     display: flex;
 
-    svg {
+    :global(svg) {
       display: block;
     }
 
