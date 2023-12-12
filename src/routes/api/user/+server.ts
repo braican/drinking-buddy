@@ -14,16 +14,15 @@ export async function GET({ setHeaders }) {
 }
 
 /** @type {import('./$types').RequestHandler} */
-export async function POST({ setHeaders, request }) {
-  // try {
-  // const { untappdUser } = await request.json();
-  // const tigris = await TigrisClient.create();
-  //   const newDbUser = Mapper.user(untappdUser);
-  //   newDbUser.lastUpdated = new Date();
-  //   await tigris.addUser(newDbUser);
-  //   return ApiResponse.success({ user: newDbUser });
-  // } catch (error) {
-  //   console.error('[Error in POST api/user]', error);
-  //   return ApiResponse.error(error.message);
-  // }
+export async function POST({ request }) {
+  try {
+    const { untappdUser } = await request.json();
+    const supabase = new SupabaseClient();
+    const newDbUser = Mapper.user(untappdUser);
+    await supabase.addUser(newDbUser);
+    return ApiResponse.success({ user: newDbUser });
+  } catch (error) {
+    console.error('[Error in POST api/user]', error);
+    return ApiResponse.error(error.message);
+  }
 }

@@ -40,14 +40,18 @@ export default class SupabaseClient {
    *
    * @param {User} user User data.
    *
-   * @return void
+   * @return User
    */
-  public async addUser(user: User) {
-    const { error } = await this.supabase
+  public async addUser(user: User): Promise<User> {
+    const { data, error } = await this.supabase
       .from('users')
-      .upsert({ ...user, last_updated: new Date() });
+      .upsert({ ...user, last_updated: new Date() })
+      .select()
+      .returns<User>();
 
     if (error) throw error;
+
+    return data;
   }
 
   /**
@@ -124,6 +128,7 @@ export default class SupabaseClient {
       .from('breweries')
       .select('*')
       .order('average', { ascending: false })
+      .order('hads', { ascending: false })
       .limit(10);
 
     if (error) throw error;
@@ -141,6 +146,7 @@ export default class SupabaseClient {
       .from('breweries')
       .select('*')
       .order('hads', { ascending: false })
+      .order('average', { ascending: false })
       .limit(10);
 
     if (error) throw error;
@@ -176,6 +182,25 @@ export default class SupabaseClient {
       .select('*')
       .eq('slug', slug)
       .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  /**
+   * Gets a brewery by ID.
+   *
+   * @param {number[]} ids Brewery IDs.
+   *
+   * @return Brewery
+   */
+  public async getBreweriesById(ids: number[]): Promise<Brewery[]> {
+    const { data, error } = await this.supabase
+      .from('breweries')
+      .select('*')
+      .in('id', ids)
+      .returns<Brewery[]>();
 
     if (error) throw error;
 
@@ -249,6 +274,21 @@ export default class SupabaseClient {
       .eq('slug', slug)
       .returns<Beer>()
       .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  /**
+   * Gets an individual beer by ID.
+   *
+   * @param {number[]} ids Beer IDs.
+   *
+   * @return Beer[]
+   */
+  public async getBeersById(ids: number[]): Promise<Beer[]> {
+    const { data, error } = await this.beersWithDataQuery().in('id', ids).returns<Beer[]>();
 
     if (error) throw error;
 
@@ -363,6 +403,25 @@ export default class SupabaseClient {
     return count;
   }
 
+  /**
+   * Gets a venue by ID.
+   *
+   * @param {number[]} ids Venue IDs.
+   *
+   * @return Venue|null
+   */
+  public async getVenuesById(ids: number[]): Promise<Venue[]> {
+    const { data, error } = await this.supabase
+      .from('venues')
+      .select('*')
+      .in('id', ids)
+      .returns<Venue[]>();
+
+    if (error) throw error;
+
+    return data;
+  }
+
   // ==============================
   // Helpers
 
@@ -410,6 +469,7 @@ export default class SupabaseClient {
       abv,
       last_had,
       hads,
+      total_rating,
       average,
       brewery(name, slug)
     `);
