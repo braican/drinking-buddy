@@ -10,13 +10,13 @@ export default {
     try {
       const req = new ApiRequest();
 
-      const [best, popular] = await Promise.all([
-        req.get<{ breweries: Brewery[] }>('breweries/best'),
-        req.get<{ breweries: Brewery[] }>('breweries/popular'),
-      ]);
+      const stats = await req.get<{
+        bestBreweries: Brewery[];
+        popularBreweries: Brewery[];
+      }>('stats');
 
-      bestBreweries.set(best.breweries);
-      popularBreweries.set(popular.breweries);
+      bestBreweries.set(stats.bestBreweries);
+      popularBreweries.set(stats.popularBreweries);
     } catch (error) {
       //
     }
