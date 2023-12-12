@@ -13,7 +13,7 @@ import { UntappdClient, SupabaseClient } from '../src/lib/index.js';
 import { Mapper, incrementRecord } from '../src/utils/index.js';
 import type { Brewery, Beer, Venue } from '../types/index.js';
 
-const DATA_FILE_PATH = './data/checkins-trunc.json';
+const DATA_FILE_PATH = './data/checkins-backup-2023.05.31.json';
 
 dotenv.config();
 

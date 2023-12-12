@@ -3,13 +3,21 @@
   import { RefreshIcon } from '@icons';
   import { ApiRequest, formatDate } from '@utils';
   import { userStore as user, checkinStore, breweryStore } from '@stores';
-  import type { UntappdUser, Checkin } from '@types';
-
-  import t from '../../data/checkins-trunc-refresh.json';
+  import type { UntappdUser, Checkin, User } from '@types';
 
   let isRefreshing = false;
   let refreshButtonText = 'Refresh';
   let refreshStatus = '';
+
+  const resetButton = (statusText = '') => {
+    if (statusText) {
+      refreshStatus = statusText;
+    }
+
+    setTimeout(() => (refreshStatus = ''), 2000);
+    refreshButtonText = 'Refresh';
+    isRefreshing = false;
+  };
 
   const refresh = async () => {
     isRefreshing = true;
@@ -25,43 +33,35 @@
         lastDbCheckin: number;
       }>('checkins/pre-fetch');
 
-      console.log(dbCheckinCount, lastDbCheckin);
+      if (!untappdUser) {
+        throw new Error('There was a problem fetching the user data.');
+      }
 
-      // console.log('Realtime user checkins (from Untappd):', untappdUser?.stats?.total_checkins);
-      console.log('Realtime user checkins (from Untappd):', 53);
+      console.log('Realtime user checkins (from Untappd):', untappdUser.stats?.total_checkins);
       console.log('Checkins in database:', dbCheckinCount);
-      // if (untappdUser.stats.total_checkins === dbCheckinCount) {
-      //   refreshStatus = 'All checkins are accounted for.';
-      //   refreshButtonText = 'Refresh';
-      //   isRefreshing = false;
-      //   setTimeout(() => (refreshStatus = ''), 2000);
-      //   return;
-      // }
-      // refreshStatus = `Fetching ${untappdUser.stats.total_checkins - dbCheckinCount} checkins...`;
-      refreshStatus = `Fetching ${53 - dbCheckinCount} checkins...`;
+      if (untappdUser.stats?.total_checkins === dbCheckinCount) {
+        return resetButton('All checkins are accounted for.');
+      }
 
-      console.log(t);
+      refreshStatus = `Fetching ${untappdUser.stats?.total_checkins - dbCheckinCount} checkins...`;
+      const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
+        lastDbCheckin,
+      });
 
-      //   const { newCheckins } = await req.post<{ newCheckins: Checkin[] }>('checkins/fetch', {
-      //     lastDbCheckin,
-      //   });
-      // const newCheckins =
-      //   const [{ totalAdded }, { user: newUser }] = await Promise.all([
-      //     req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
-      //     req.post<{ user: User }>('user', { untappdUser }),
-      //   ]);
-      //   user.set(newUser);
-      //   await checkinStore.refresh();
-      //   await breweryStore.refresh();
-      //   refreshStatus = `Added ${totalAdded} checkins to database.`;
+      const [{ totalAdded }, { user: newUser }] = await Promise.all([
+        req.post<{ totalAdded: number }>('checkins/add', { newCheckins }),
+        req.post<{ user: User }>('user', { untappdUser }),
+      ]);
+
+      user.set(newUser);
+      await checkinStore.refresh();
+      await breweryStore.refresh();
+
+      resetButton(`Added ${totalAdded} checkins to database.`);
     } catch (error) {
       console.error('There was a problem fetching the data.', error);
-      refreshStatus = `There was a problem fetching the data.`;
+      resetButton('There was a problem fetching the data.');
     }
-
-    setTimeout(() => (refreshStatus = ''), 2000);
-    refreshButtonText = 'Refresh';
-    isRefreshing = false;
   };
 </script>
 

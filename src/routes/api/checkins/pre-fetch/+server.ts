@@ -10,24 +10,14 @@ export async function GET() {
 
     untappd.setToken(UNTAPPD_ACCESS_TOKEN);
 
-    const [
-      // user,
-      lastDbCheckin,
-      dbCheckinCount,
-    ] = await Promise.all([
-      // untappd.getUser(),
+    const [user, lastDbCheckin, dbCheckinCount] = await Promise.all([
+      untappd.getUser(),
       supabase.getLastCheckin(),
       supabase.getCheckinCount(),
     ]);
 
-    // return ApiResponse.success({
-    //   untappdUser: user,
-    //   dbCheckins: dbCheckinCount,
-    //   lastDbCheckin,
-    // });
     return ApiResponse.success({
-      // untappdUser: user,
-      // dbCheckins: dbCheckinCount,
+      untappdUser: user,
       lastDbCheckin,
       dbCheckinCount,
     });
