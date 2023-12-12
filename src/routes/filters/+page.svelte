@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { states, styleOptGroups } from '@utils/constants';
   import { ApiRequest } from '@utils';
   import { Tabs, BeerList, CheckinPlacard, BreweryPlacard } from '@components';
@@ -16,10 +19,24 @@
   let filteredAverage = null;
 
   let filtered = false;
-  let loading = false;
+  let loading = true;
+
+  onMount(async () => {
+    const queryFilters = $page.url.searchParams;
+
+    style = queryFilters.get('style') || '';
+    state = queryFilters.get('state') || '';
+
+    if (style || state) {
+      await filter();
+    }
+
+    loading = false;
+  });
 
   const filter = async () => {
     if (style === filteredStyle && state === filteredState) return;
+
     const req = new ApiRequest();
     loading = true;
 
@@ -34,6 +51,10 @@
         ...(state && { state }),
       })}`,
     );
+
+    $page.url.searchParams.set('style', style);
+    $page.url.searchParams.set('state', state);
+    goto(`?${$page.url.searchParams.toString()}`);
 
     filteredStyle = style;
     filteredState = state;
@@ -125,7 +146,7 @@
       {:else if view === 'Beers'}
         <BeerList {beers} />
       {:else if view === 'Breweries'}
-        <h2 class="list-header">{breweries.length} breweries</h2>
+        <h2 class="list-header">{breweries.length} Brewer{breweries.length === 1 ? 'y' : 'ies'}</h2>
         <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
 
         <ul class="margin-top-lg">
