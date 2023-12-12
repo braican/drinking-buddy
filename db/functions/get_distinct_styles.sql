@@ -1,0 +1,9 @@
+CREATE OR REPLACE FUNCTION get_distinct_styles()
+RETURNS TABLE (style TEXT)
+AS $$
+BEGIN
+ RETURN QUERY (
+  SELECT DISTINCT style FROM beers ORDER BY style;
+ );
+END;
+$$ LANGUAGE plpgsql;
