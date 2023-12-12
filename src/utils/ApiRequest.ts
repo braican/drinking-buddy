@@ -21,7 +21,7 @@ export default class ApiRequest {
           }
 
           if (data && data.status === 404) {
-            return resolve(null);
+            return resolve(data);
           }
 
           throw new Error(data.message);

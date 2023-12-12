@@ -1,44 +1,74 @@
-import { TigrisClient } from '@lib';
-import { ApiResponse, checkinsToBeers } from '@utils';
-import type { BreweryRecord } from '@app';
-
-interface BreweryMap {
-  [key: string]: BreweryRecord;
-}
+import { SupabaseClient } from '@lib';
+import { ApiResponse } from '@utils';
+import type { CheckinWithData, Brewery, BeerWithData } from '@types';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
   try {
     const style = url.searchParams.get('style');
     const state = url.searchParams.get('state');
-    const tigris = await TigrisClient.create();
 
-    const checkins = await tigris.getFilteredCheckins(style, state);
+    const supabase = new SupabaseClient();
+    const checkins: CheckinWithData[] = [];
+    let page = 1;
+
+    const initialFetch = await supabase.getFilteredCheckins({ style, state });
+    checkins.push(...initialFetch.checkins);
+
+    // Keep fetching checkins in this filter until we have the right number.
+    while (checkins.length < initialFetch.count) {
+      page += 1;
+      const nextPageFetch = await supabase.getFilteredCheckins({ style, state }, page);
+      checkins.push(...nextPageFetch.checkins);
+    }
+
     const ratedCheckins = checkins.filter(ch => ch.rating);
-    const beers = checkinsToBeers(checkins);
-
-    const breweryMap: BreweryMap = {};
+    const beerMap: { [id: number]: Partial<BeerWithData> } = {};
+    const breweryMap: { [slug: string]: Partial<Brewery> & { rated_hads: number } } = {};
 
     checkins.forEach(ch => {
-      const brewery = ch.brewery;
+      const { beer, brewery } = ch;
 
+      const checkinData: BeerWithData['checkins'][0] = {
+        date: ch.created_at,
+        rating: ch.rating,
+      };
+
+      // Beer map.
+      if (!beerMap[beer.id]) {
+        beerMap[beer.id] = {
+          ...beer,
+          brewery,
+          last_had: ch.created_at,
+          checkins: [checkinData],
+        };
+      } else {
+        beerMap[beer.id].checkins = [...beerMap[beer.id].checkins, checkinData].sort((a, b) =>
+          a.date > b.date ? -1 : 1,
+        );
+      }
+
+      // Brewery map
       if (!breweryMap[brewery.id]) {
         breweryMap[brewery.id] = {
           ...brewery,
-          beerCount: 1,
-          cumulative: ch.rating,
+          hads: 1,
+          rated_hads: ch.rating ? 1 : 0,
+          total_rating: ch.rating,
         };
       } else {
-        breweryMap[brewery.id].beerCount += 1;
-        breweryMap[brewery.id].cumulative += ch.rating;
+        breweryMap[brewery.id].hads += 1;
+        breweryMap[brewery.id].rated_hads += ch.rating ? 1 : 0;
+        breweryMap[brewery.id].total_rating += ch.rating;
       }
     });
 
+    const beers = Object.values(beerMap).sort((a, b) => b.average - a.average);
     const breweries = Object.values(breweryMap)
       .map(brewery => ({
         ...brewery,
-        beers: beers.filter(beer => beer.breweryId === brewery.id),
-        average: parseFloat((brewery.cumulative / brewery.beerCount).toFixed(2)),
+        beers: beers.filter(beer => beer.brewery.id === brewery.id),
+        average: parseFloat((brewery.total_rating / brewery.rated_hads).toFixed(2)),
       }))
       .sort((a, b) => b.average - a.average);
 

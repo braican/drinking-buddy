@@ -1,11 +1,11 @@
-import { TigrisClient } from '@lib';
+import { SupabaseClient } from '@lib';
 import { ApiResponse } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders }): Promise<Response> {
   try {
-    const tigris = await TigrisClient.create();
-    const checkins = await tigris.getLatestCheckins();
+    const supabase = new SupabaseClient();
+    const checkins = await supabase.getLatestCheckins();
     return ApiResponse.success({ checkins });
   } catch (error) {
     console.error('[Error in GET api/checkins/latest]', error);

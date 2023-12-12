@@ -1,23 +1,38 @@
 <script lang="ts">
-  import type { Checkin } from '@models';
-  import type { BeerRecord, BreweryRecord } from '@app';
-  import { states, styles, styleOptGroups } from '@utils/constants';
+  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import { states, styleOptGroups } from '@utils/constants';
   import { ApiRequest } from '@utils';
   import { Tabs, BeerList, CheckinPlacard, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
+  import type { BeerWithData, Brewery, CheckinWithData } from '@types';
   let style = '';
   let state = '';
 
   let filteredStyle = '';
   let filteredState = '';
 
-  let checkins = [];
-  let beers = [];
-  let breweries = [];
+  let checkins: CheckinWithData[] = [];
+  let beers: BeerWithData[] = [];
+  let breweries: (Brewery & { beers: BeerWithData[] })[] = [];
   let filteredAverage = null;
 
   let filtered = false;
-  let loading = false;
+  let loading = true;
+
+  onMount(async () => {
+    const queryFilters = $page.url.searchParams;
+
+    style = queryFilters.get('style') || '';
+    state = queryFilters.get('state') || '';
+
+    if (style || state) {
+      await filter();
+    }
+
+    loading = false;
+  });
 
   const filter = async () => {
     if (style === filteredStyle && state === filteredState) return;
@@ -26,9 +41,9 @@
     loading = true;
 
     const results = await req.get<{
-      checkins: Checkin[];
-      beers: BeerRecord[];
-      breweries: BreweryRecord[];
+      checkins: CheckinWithData[];
+      beers: BeerWithData[];
+      breweries: (Brewery & { beers: BeerWithData[] })[];
       filteredAverage: string;
     }>(
       `filter?${new URLSearchParams({
@@ -37,12 +52,14 @@
       })}`,
     );
 
+    $page.url.searchParams.set('style', style);
+    $page.url.searchParams.set('state', state);
+    goto(`?${$page.url.searchParams.toString()}`);
+
     filteredStyle = style;
     filteredState = state;
-
     filtered = true;
     loading = false;
-
     checkins = results.checkins;
     beers = results.beers;
     breweries = results.breweries;
@@ -109,7 +126,7 @@
   {:else if checkins.length > 0}
     <p class="margin-bottom-lg fs-sm">
       You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
-      {filteredStyle}{beers.length === 1 ? '' : 's'}{filteredState
+      {filteredStyle || 'beer'}{beers.length === 1 ? '' : 's'}{filteredState
         ? ` from ${states[filteredState]}`
         : ''} from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
         ? 'y'
@@ -129,7 +146,7 @@
       {:else if view === 'Beers'}
         <BeerList {beers} />
       {:else if view === 'Breweries'}
-        <h2 class="list-header">{breweries.length} breweries</h2>
+        <h2 class="list-header">{breweries.length} Brewer{breweries.length === 1 ? 'y' : 'ies'}</h2>
         <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
 
         <ul class="margin-top-lg">

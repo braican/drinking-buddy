@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tabs, BeerList, CheckinPlacard } from '@components';
+  import { Tabs, BeerList, CheckinList } from '@components';
 
   export let data;
 </script>
@@ -11,38 +11,27 @@
     {data.brewery.city}, {data.brewery.state}, {data.brewery.country}
   </p>
 
-  {#await data.streamed.stats}
-    <p class="margin-top-md">Loading...</p>
-  {:then stats}
-    <p class="margin-top-md">Rating: <strong>{stats.rating}</strong></p>
-    <p>
-      {stats.beers.length} beer{stats.beers.length > 1 ? 's' : ''} / {stats.checkinCount} checkin{stats.checkinCount >
-      1
-        ? 's'
-        : ''}
-    </p>
-  {/await}
+  <p class="margin-top-md">Rating: <strong>{data.brewery.average.toFixed(2)}</strong></p>
+  <p>
+    {data.beers.length} beer{data.beers.length > 1 ? 's' : ''} /
+    {data.brewery.hads} checkin{data.brewery.hads > 1 ? 's' : ''}
+  </p>
 </header>
 
-{#await data.streamed.stats then stats}
-  <Tabs views={['Beers', 'Checkins']} let:view>
-    {#if view === 'Beers'}
-      {#await data.streamed.stats then stats}
-        <BeerList beers={stats.beers} showBreweries={false} />
-      {/await}
-    {:else if view === 'Checkins'}
-      <section class="list-section">
-        {#if stats.checkins}
-          <h2 class="list-header">{stats.checkins.length} Checkins</h2>
-          <ul class="margin-top-lg">
-            {#each stats.checkins as checkin}
-              <li><CheckinPlacard {checkin} /></li>
-            {/each}
-          </ul>
+<Tabs views={['Beers', 'Checkins']} let:view>
+  {#if view === 'Beers'}
+    <BeerList beers={data.beers} showBreweries={false} />
+  {:else if view === 'Checkins'}
+    <section class="list-section">
+      {#await data.streamed.checkins}
+        <p>Loading</p>
+      {:then paginatedCheckins}
+        {#if paginatedCheckins.checkins.length > 0}
+          <CheckinList checkinData={paginatedCheckins} breweryId={data.brewery.id} />
         {:else}
           <p class="margin-top-lg">No checkins</p>
         {/if}
-      </section>
-    {/if}
-  </Tabs>
-{/await}
+      {/await}
+    </section>
+  {/if}
+</Tabs>

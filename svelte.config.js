@@ -12,14 +12,13 @@ const config = {
     adapter: adapter(),
 
     alias: {
-      '@app': './src/app.d.ts',
+      '@types': './types',
       '@components': './src/components/index.js',
       '@icons': './src/icons/index.js',
       '@utils': './src/utils/index.js',
       '@utils/*': './src/utils/*',
       '@lib': './src/lib/index.js',
       '@lib/*': './src/lib/*',
-      '@models': './db/models/index.js',
       '@stores': './src/stores/index.js',
     },
   },

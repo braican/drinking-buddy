@@ -1,8 +1,8 @@
 <script lang="ts">
   import { BeerPlacard } from '@components';
-  import { beerRating } from '@utils';
+  import type { BeerWithData, Beer } from '@types';
 
-  export let beers;
+  export let beers: BeerWithData[] | Beer[];
   export let showBreweries = true;
   let sort = 'Alphabetical';
 
@@ -13,11 +13,11 @@
       case 'Alphabetical':
         return beers.sort((a, b) => (a.name > b.name ? 1 : -1));
       case 'Highest rated':
-        return beers.sort((a, b) => (beerRating(a) > beerRating(b) ? -1 : 1));
+        return beers.sort((a, b) => (a.average > b.average ? -1 : 1));
       case 'Most recent':
-        return beers.sort((a, b) => (a.lastHad > b.lastHad ? -1 : 1));
+        return beers.sort((a, b) => (a.last_had > b.last_had ? -1 : 1));
       default:
-        return beers.sort((a, b) => (a.checkins.length > b.checkins.length ? -1 : 1));
+        return beers.sort((a, b) => (a.hads > b.hads ? -1 : 1));
     }
   };
 </script>

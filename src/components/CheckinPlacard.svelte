@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { Checkin } from '@models';
+  import type { CheckinWithData } from '@types';
   import { formatDate } from '@utils';
   import { BuildingIcon } from '@icons';
 
-  export let checkin: Checkin;
+  export let checkin: CheckinWithData;
   export let light: boolean = false;
+  export let showVenue: boolean = true;
 
   $: ratingClasses = new Array(5).fill('').map((v, i) => {
     const diff = checkin.rating - i;
@@ -34,11 +35,17 @@
   {/if}
 
   <p class:fw-bold={light} class:fs-xs={!light} class:color-opacity-50={!light}>
-    {formatDate(checkin.createdAt.toString())}
+    {formatDate(checkin.created_at.toString())}
   </p>
 
-  {#if checkin.venue}
-    <p class="fs-sm venue"><BuildingIcon />{checkin.venue.name}</p>
+  {#if checkin.comment}
+    <p>{checkin.comment}</p>
+  {/if}
+
+  {#if checkin.venue && showVenue}
+    <p class="fs-sm venue">
+      <BuildingIcon /><a href={`/venue/${checkin.venue.slug}`}>{checkin.venue.name}</a>
+    </p>
   {/if}
 
   <div class="rating margin-top-sm">

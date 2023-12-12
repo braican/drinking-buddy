@@ -1,12 +1,12 @@
-import { TigrisClient } from '@lib';
+import { SupabaseClient } from '@lib';
 import { ApiResponse } from '@utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {
   try {
     const slug = url.searchParams.get('slug');
-    const tigris = await TigrisClient.create();
-    const brewery = await tigris.getBrewery(slug);
+    const supabase = new SupabaseClient();
+    const brewery = await supabase.getBrewery(slug);
 
     if (!brewery) {
       return ApiResponse.error('Brewery not found.', 404);

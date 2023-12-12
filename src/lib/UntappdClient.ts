@@ -1,81 +1,13 @@
 import qs from 'qs';
 import { Mapper, Request } from '../utils/index.js';
-import type { Checkin } from '../../db/models/index.js';
 
-interface UntappdResponse<T> {
-  meta: {
-    code?: number;
-    error_detail?: string;
-  };
-  notifications: object;
-  response: T;
-}
-
-interface UntappdUserInfoResponse {
-  user: UntappdUser;
-}
-interface UntappdUserCheckinsResponse {
-  checkins: {
-    count: number;
-    items: UntappdCheckinData[];
-  };
-}
-
-export interface UntappdUser {
-  id: number;
-  user_name: string;
-  first_name: string;
-  last_name: string;
-  user_avatar_hd: string;
-  stats: {
-    total_badges: number;
-    total_friends: number;
-    total_checkins: number;
-    total_beers: number;
-  };
-}
-
-export interface UntappdCheckinData {
-  checkin_id: number;
-  created_at: string;
-  checkin_comment: string;
-  rating_score: number;
-  beer: {
-    bid: number;
-    beer_name: string;
-    beer_slug: string;
-    beer_label: string;
-    beer_style: string;
-    beer_abv: number;
-  };
-  brewery: {
-    brewery_id: number;
-    brewery_name: string;
-    brewery_slug: string;
-    brewery_type: string;
-    brewery_label: string;
-    country_name: string;
-    location: {
-      brewery_city: string;
-      brewery_state: string;
-      lat: number;
-      lng: number;
-    };
-  };
-  venue: {
-    venue_id: number;
-    venue_name: string;
-    venue_slug: string;
-    location: {
-      venue_address;
-      venue_city: string;
-      venue_state: string;
-      venue_country: string;
-      lat: number;
-      lng: number;
-    };
-  };
-}
+import type {
+  UntappdResponse,
+  UntappdUser,
+  UntappdUserInfoResponse,
+  UntappdUserCheckinsResponse,
+  UntappdCheckinData,
+} from '@types';
 
 export default class UntappdClient {
   BASE = 'https://api.untappd.com/v4';
@@ -116,7 +48,7 @@ export default class UntappdClient {
     return data.response.user;
   }
 
-  async getCheckins(lastDbCheckin: number = null): Promise<Checkin[]> {
+  async getCheckins(lastDbCheckin: number = null): Promise<UntappdCheckinData[]> {
     const newCheckins = [];
     let checkinPointer = null;
 
@@ -145,7 +77,7 @@ export default class UntappdClient {
         }
 
         checkinPointer = ch.checkin_id;
-        newCheckins.push(Mapper.checkin(ch));
+        newCheckins.push(ch);
       }
     }
 

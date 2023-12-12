@@ -1,21 +1,26 @@
 import { error } from '@sveltejs/kit';
 import { ApiRequest } from '@utils';
-import type { Beer, Brewery, Checkin } from '@models';
+import type { BeerWithData, PaginatedCheckins } from '@types';
 
 export async function load({ fetch, params }) {
   try {
     const req = new ApiRequest(fetch);
+    const { beer } = await req.get<{ beer: BeerWithData }>(`beer?slug=${params.slug}`);
+
+    if (!beer) {
+      throw error(404);
+    }
 
     return {
       slug: params.slug,
+      beer,
       streamed: {
-        beerData: req.get<{ beer: Beer; brewery: Brewery }>(`beer?slug=${params.slug}`),
-        checkinData: req.get<{ checkins: Checkin[] }>(`beer/checkins?slug=${params.slug}`),
+        checkins: await req.get<PaginatedCheckins>(`beer/${beer.id}/checkins`),
       },
     };
   } catch (err) {
     if (err.status === 404) {
-      throw error(404, 'Brewery not found.');
+      throw error(404, 'Beer not found.');
     }
 
     return {};
