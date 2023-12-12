@@ -330,8 +330,9 @@ export default class SupabaseClient {
       };
     }
 
-    const rangeStart = (page - 1) * 3;
-    const rangeEnd = rangeStart + 3 - 1;
+    const FILTERED_CHECKINS_PER_PAGE = 500;
+    const rangeStart = (page - 1) * FILTERED_CHECKINS_PER_PAGE;
+    const rangeEnd = rangeStart + FILTERED_CHECKINS_PER_PAGE - 1;
 
     let query = this.supabase.from('checkins').select(
       `

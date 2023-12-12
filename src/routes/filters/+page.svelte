@@ -105,7 +105,7 @@
   {:else if checkins.length > 0}
     <p class="margin-bottom-lg fs-sm">
       You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
-      {filteredStyle}{beers.length === 1 ? '' : 's'}{filteredState
+      {filteredStyle || 'beer'}{beers.length === 1 ? '' : 's'}{filteredState
         ? ` from ${states[filteredState]}`
         : ''} from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
         ? 'y'
