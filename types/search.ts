@@ -1,5 +1,6 @@
 export interface SearchResult {
   slug: string;
-  name: string;
+  beer_name?: string;
+  brewery_name?: string;
   table_name: 'breweries' | 'beers';
 }

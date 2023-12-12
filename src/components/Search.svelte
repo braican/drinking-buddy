@@ -2,14 +2,15 @@
   import { viewStore } from '@stores';
   import { onMount, onDestroy } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { CloseIcon, RightArrowIcon } from '@icons';
+  import { CloseIcon } from '@icons';
   import { ApiRequest } from '@utils';
+  import type { SearchResult } from '@types';
 
   let query = '';
   let input = null;
   let loading = false;
-  let breweryResults = [];
-  let beerResults = [];
+  let breweryResults: SearchResult[] = [];
+  let beerResults: SearchResult[] = [];
 
   let timer;
   let controller;
@@ -46,8 +47,8 @@
         req
           .get<{ breweryResults: []; beerResults: [] }>(`search?query=${query}`, { signal })
           .then(r => {
-            beerResults = r.beerResults;
-            breweryResults = r.breweryResults;
+            beerResults = r?.beerResults;
+            breweryResults = r?.breweryResults;
             loading = false;
           })
           .catch(error => {
@@ -85,13 +86,13 @@
           <p class="padding-top-bottom-base fs-sm tt-uppercase"><strong>Breweries</strong></p>
 
           <ul>
-            {#each breweryResults as brewery}
+            {#each breweryResults as breweryResult}
               <li class="top-border">
                 <a
                   class="result-link padding-base fs-lg"
-                  href={`/brewery/${brewery.slug}`}
+                  href={`/brewery/${breweryResult.slug}`}
                   on:click={viewStore.hideSearch}>
-                  {brewery.name}
+                  {breweryResult.brewery_name}
                 </a>
               </li>
             {/each}
@@ -103,13 +104,14 @@
         <div class="margin-top-lg">
           <p class="padding-top-bottom-base fs-sm tt-uppercase"><strong>Beers</strong></p>
           <ul>
-            {#each beerResults as beer}
+            {#each beerResults as beerResult}
               <li class="top-border">
                 <a
                   class="result-link padding-base fs-lg"
-                  href={`/beer/${beer.slug}`}
-                  on:click={viewStore.hideSearch}
-                  >{beer.name}
+                  href={`/beer/${beerResult.slug}`}
+                  on:click={viewStore.hideSearch}>
+                  <span class="fs-sm color-opacity-50">{beerResult.brewery_name}</span><br />
+                  {beerResult.beer_name}
                 </a>
               </li>
             {/each}
