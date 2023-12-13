@@ -54,6 +54,7 @@ export async function POST({ request }) {
           const existingItem = accumulator.find(item => item.id === current.id);
           if (existingItem) {
             existingItem.hads = existingItem.hads + current.hads;
+            existingItem.rated_hads = existingItem.rated_hads + current.rated_hads;
             existingItem.total_rating = existingItem.total_rating + current.total_rating;
             existingItem.average = existingItem.total_rating / existingItem.hads;
           } else {

@@ -31,9 +31,6 @@ export default class UntappdClient {
     };
 
     const url = `${this.BASE}${endpoint}?${qs.stringify(params)}`;
-
-    console.log(url);
-
     const data = await Request.getExternal<UntappdResponse<T>>(url);
     const status = (data?.meta?.code as number) || 500;
 
