@@ -4,3 +4,4 @@ export { default as ApiRequest } from './ApiRequest.ts';
 export { default as ApiResponse } from './ApiResponse.ts';
 export { formatDate } from './formatDate.ts';
 export { incrementRecord } from './incrementRecord.ts';
+export { debounce } from './debounce.ts';
