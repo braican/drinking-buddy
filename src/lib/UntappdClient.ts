@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { Mapper, Request } from '../utils/index.js';
+import { Request } from '../utils/index.js';
 
 import type {
   UntappdResponse,
@@ -31,6 +31,9 @@ export default class UntappdClient {
     };
 
     const url = `${this.BASE}${endpoint}?${qs.stringify(params)}`;
+
+    console.log(url);
+
     const data = await Request.getExternal<UntappdResponse<T>>(url);
     const status = (data?.meta?.code as number) || 500;
 
@@ -82,5 +85,9 @@ export default class UntappdClient {
     }
 
     return newCheckins;
+  }
+
+  async genericRequest(endpoint: string, args: object = {}): Promise<UntappdResponse<unknown>> {
+    return await this.req(endpoint, args);
   }
 }
