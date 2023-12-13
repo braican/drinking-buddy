@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import UntappdClient from '../src/lib/UntappdClient.ts';
+import Mapper from '../src/utils/Mapper.ts';
 import type { UntappdResponse, UntappdUserCheckinsResponse } from '@types';
 
 dotenv.config();
@@ -35,5 +36,7 @@ dotenv.config();
     queryArgs,
   )) as UntappdResponse<UntappdUserCheckinsResponse>;
 
-  console.log(response.response.checkins.items);
+  response.response.checkins.items.forEach(ch => {
+    console.log(Mapper.checkin(ch));
+  });
 })();

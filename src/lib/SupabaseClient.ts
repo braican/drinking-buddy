@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-import { styles } from '@utils/constants';
+import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
   User,
@@ -17,10 +17,10 @@ import type {
 
 dotenv.config();
 
-const CHECKINS_PER_PAGE = 32;
-
 export default class SupabaseClient {
   supabase: SupabaseClientType;
+
+  CHECKINS_PER_PAGE = 32;
 
   constructor() {
     const url = process.env.SUPABASE_URL;
@@ -74,7 +74,7 @@ export default class SupabaseClient {
    *
    * @return void
    */
-  public async addBreweries(breweries: Brewery[]): Promise<void> {
+  public async addBreweries(breweries: Partial<Brewery>[]): Promise<void> {
     const { error } = await this.supabase.from('breweries').upsert(breweries);
     if (error) throw error;
   }
@@ -159,16 +159,21 @@ export default class SupabaseClient {
   /**
    * Gets the most recent checkins.
    *
-   * @return CheckinWithData[]
+   * @param {number} page Page to get.
+   *
+   * @return PaginatedCheckins
    */
-  public async getLatestCheckins(): Promise<CheckinWithData[]> {
-    const { data, error } = await this.checkinsWithDataQuery()
-      .limit(20)
-      .returns<CheckinWithData[]>();
+  public async getCheckins(page = 1): Promise<PaginatedCheckins> {
+    const { data, error, count } = await this.checkinsWithDataQuery(page).returns<
+      CheckinWithData[]
+    >();
 
     if (error) throw error;
 
-    return data;
+    return {
+      checkins: data,
+      count,
+    };
   }
 
   /**
@@ -273,7 +278,7 @@ export default class SupabaseClient {
    *
    * @param {string} id Venue ID.
    *
-   * @return CheckinWithData[]
+   * @return PaginatedCheckins
    */
   public async getVenueCheckins(id: string, page = 1): Promise<PaginatedCheckins> {
     const { data, error, count } = await this.checkinsWithDataQuery(page)
@@ -360,9 +365,8 @@ export default class SupabaseClient {
       };
     }
 
-    const FILTERED_CHECKINS_PER_PAGE = 500;
-    const rangeStart = (page - 1) * FILTERED_CHECKINS_PER_PAGE;
-    const rangeEnd = rangeStart + FILTERED_CHECKINS_PER_PAGE - 1;
+    const rangeStart = (page - 1) * this.CHECKINS_PER_PAGE;
+    const rangeEnd = rangeStart + this.CHECKINS_PER_PAGE - 1;
 
     let query = this.supabase.from('checkins').select(
       `
@@ -435,6 +439,26 @@ export default class SupabaseClient {
   }
 
   /**
+   * Gets a single checkin by ID.
+   *
+   * @param {number} id Checkin ID.
+   *
+   * @return Checkin
+   */
+  public async getCheckinById(id: number): Promise<Checkin | null> {
+    const { data, error } = await this.supabase
+      .from('checkins')
+      .select('*')
+      .eq('id', id)
+      .returns<Checkin>()
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+  }
+
+  /**
    * Gets a single venue by slug.
    *
    * @return Venue|null
@@ -479,8 +503,8 @@ export default class SupabaseClient {
    * @return PostgresFilterBuilder
    */
   private checkinsWithDataQuery(page = 1) {
-    const rangeStart = (page - 1) * CHECKINS_PER_PAGE;
-    const rangeEnd = rangeStart + CHECKINS_PER_PAGE - 1;
+    const rangeStart = (page - 1) * this.CHECKINS_PER_PAGE;
+    const rangeEnd = rangeStart + this.CHECKINS_PER_PAGE - 1;
 
     return this.supabase
       .from('checkins')
@@ -490,9 +514,9 @@ export default class SupabaseClient {
           created_at,
           comment,
           rating,
-          beer(name, slug, style),
-          brewery(name),
-          venue(name, slug)
+          beer(id, name, slug, style),
+          brewery(id, name),
+          venue(id, name, slug)
         `,
         {
           count: 'exact',
