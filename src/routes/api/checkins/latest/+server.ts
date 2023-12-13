@@ -5,7 +5,7 @@ import { ApiResponse } from '@utils';
 export async function GET({ setHeaders }): Promise<Response> {
   try {
     const supabase = new SupabaseClient();
-    const checkins = await supabase.getLatestCheckins();
+    const { checkins } = await supabase.getCheckins();
     return ApiResponse.success({ checkins });
   } catch (error) {
     console.error('[Error in GET api/checkins/latest]', error);

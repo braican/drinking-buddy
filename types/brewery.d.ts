@@ -13,6 +13,7 @@ export interface Brewery {
   lat: number;
   lng: number;
   hads?: number;
+  rated_hads?: number;
   total_rating?: number;
   average?: number;
   beers?: BeerWithData[];
