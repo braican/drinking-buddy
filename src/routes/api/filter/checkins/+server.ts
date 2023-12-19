@@ -8,8 +8,6 @@ export async function GET({ setHeaders, url }) {
     const state = url.searchParams.get('state');
     const page = url.searchParams.get('page') || '1';
 
-    console.log(style, state, page);
-
     const supabase = new SupabaseClient();
     const { checkins, count } = await supabase.getFilteredCheckins(
       { style, state },

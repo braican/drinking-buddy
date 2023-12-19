@@ -29,9 +29,6 @@ export default class Mapper {
   }
 
   static brewery(ch: UntappdCheckinData): Brewery {
-    if (!ch.brewery.location) {
-      console.log(ch);
-    }
     return {
       id: ch.brewery.brewery_id,
       name: ch.brewery.brewery_name,
