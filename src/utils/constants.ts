@@ -288,6 +288,7 @@ export const styles = {
     'Cider - Graff',
     'Cider - Herbed / Spiced / Hopped',
     'Cider - Traditional',
+    'Cider - Other Fruit',
   ],
   'Malt Liquor': ['Malt Liquor ', 'Malt Liquor'],
   'Hard Seltzer': ['Hard Seltzer'],
@@ -379,6 +380,6 @@ export const styleOptGroups = [
   },
   {
     group: 'Other Styles',
-    styles: ['Gluten-Free Beer', 'Non-alcoholic', 'Mead', 'Ciider', 'Malt Liquor', 'Hard Seltzer'],
+    styles: ['Gluten-Free Beer', 'Non-alcoholic', 'Mead', 'Cider', 'Malt Liquor', 'Hard Seltzer'],
   },
 ];

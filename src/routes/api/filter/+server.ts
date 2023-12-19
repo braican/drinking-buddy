@@ -69,12 +69,20 @@ export async function GET({ setHeaders, url }) {
       .map(brewery => ({
         ...brewery,
         beers: beers.filter(beer => beer.brewery.id === brewery.id),
-        average: parseFloat((brewery.total_rating / brewery.rated_hads).toFixed(2)),
+        average: brewery.total_rating / brewery.rated_hads,
       }))
-      .sort((a, b) => b.average - a.average);
+      .sort((a, b) => {
+        if ((!a.average && !b.average) || !a.average) {
+          return 1;
+        }
+        if (!b.average) {
+          return -1;
+        }
+
+        return b.average - a.average;
+      });
 
     return ApiResponse.success({
-      checkins,
       beers,
       breweries,
       filteredAverage: (

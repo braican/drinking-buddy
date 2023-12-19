@@ -12,7 +12,9 @@
       {data.brewery.city}, {data.brewery.state}, {data.brewery.country}
     </p>
 
-    <p class="margin-top-md">Rating: <strong>{data.brewery.average.toFixed(2)}</strong></p>
+    <p class="margin-top-md">
+      Rating: <strong>{data.brewery ? data.brewery.average?.toFixed(2) : '-'}</strong>
+    </p>
     <p>
       {data.beers.length} beer{data.beers.length > 1 ? 's' : ''} /
       {data.brewery.hads} checkin{data.brewery.hads > 1 ? 's' : ''}

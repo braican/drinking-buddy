@@ -4,27 +4,27 @@
 </script>
 
 <div data-id={data.beer.id}>
-  <header class="padding-bottom-lg">
-    <div class="beer-header">
-      <p class="brewery-name">
-        <a class="link" href={`/brewery/${data.beer.brewery.slug}`}
-          >&larr; {data.beer.brewery.name}</a>
+  <header class="beer-header padding-bottom-lg">
+    <p class="brewery-name">
+      <a class="link" href={`/brewery/${data.beer.brewery.slug}`}
+        >&larr; {data.beer.brewery.name}</a>
+    </p>
+
+    <div>
+      <h1>{data.beer.name}</h1>
+      <p class="fs-sm color-opacity-50 margin-top-sm">{data.beer.abv}% ABV</p>
+      <p class="fs-sm color-opacity-50">{data.beer.style}</p>
+      <p class="margin-top-sm">
+        Rating: <strong>{data.beer ? data.beer.average.toFixed(2) : '-'}</strong>
       </p>
-
-      <div>
-        <h1>{data.beer.name}</h1>
-        <p class="fs-sm color-opacity-50 margin-top-sm">{data.beer.abv}% ABV</p>
-        <p class="fs-sm color-opacity-50">{data.beer.style}</p>
-        <p class="margin-top-sm">Rating: <strong>{data.beer.average.toFixed(2)}</strong></p>
-        <p>Hads: <strong>{data.beer.hads}</strong></p>
-      </div>
-
-      {#if data.beer.label}
-        <img
-          src={data.beer.label.replace('untappd.akamaized.net', 'assets.untappd.com')}
-          alt={data.beer.name} />
-      {/if}
+      <p>Hads: <strong>{data.beer.hads}</strong></p>
     </div>
+
+    {#if data.beer.label}
+      <img
+        src={data.beer.label.replace('untappd.akamaized.net', 'assets.untappd.com')}
+        alt={data.beer.name} />
+    {/if}
   </header>
 
   <section class="list-section">
