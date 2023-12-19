@@ -69,12 +69,11 @@ export async function GET({ setHeaders, url }) {
       .map(brewery => ({
         ...brewery,
         beers: beers.filter(beer => beer.brewery.id === brewery.id),
-        average: parseFloat((brewery.total_rating / brewery.rated_hads).toFixed(2)),
+        average: brewery.total_rating / brewery.rated_hads,
       }))
       .sort((a, b) => b.average - a.average);
 
     return ApiResponse.success({
-      checkins,
       beers,
       breweries,
       filteredAverage: (

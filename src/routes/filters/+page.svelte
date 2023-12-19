@@ -3,17 +3,17 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { states, styleOptGroups } from '@utils/constants';
-  import { ApiRequest } from '@utils';
-  import { Tabs, BeerList, CheckinPlacard, BreweryPlacard } from '@components';
+  import { ApiRequest, createQueryString } from '@utils';
+  import { Tabs, BeerList, CheckinList, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
-  import type { BeerWithData, Brewery, CheckinWithData } from '@types';
+  import type { BeerWithData, Brewery, PaginatedCheckins } from '@types';
   let style = '';
   let state = '';
 
   let filteredStyle = '';
   let filteredState = '';
 
-  let checkins: CheckinWithData[] = [];
+  let paginatedCheckins: PaginatedCheckins = null;
   let beers: BeerWithData[] = [];
   let breweries: (Brewery & { beers: BeerWithData[] })[] = [];
   let filteredAverage = null;
@@ -40,30 +40,28 @@
     const req = new ApiRequest();
     loading = true;
 
-    const results = await req.get<{
-      checkins: CheckinWithData[];
-      beers: BeerWithData[];
-      breweries: (Brewery & { beers: BeerWithData[] })[];
-      filteredAverage: string;
-    }>(
-      `filter?${new URLSearchParams({
-        ...(style && { style }),
-        ...(state && { state }),
-      })}`,
-    );
+    const [filterData, filteredCheckinData] = await Promise.all([
+      req.get<{
+        beers: BeerWithData[];
+        breweries: (Brewery & { beers: BeerWithData[] })[];
+        filteredAverage: string;
+      }>(`filter?${createQueryString({ style, state })}`),
+      req.get<PaginatedCheckins>(`filter/checkins?${createQueryString({ style, state })}`),
+    ]);
 
-    $page.url.searchParams.set('style', style);
-    $page.url.searchParams.set('state', state);
+    if (style) $page.url.searchParams.set('style', style);
+    if (state) $page.url.searchParams.set('state', state);
     goto(`?${$page.url.searchParams.toString()}`);
+
+    beers = filterData.beers;
+    breweries = filterData.breweries;
+    filteredAverage = filterData.filteredAverage;
+    paginatedCheckins = filteredCheckinData;
 
     filteredStyle = style;
     filteredState = state;
     filtered = true;
     loading = false;
-    checkins = results.checkins;
-    beers = results.beers;
-    breweries = results.breweries;
-    filteredAverage = results.filteredAverage;
   };
 </script>
 
@@ -123,7 +121,7 @@
     <p>Loading...</p>
   {:else if !filtered}
     <p>Use the filters to drill down.</p>
-  {:else if checkins.length > 0}
+  {:else if paginatedCheckins?.checkins.length > 0}
     <p class="margin-bottom-lg fs-sm">
       You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
       {filteredStyle || 'beer'}{beers.length === 1 ? '' : 's'}{filteredState
@@ -135,18 +133,15 @@
 
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
       {#if view === 'Checkins'}
-        {#if filtered && checkins.length}
-          <h2 class="list-header">{checkins.length.toLocaleString()} Checkins</h2>
-          <ul class="margin-top-lg">
-            {#each checkins as checkin}
-              <li><CheckinPlacard {checkin} /></li>
-            {/each}
-          </ul>
+        {#if paginatedCheckins?.checkins.length > 0}
+          <CheckinList checkinData={paginatedCheckins} filterQuery={{ style, state }} />
         {/if}
       {:else if view === 'Beers'}
         <BeerList {beers} />
       {:else if view === 'Breweries'}
-        <h2 class="list-header">{breweries.length} Brewer{breweries.length === 1 ? 'y' : 'ies'}</h2>
+        <h2 class="list-header">
+          {breweries.length.toLocaleString()} Brewer{breweries.length === 1 ? 'y' : 'ies'}
+        </h2>
         <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
 
         <ul class="margin-top-lg">
