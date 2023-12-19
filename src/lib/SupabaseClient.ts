@@ -244,18 +244,34 @@ export default class SupabaseClient {
   }
 
   /**
-   * Deletes a checkin reecord.
+   * Deletes a Beer reecord.
    *
-   * @param {number} id Checkin ID.
+   * @param {number} id Beer ID.
    *
    * @return void
    */
-  public async deleteCheckin(id: number): Promise<void> {
+  public async deleteBeer(id: number): Promise<void> {
     if (!id) {
       return;
     }
 
-    const { error } = await this.supabase.from('checkins').delete().eq('id', id);
+    const { error } = await this.supabase.from('beers').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  /**
+   * Deletes a Venue reecord.
+   *
+   * @param {number} id Venue ID.
+   *
+   * @return void
+   */
+  public async deleteVenue(id: number): Promise<void> {
+    if (!id) {
+      return;
+    }
+
+    const { error } = await this.supabase.from('venues').delete().eq('id', id);
     if (error) throw error;
   }
 
