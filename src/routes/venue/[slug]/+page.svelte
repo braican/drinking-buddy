@@ -14,7 +14,14 @@
     </div>
 
     <p class="margin-top-sm">
-      {data.venue.address}<br />{data.venue.city}, {data.venue.state}<br />{data.venue.country}
+      <a
+        class="link"
+        href={`https://maps.google.com/?q=${encodeURIComponent(
+          `${data.venue.address}, ${data.venue.city}, ${data.venue.state}, ${data.venue.country}`,
+        )}`}
+        target="_blank">
+        {data.venue.address}<br />{data.venue.city}, {data.venue.state}<br />{data.venue.country}
+      </a>
     </p>
   </header>
 
@@ -35,7 +42,7 @@
   .venue-header {
     display: grid;
     gap: var(--spacing-base) var(--spacing-lg);
-    grid-template-columns: auto auto;
+    grid-template-columns: auto 1fr;
 
     .venue-name {
       grid-column: 1 / span 2;
