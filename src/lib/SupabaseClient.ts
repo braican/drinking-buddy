@@ -82,11 +82,11 @@ export default class SupabaseClient {
   /**
    * Adds venues to the database.
    *
-   * @param {Venue[]} venues Venues to add.
+   * @param {Partial<Venue>[]} venues Venues to add.
    *
    * @return void
    */
-  public async addVenues(venues: Venue[]): Promise<void> {
+  public async addVenues(venues: Partial<Venue>[]): Promise<void> {
     const { error } = await this.supabase.from('venues').upsert(venues);
     if (error) throw error;
   }
@@ -94,11 +94,11 @@ export default class SupabaseClient {
   /**
    * Adds beers to the database.
    *
-   * @param {Beer[]} beers Beers to add.
+   * @param {Partial<Beer>[]} beers Beers to add.
    *
    * @return void
    */
-  public async addBeers(beers: Beer[]): Promise<void> {
+  public async addBeers(beers: Partial<Beer>[]): Promise<void> {
     const { error } = await this.supabase.from('beers').upsert(beers);
     if (error) throw error;
   }
@@ -177,18 +177,31 @@ export default class SupabaseClient {
   }
 
   /**
-   * Gets a brewery by slug.
+   * Gets a brewery by slug or by ID.
    *
-   * @param {string} slug Brewery slug.
+   * @param {object} params
+   *  - slug Brewery slug.
+   *  - id   Brewry ID
    *
    * @return Brewery
    */
-  public async getBrewery(slug: string): Promise<Brewery | null> {
-    const { data, error } = await this.supabase
-      .from('breweries')
-      .select('*')
-      .eq('slug', slug)
-      .maybeSingle();
+  public async getBrewery(params: { slug?: string; id?: number }): Promise<Brewery | null> {
+    const slug = params.slug;
+    const id = params.id;
+
+    if (!slug && !id) {
+      return null;
+    }
+
+    const query = this.supabase.from('breweries').select('*');
+
+    if (slug) {
+      query.eq('slug', slug);
+    } else {
+      query.eq('id', id);
+    }
+
+    const { data, error } = await query.returns<Brewery>().maybeSingle();
 
     if (error) throw error;
 
@@ -212,6 +225,54 @@ export default class SupabaseClient {
     if (error) throw error;
 
     return data;
+  }
+
+  /**
+   * Deletes a brewery reecord.
+   *
+   * @param {number} id Brewery ID.
+   *
+   * @return void
+   */
+  public async deleteBrewery(id: number): Promise<void> {
+    if (!id) {
+      return;
+    }
+
+    const { error } = await this.supabase.from('breweries').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  /**
+   * Deletes a Beer reecord.
+   *
+   * @param {number} id Beer ID.
+   *
+   * @return void
+   */
+  public async deleteBeer(id: number): Promise<void> {
+    if (!id) {
+      return;
+    }
+
+    const { error } = await this.supabase.from('beers').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  /**
+   * Deletes a Venue reecord.
+   *
+   * @param {number} id Venue ID.
+   *
+   * @return void
+   */
+  public async deleteVenue(id: number): Promise<void> {
+    if (!id) {
+      return;
+    }
+
+    const { error } = await this.supabase.from('venues').delete().eq('id', id);
+    if (error) throw error;
   }
 
   /**

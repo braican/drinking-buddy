@@ -84,7 +84,7 @@ export default class UntappdClient {
     return newCheckins;
   }
 
-  async genericRequest(endpoint: string, args: object = {}): Promise<UntappdResponse<unknown>> {
+  async genericRequest<R>(endpoint: string, args: object = {}): Promise<UntappdResponse<R>> {
     return await this.req(endpoint, args);
   }
 }
