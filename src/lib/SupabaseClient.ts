@@ -437,7 +437,7 @@ export default class SupabaseClient {
           rating,
           beer!inner(id, name, slug, style, hads, average, abv),
           brewery!inner(id, name, state, slug),
-          venue(name)
+          venue(id, slug, name)
         `,
       {
         count: 'exact',
