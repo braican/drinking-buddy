@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import SupabaseClient from '../src/lib/SupabaseClient.ts';
+import { getArg } from './utils/getArg.ts';
+import { promptUser } from './utils/promptUser.ts';
 import type { CheckinWithData, Beer, Brewery, Venue } from '@types';
 
 dotenv.config();
@@ -23,43 +25,6 @@ function incrementRecord(record: PartialTypes, id: number, checkin: CheckinWithD
     average,
   };
 }
-
-function promptUser(question: string): Promise<string> {
-  return new Promise(resolve => {
-    process.stdout.write(question);
-
-    process.stdin.once('data', data => {
-      const answer = data.toString().trim();
-      resolve(answer);
-    });
-  });
-}
-
-// Parse command line arguments
-const args = process.argv.slice(2);
-
-const beersIndex = args.indexOf('--beers');
-const breweriesIndex = args.indexOf('--breweries');
-const venuesIndex = args.indexOf('--venues');
-const checkinsIndex = args.indexOf('--checkins');
-const argBeerIds =
-  beersIndex !== -1 && beersIndex < args.length - 1
-    ? args[beersIndex + 1].split(',').map(x => x.trim())
-    : [];
-const argBreweryIds =
-  breweriesIndex !== -1 && breweriesIndex < args.length - 1
-    ? args[breweriesIndex + 1].split(',').map(x => x.trim())
-    : [];
-const argVenueIds =
-  venuesIndex !== -1 && venuesIndex < args.length - 1
-    ? args[venuesIndex + 1].split(',').map(x => x.trim())
-    : [];
-const argCheckinsIndex =
-  checkinsIndex !== -1 && checkinsIndex < args.length - 1
-    ? args[checkinsIndex + 1].split(',').map(x => x.trim())
-    : [];
-
-console.log('\n');
 
 async function getAllCheckins(): Promise<CheckinWithData[]> {
   const checkins: CheckinWithData[] = [];
@@ -100,26 +65,12 @@ async function getAllCheckins(): Promise<CheckinWithData[]> {
   return checkins;
 }
 
-(async () => {
-  if (argCheckinsIndex && argCheckinsIndex.length > 0) {
-    const allCheckins = await Promise.all(
-      argCheckinsIndex.map(id => supabase.getCheckinById(parseInt(id))),
-    );
-
-    const validCheckins = allCheckins.filter(x => x !== null);
-    argBeerIds.push(...validCheckins.map(ch => ch.beer.toString()));
-    argBreweryIds.push(...validCheckins.map(ch => ch.brewery.toString()));
-    argVenueIds.push(...validCheckins.filter(ch => ch.venue).map(ch => ch.venue.toString()));
-  }
-
-  if (argBeerIds.length === 0 && argBreweryIds.length === 0 && argVenueIds.length === 0) {
-    const promptDoAll = await promptUser('Are you sure you want to refresh all? (Y/n) ');
-    if (promptDoAll !== 'Y') {
-      console.log('Exiting.');
-      process.exit(1);
-    }
-  }
-
+type RecalculateTotalsArgs = {
+  beerIds: string[];
+  breweryIds: string[];
+  venueIds: string[];
+};
+async function recalculateTotals({ beerIds, breweryIds, venueIds }: RecalculateTotalsArgs) {
   console.log('Fetching all checkins...');
   const checkins: CheckinWithData[] = await getAllCheckins();
   console.log(`Fetched ${checkins.length} checkins.`);
@@ -147,45 +98,77 @@ async function getAllCheckins(): Promise<CheckinWithData[]> {
 
   console.log('Updating records...');
 
-  if (argBeerIds.length > 0) {
+  if (beerIds && beerIds.length > 0) {
     try {
       console.log('Updating beers...');
-
-      const toUpdate = [];
-      argBeerIds.forEach(id => {
-        toUpdate.push(beers[parseInt(id)]);
-      });
-
-      await supabase.addBeers(toUpdate);
+      await supabase.addBeers(beerIds.map(id => beers[parseInt(id)]));
     } catch (e) {
       console.error('Error updating beer records:', e);
     }
   }
 
-  if (argBreweryIds.length > 0) {
+  if (breweryIds && breweryIds.length > 0) {
     try {
       console.log('Updating breweries...');
-      const toUpdate = [];
-      argBreweryIds.forEach(id => {
-        toUpdate.push(breweries[parseInt(id)]);
-      });
-
-      await supabase.addBreweries(toUpdate);
+      await supabase.addBreweries(breweryIds.map(id => breweries[parseInt(id)]));
     } catch (e) {
       console.error('Error updating brewery records:', e);
     }
   }
 
-  if (argVenueIds.length > 0) {
+  if (venueIds && venueIds.length > 0) {
     try {
-      const toUpdate = [];
-      argVenueIds.forEach(id => {
-        toUpdate.push(venues[parseInt(id)]);
-      });
-
-      await supabase.addVenues(toUpdate);
+      console.log('Updating venues...');
+      await supabase.addVenues(venueIds.map(id => venues[parseInt(id)]));
     } catch (e) {
       console.error('Error updating venue records:', e);
     }
+  }
+}
+
+function getArrayArg(arg: string): string[] {
+  const argValue = getArg(arg);
+
+  if (!argValue) {
+    return [];
+  }
+
+  return argValue.split(',').map(x => x.trim());
+}
+
+(async () => {
+  const refreshCheckins = getArrayArg('checkins');
+  const refreshBeers = getArrayArg('beers');
+  const refreshBreweries = getArrayArg('breweries');
+  const refreshVenues = getArrayArg('venues');
+
+  if (refreshCheckins && refreshCheckins.length > 0) {
+    const allCheckins = await Promise.all(
+      refreshCheckins.map(id => supabase.getCheckinById(parseInt(id))),
+    );
+
+    const validCheckins = allCheckins.filter(x => x !== null);
+    refreshBeers.push(...validCheckins.map(ch => ch.beer.toString()));
+    refreshBreweries.push(...validCheckins.map(ch => ch.brewery.toString()));
+    refreshVenues.push(...validCheckins.filter(ch => ch.venue).map(ch => ch.venue.toString()));
+  }
+
+  if (refreshBeers.length === 0 && refreshBreweries.length === 0 && refreshVenues.length === 0) {
+    const promptDoAll = await promptUser('Are you sure you want to refresh all? (Y/n) ');
+    if (promptDoAll !== 'Y') {
+      console.log('Exiting.');
+      process.exit(1);
+    }
+  }
+
+  try {
+    await recalculateTotals({
+      beerIds: refreshBeers,
+      breweryIds: refreshBreweries,
+      venueIds: refreshVenues,
+    });
+  } catch (error) {
+    console.error('Something went wrong:');
+    console.error(error);
   }
 })();
