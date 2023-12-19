@@ -23,7 +23,7 @@
   </div>
 
   <div class="text-align-right">
-    <p class="beer-rating fs-lg ff-mono">{beer.average?.toFixed(2) || '-'}</p>
+    <p class="beer-rating fs-lg ff-mono">{beer.average ? beer.average.toFixed(2) : '-'}</p>
     <p class="margin-top-xs beer-count fs-sm">
       {beer.hads} had{beer.hads > 1 ? 's' : ''}
     </p>
