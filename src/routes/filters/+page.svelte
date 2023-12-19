@@ -49,8 +49,16 @@
       req.get<PaginatedCheckins>(`filter/checkins?${createQueryString({ style, state })}`),
     ]);
 
-    if (style) $page.url.searchParams.set('style', style);
-    if (state) $page.url.searchParams.set('state', state);
+    if (style) {
+      $page.url.searchParams.set('style', style);
+    } else {
+      $page.url.searchParams.delete('style');
+    }
+    if (state) {
+      $page.url.searchParams.set('state', state);
+    } else {
+      $page.url.searchParams.delete('state');
+    }
     goto(`?${$page.url.searchParams.toString()}`);
 
     beers = filterData.beers;
