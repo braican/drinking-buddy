@@ -123,12 +123,12 @@
     <p>Use the filters to drill down.</p>
   {:else if paginatedCheckins?.checkins.length > 0}
     <p class="margin-bottom-lg fs-sm">
-      You've had {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
+      You've checked in {paginatedCheckins.count.toLocaleString()}
       {filteredStyle || 'beer'}{beers.length === 1 ? '' : 's'}{filteredState
         ? ` from ${states[filteredState]}`
-        : ''} from {breweries.length.toLocaleString()} different brewer{breweries.length === 1
-        ? 'y'
-        : 'ies'}. Your average rating of these is {filteredAverage}.
+        : ''} across {beers.length.toLocaleString()}{beers.length > 1 ? ' different' : ''}
+      {beers.length === 1 ? 'beer' : 'beers'} from {breweries.length.toLocaleString()}
+      different {breweries.length === 1 ? 'brewery' : 'breweries'}. Your average rating of these is {filteredAverage}.
     </p>
 
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
@@ -154,6 +154,10 @@
       {/if}
     </Tabs>
   {:else}
-    <p>You've not had any {style} beers{state ? ` from ${states[state]}` : ''}</p>
+    <p>
+      You've not had any {filteredStyle || 'beer'}{beers.length === 1 ? '' : 's'}{filteredState
+        ? ` from ${states[filteredState]}`
+        : ''}
+    </p>
   {/if}
 </main>
