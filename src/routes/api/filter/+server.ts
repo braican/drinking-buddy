@@ -9,6 +9,7 @@ export async function GET({ setHeaders, url }) {
     const state = url.searchParams.get('state');
 
     const supabase = new SupabaseClient();
+    supabase.CHECKINS_PER_PAGE = 1000;
     const checkins: CheckinWithData[] = [];
     let page = 1;
 
