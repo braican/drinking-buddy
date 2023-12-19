@@ -33,7 +33,7 @@
 <style lang="scss">
   .beer {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-lg);
     justify-content: space-between;
   }
 
