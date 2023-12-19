@@ -11,7 +11,7 @@
   let { checkins } = checkinData;
   const totalPages = Math.ceil(checkinData.count / checkins.length);
   let currentPage = 1;
-  let loadingButtonText = 'Load More';
+  let loadingButtonText = `Load page ${currentPage + 1} of ${totalPages}`;
 
   const loadMore = async () => {
     const req = new ApiRequest(fetch);
@@ -31,7 +31,7 @@
     const newCheckins = await req.get<PaginatedCheckins>(endpoint);
 
     currentPage += 1;
-    loadingButtonText = 'Load More';
+    loadingButtonText = `Load page ${currentPage + 1} of ${totalPages}`;
 
     if (newCheckins) {
       checkins = [...checkins, ...newCheckins.checkins];
@@ -50,7 +50,7 @@
 {#if currentPage < totalPages}
   <p class="margin-top-lg">
     <button class="button button-translucent button-full" on:click={loadMore}>
-      {loadingButtonText} ({totalPages} pages)
+      {loadingButtonText}
     </button>
   </p>
 {/if}

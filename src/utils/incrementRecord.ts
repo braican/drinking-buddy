@@ -10,11 +10,13 @@ import type { Checkin } from '@types';
  * @return The incremented record.
  */
 export function incrementRecord<T>(record, newItem: T, checkin: Checkin): T {
+  const rating = checkin.rating;
   if (!record) {
     return {
       ...newItem,
       hads: 1,
-      total_rating: checkin.rating,
+      rated_hads: rating ? 1 : 0,
+      total_rating: rating,
       average: checkin.rating,
     };
   }
@@ -22,7 +24,8 @@ export function incrementRecord<T>(record, newItem: T, checkin: Checkin): T {
   return {
     ...record,
     hads: record.hads + 1,
-    total_rating: record.total_rating + checkin.rating,
-    average: (record.total_rating + checkin.rating) / (record.hads + 1),
+    rated_hads: record.rated_hads + (rating ? 1 : 0),
+    total_rating: record.total_rating + rating,
+    average: (record.total_rating + checkin.rating) / (record.rated_hads + (rating ? 1 : 0) + 1),
   };
 }

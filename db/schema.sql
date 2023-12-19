@@ -22,6 +22,7 @@ create table breweries (
   lat numeric,
   lng numeric,
   hads int,
+  rated_hads int,
   total_rating numeric,
   average numeric
 );
@@ -36,6 +37,7 @@ create table beers (
   brewery bigint references breweries,
   last_had timestamp with time zone,
   hads int,
+  rated_hads int,
   total_rating numeric,
   average numeric
 );
@@ -51,6 +53,7 @@ create table venues (
   lat numeric,
   lng numeric,
   hads int,
+  rated_hads int,
   total_rating numeric,
   average numeric
 );

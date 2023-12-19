@@ -1,65 +1,66 @@
 <script lang="ts">
   import { viewStore } from '@stores';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { CloseIcon } from '@icons';
-  import { ApiRequest } from '@utils';
+  import { ApiRequest, debounce } from '@utils';
   import type { SearchResult } from '@types';
 
   let query = '';
-  let input = null;
+  let inputEl = null;
   let loading = false;
   let breweryResults: SearchResult[] = [];
   let beerResults: SearchResult[] = [];
-
-  let timer;
-  let controller;
+  let abortController;
+  const QUERY_LENGTH_THRESHOLD = 3;
 
   onMount(() => {
-    if (input) {
-      input.focus();
+    if (inputEl) {
+      inputEl.focus();
     }
+
+    delayedFetch();
+
+    return () => {
+      if (abortController) {
+        abortController.abort();
+      }
+    };
   });
 
-  onDestroy(() => {
-    if (controller) {
-      controller.abort();
-    }
-  });
+  const delayedFetch = debounce(async () => {
+    if (query.length < QUERY_LENGTH_THRESHOLD) return;
 
-  $: {
-    clearTimeout(timer);
-    if (controller) {
-      controller.abort();
+    if (abortController) abortController.abort();
+    abortController = new AbortController();
+    const req = new ApiRequest(fetch);
+
+    try {
+      const r = await req.get<{ breweryResults: []; beerResults: [] }>(`search?query=${query}`, {
+        signal: abortController.signal,
+      });
+
+      beerResults = r.beerResults;
+      breweryResults = r.breweryResults;
+    } catch (error) {
+      console.error('There was an error fetching search results.', error);
     }
 
-    if (query.length < 2) {
-      loading = false;
-      breweryResults = [];
+    loading = false;
+  }, 200);
+
+  const onInput = () => {
+    if (query.length < QUERY_LENGTH_THRESHOLD) {
       beerResults = [];
-    } else {
-      loading = true;
-      controller = new AbortController();
-      const signal = controller.signal;
-      const req = new ApiRequest(fetch);
-
-      timer = setTimeout(() => {
-        req
-          .get<{ breweryResults: []; beerResults: [] }>(`search?query=${query}`, { signal })
-          .then(r => {
-            beerResults = r?.beerResults;
-            breweryResults = r?.breweryResults;
-            loading = false;
-          })
-          .catch(error => {
-            if (error.name !== 'AbortError') {
-              console.error(error);
-              loading = false;
-            }
-          });
-      }, 200);
+      breweryResults = [];
+      loading = false;
+      return;
     }
-  }
+
+    loading = true;
+
+    delayedFetch();
+  };
 </script>
 
 <div class="modal padding-base" transition:fade={{ duration: 100 }}>
@@ -71,14 +72,15 @@
   <input
     class="search-input"
     type="text"
-    bind:this={input}
+    bind:this={inputEl}
     bind:value={query}
+    on:input={onInput}
     placeholder="Search for a brewery or beer..." />
 
   <div>
     {#if loading}
       <p class="loading margin-top-lg color-opacity-50">Loading...</p>
-    {:else if beerResults.length === 0 && breweryResults.length === 0 && query.length > 2}
+    {:else if beerResults.length === 0 && breweryResults.length === 0 && query.length > QUERY_LENGTH_THRESHOLD - 1}
       <p class="margin-top-lg fs-lg">No breweries or beers match your search.</p>
     {:else}
       {#if breweryResults.length > 0}
@@ -88,10 +90,7 @@
           <ul>
             {#each breweryResults as breweryResult}
               <li class="top-border">
-                <a
-                  class="result-link padding-base fs-lg"
-                  href={`/brewery/${breweryResult.slug}`}
-                  on:click={viewStore.hideSearch}>
+                <a class="result-link padding-base fs-lg" href={`/brewery/${breweryResult.slug}`}>
                   {breweryResult.brewery_name}
                 </a>
               </li>
@@ -106,10 +105,7 @@
           <ul>
             {#each beerResults as beerResult}
               <li class="top-border">
-                <a
-                  class="result-link padding-base fs-lg"
-                  href={`/beer/${beerResult.slug}`}
-                  on:click={viewStore.hideSearch}>
+                <a class="result-link padding-base fs-lg" href={`/beer/${beerResult.slug}`}>
                   <span class="fs-sm color-opacity-50">{beerResult.brewery_name}</span><br />
                   {beerResult.beer_name}
                 </a>

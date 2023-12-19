@@ -11,6 +11,7 @@ export interface Beer {
   brewery: number;
   last_had?: Date;
   hads?: number;
+  rated_hads?: number;
   total_rating?: number;
   average?: number;
 }
