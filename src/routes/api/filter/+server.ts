@@ -71,7 +71,16 @@ export async function GET({ setHeaders, url }) {
         beers: beers.filter(beer => beer.brewery.id === brewery.id),
         average: brewery.total_rating / brewery.rated_hads,
       }))
-      .sort((a, b) => b.average - a.average);
+      .sort((a, b) => {
+        if ((!a.average && !b.average) || !a.average) {
+          return 1;
+        }
+        if (!b.average) {
+          return -1;
+        }
+
+        return b.average - a.average;
+      });
 
     return ApiResponse.success({
       beers,
