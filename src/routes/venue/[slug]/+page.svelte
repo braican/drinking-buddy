@@ -8,7 +8,9 @@
     <div class="beer-header">
       <div>
         <h1>{data.venue.name}</h1>
-        <p class="margin-top-sm">Rating: <strong>{data.venue.average.toFixed(2)}</strong></p>
+        <p class="margin-top-sm">
+          Rating: <strong>{data.venue ? data.venue.average.toFixed(2) : '-'}</strong>
+        </p>
         <p>Hads: <strong>{data.venue.hads}</strong></p>
       </div>
     </div>

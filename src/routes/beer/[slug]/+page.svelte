@@ -15,7 +15,9 @@
         <h1>{data.beer.name}</h1>
         <p class="fs-sm color-opacity-50 margin-top-sm">{data.beer.abv}% ABV</p>
         <p class="fs-sm color-opacity-50">{data.beer.style}</p>
-        <p class="margin-top-sm">Rating: <strong>{data.beer.average.toFixed(2)}</strong></p>
+        <p class="margin-top-sm">
+          Rating: <strong>{data.beer ? data.beer.average.toFixed(2) : '-'}</strong>
+        </p>
         <p>Hads: <strong>{data.beer.hads}</strong></p>
       </div>
 

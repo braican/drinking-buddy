@@ -14,7 +14,7 @@
     <a href={`/brewery/${brewery.slug}`} class="link">{brewery.name}</a>
   </span>
   <div class="brewery-average">
-    <span class="fs-lg ff-mono">{brewery.average.toFixed(2)}</span>
+    <span class="fs-lg ff-mono">{brewery.average ? brewery.average.toFixed(2) : '-'}</span>
     {#if filtered}
       <p class="fs-xs">average rating</p>
     {/if}
