@@ -6,11 +6,12 @@ export async function GET({ setHeaders, url }) {
   try {
     const style = url.searchParams.get('style');
     const state = url.searchParams.get('state');
+    const year = url.searchParams.get('year');
     const page = url.searchParams.get('page') || '1';
 
     const supabase = new SupabaseClient();
     const { checkins, count } = await supabase.getFilteredCheckins(
-      { style, state },
+      { style, state, year },
       parseInt(page),
     );
 

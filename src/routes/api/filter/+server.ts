@@ -7,19 +7,20 @@ export async function GET({ setHeaders, url }) {
   try {
     const style = url.searchParams.get('style');
     const state = url.searchParams.get('state');
+    const year = url.searchParams.get('year');
 
     const supabase = new SupabaseClient();
     supabase.CHECKINS_PER_PAGE = 1000;
     const checkins: CheckinWithData[] = [];
     let page = 1;
 
-    const initialFetch = await supabase.getFilteredCheckins({ style, state });
+    const initialFetch = await supabase.getFilteredCheckins({ style, state, year });
     checkins.push(...initialFetch.checkins);
 
     // Keep fetching checkins in this filter until we have the right number.
     while (checkins.length < initialFetch.count) {
       page += 1;
-      const nextPageFetch = await supabase.getFilteredCheckins({ style, state }, page);
+      const nextPageFetch = await supabase.getFilteredCheckins({ style, state, year }, page);
       checkins.push(...nextPageFetch.checkins);
     }
 
