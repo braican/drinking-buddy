@@ -13,6 +13,7 @@ import type {
   BeerWithData,
   Venue,
   SearchResult,
+  FilterParameters,
 } from '@types';
 
 dotenv.config();
@@ -416,10 +417,10 @@ export default class SupabaseClient {
    * @return CheckinWithData[]
    */
   public async getFilteredCheckins(
-    filters: { style?: string; state?: string } = {},
+    filters: FilterParameters = {},
     page = 1,
   ): Promise<PaginatedCheckins> {
-    if (!filters.style && !filters.state) {
+    if (!filters.style && !filters.state && !filters.year) {
       return {
         checkins: [],
         count: 0,
@@ -452,6 +453,11 @@ export default class SupabaseClient {
       }
     }
     if (filters.state) query = query.eq('brewery.state', filters.state.toUpperCase());
+    if (filters.year) {
+      query = query
+        .lt('created_at', `${parseInt(filters.year) + 1}-01-01`)
+        .gte('created_at', `${filters.year}-01-01`);
+    }
 
     const { data, error, count } = await query
       .order('created_at', { ascending: false })

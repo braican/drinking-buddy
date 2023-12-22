@@ -7,11 +7,14 @@
   import { Tabs, BeerList, CheckinList, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
   import type { BeerWithData, Brewery, PaginatedCheckins } from '@types';
+
   let style = '';
   let state = '';
+  let year = '';
 
   let filteredStyle = '';
   let filteredState = '';
+  let filteredYear = '';
 
   let paginatedCheckins: PaginatedCheckins = null;
   let beers: BeerWithData[] = [];
@@ -26,8 +29,9 @@
 
     style = queryFilters.get('style') || '';
     state = queryFilters.get('state') || '';
+    year = queryFilters.get('year') || '';
 
-    if (style || state) {
+    if (style || state || year) {
       await filter();
     }
 
@@ -35,7 +39,7 @@
   });
 
   const filter = async () => {
-    if (style === filteredStyle && state === filteredState) return;
+    if (style === filteredStyle && state === filteredState && year === filteredYear) return;
 
     const req = new ApiRequest();
     loading = true;
@@ -45,8 +49,8 @@
         beers: BeerWithData[];
         breweries: (Brewery & { beers: BeerWithData[] })[];
         filteredAverage: string;
-      }>(`filter?${createQueryString({ style, state })}`),
-      req.get<PaginatedCheckins>(`filter/checkins?${createQueryString({ style, state })}`),
+      }>(`filter?${createQueryString({ style, state, year })}`),
+      req.get<PaginatedCheckins>(`filter/checkins?${createQueryString({ style, state, year })}`),
     ]);
 
     if (style) {
@@ -59,6 +63,11 @@
     } else {
       $page.url.searchParams.delete('state');
     }
+    if (year) {
+      $page.url.searchParams.set('year', year);
+    } else {
+      $page.url.searchParams.delete('year');
+    }
     goto(`?${$page.url.searchParams.toString()}`);
 
     beers = filterData.beers;
@@ -68,6 +77,7 @@
 
     filteredStyle = style;
     filteredState = state;
+    filteredYear = year;
     filtered = true;
     loading = false;
   };
@@ -102,9 +112,20 @@
         {/each}
       </select>
     </div>
+
+    <div>
+      <label class="fs-xs block-label" for="filter-year">Year:</label>
+      <select bind:value={year} id="filter-year">
+        <option value="">Choose Year</option>
+
+        {#each Array.from({ length: new Date().getFullYear() - 2013 + 1 }, (_, index) => 2013 + index) as yr}
+          <option value={yr.toString()}>{yr}</option>
+        {/each}
+      </select>
+    </div>
   </div>
 
-  {#if style || state}
+  {#if style || state || year}
     <p class="margin-top-md">
       <button
         on:click={filter}
@@ -116,6 +137,8 @@
           Filter {style}s
         {:else if state}
           Filter beers from {states[state]}
+        {:else if year}
+          See stats from {year}
         {/if}
 
         <span class="icon"><FiltersIcon /></span>
@@ -142,7 +165,7 @@
     <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
       {#if view === 'Checkins'}
         {#if paginatedCheckins?.checkins.length > 0}
-          <CheckinList checkinData={paginatedCheckins} filterQuery={{ style, state }} />
+          <CheckinList checkinData={paginatedCheckins} filterQuery={{ style, state, year }} />
         {/if}
       {:else if view === 'Beers'}
         <BeerList {beers} />
