@@ -1,16 +1,13 @@
 <script lang="ts">
   import { CheckinPlacard } from '@components';
   import { ApiRequest, createQueryString } from '@utils';
-  import type { PaginatedCheckins } from '@types';
+  import type { PaginatedCheckins, FilterParameters } from '@types';
 
   export let checkinData: PaginatedCheckins;
   export let breweryId: number = null;
   export let beerId: number = null;
   export let venueId: number = null;
-  export let filterQuery: {
-    state?: string;
-    style?: string;
-  } = null;
+  export let filterQuery: FilterParameters = null;
 
   let { checkins } = checkinData;
   const totalPages = Math.ceil(checkinData.count / checkins.length);
@@ -50,7 +47,7 @@
 
 <ul class="margin-top-lg">
   {#each checkins as checkin}
-    <li><CheckinPlacard {checkin} showVenue={venueId === null} /></li>
+    <li><CheckinPlacard {checkin} showVenue={venueId === null} light={beerId !== null} /></li>
   {/each}
 </ul>
 

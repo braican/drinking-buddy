@@ -44,7 +44,7 @@
 
   {#if checkin.venue && showVenue}
     <p class="fs-sm venue">
-      <BuildingIcon /><a href={`/venue/${checkin.venue.slug}`}>{checkin.venue.name}</a>
+      <BuildingIcon /><a href={`/venue/${checkin.venue.slug}`} class="link">{checkin.venue.name}</a>
     </p>
   {/if}
 
