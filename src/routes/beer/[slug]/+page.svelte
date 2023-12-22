@@ -44,7 +44,7 @@
   .beer-header {
     display: grid;
     gap: var(--spacing-base) var(--spacing-lg);
-    grid-template-columns: auto 60px;
+    grid-template-columns: auto 100px;
     grid-template-rows: auto auto;
 
     .brewery-name {

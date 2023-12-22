@@ -47,7 +47,7 @@
 
 <ul class="margin-top-lg">
   {#each checkins as checkin}
-    <li><CheckinPlacard {checkin} showVenue={venueId === null} /></li>
+    <li><CheckinPlacard {checkin} showVenue={venueId === null} light={beerId !== null} /></li>
   {/each}
 </ul>
 
