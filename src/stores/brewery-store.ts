@@ -2,8 +2,18 @@ import { writable } from 'svelte/store';
 import { ApiRequest } from '@utils';
 import type { Brewery } from '@types';
 
-const bestBreweries = writable<Brewery[]>();
-const popularBreweries = writable<Brewery[]>();
+// const bestBreweries = writable<Brewery[]>();
+// const popularBreweries = writable<Brewery[]>();
+
+const bestBreweries = writable<{
+  recent: Brewery[];
+  allTime: Brewery[];
+}>();
+
+const popularBreweries = writable<{
+  recent: Brewery[];
+  allTime: Brewery[];
+}>();
 
 export default {
   refresh: async () => {
@@ -15,8 +25,8 @@ export default {
         popularBreweries: Brewery[];
       }>('stats');
 
-      bestBreweries.set(stats.bestBreweries);
-      popularBreweries.set(stats.popularBreweries);
+      // bestBreweries.set(stats.bestBreweries);
+      // popularBreweries.set(stats.popularBreweries);
     } catch (error) {
       //
     }
