@@ -34,10 +34,25 @@
           {/if}
         </section>
       {:else if view === 'Breweries'}
-        <div>
-          <button on:click={() => (allTime = true)}>All time</button>
-          <button on:click={() => (allTime = false)}>Recent</button>
+        <div class="margin-bottom-lg">
+          <button
+            class:button-translucent--active={!allTime}
+            class="button button-translucent"
+            on:click={() => (allTime = false)}>Recent</button>
+          <button
+            class:button-translucent--active={allTime}
+            class="button button-translucent"
+            on:click={() => (allTime = true)}>All time</button>
         </div>
+
+        <p class="margin-bottom-xl">
+          {#if allTime}
+            Ratings based on all checkins.
+          {:else}
+            Ratings based on the last 1,000 checkins.
+          {/if}
+        </p>
+
         <div class="split split--50-50">
           <section class="list-section">
             <h2 class="list-header">Highest Rated</h2>
@@ -50,17 +65,11 @@
 
           <section class="list-section">
             <h2 class="list-header">Most Popular</h2>
-            {#if allTime}
-              {#if $popularBreweries}
-                <ul class="margin-top-lg">
-                  {#each allTime ? $popularBreweries.allTime : $popularBreweries.recent as brewery}
-                    <li><BreweryPlacard {brewery} /></li>
-                  {/each}
-                </ul>
-              {/if}
-            {:else}
-              recents
-            {/if}
+            <ul class="margin-top-lg">
+              {#each allTime ? $popularBreweries.allTime : $popularBreweries.recent as brewery}
+                <li><BreweryPlacard {brewery} /></li>
+              {/each}
+            </ul>
           </section>
         </div>
       {/if}

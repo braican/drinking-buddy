@@ -158,6 +158,63 @@ export default class SupabaseClient {
   }
 
   /**
+   * Returns a list of the best and most popular brewries based on the most reent checkins.
+   *
+   * @return Brewery[]
+   */
+  public async getRecentBreweryRankings(): Promise<{
+    best: Partial<Brewery>[];
+    popular: Partial<Brewery>[];
+  }> {
+    const baseCheckinsPerPage = this.CHECKINS_PER_PAGE;
+    this.CHECKINS_PER_PAGE = 1000;
+    const { data, error } = await this.checkinsWithDataQuery().returns<CheckinWithData[]>();
+    this.CHECKINS_PER_PAGE = baseCheckinsPerPage;
+
+    if (error) throw error;
+
+    const breweryMap: { [slug: string]: Partial<Brewery> } = {};
+
+    data.forEach(ch => {
+      const { brewery } = ch;
+
+      // Brewery map
+      if (!breweryMap[brewery.id]) {
+        breweryMap[brewery.id] = {
+          ...brewery,
+          hads: 1,
+          rated_hads: ch.rating ? 1 : 0,
+          total_rating: ch.rating,
+        };
+      } else {
+        breweryMap[brewery.id].hads += 1;
+        breweryMap[brewery.id].rated_hads += ch.rating ? 1 : 0;
+        breweryMap[brewery.id].total_rating += ch.rating;
+      }
+    });
+
+    const breweryItems = Object.values(breweryMap);
+
+    const best = breweryItems
+      .filter(b => b.hads > 3)
+      .map(b => ({ ...b, average: b.total_rating / b.rated_hads }))
+      .sort((a, b) => {
+        if (a.average === b.average) {
+          return b.hads - a.hads;
+        }
+        return b.average - a.average;
+      }).slice(0, 20);
+
+    const popular = breweryItems.sort((a, b) => b.hads - a.hads).slice(0, 20).map(b => ({ ...b, average: b.total_rating / b.rated_hads }))
+
+
+    return {
+      best,
+      popular,
+    };
+  }
+
+  /**
    * Gets the most recent checkins.
    *
    * @param {number} page Page to get.
@@ -427,23 +484,7 @@ export default class SupabaseClient {
       };
     }
 
-    const rangeStart = (page - 1) * this.CHECKINS_PER_PAGE;
-    const rangeEnd = rangeStart + this.CHECKINS_PER_PAGE - 1;
-
-    let query = this.supabase.from('checkins').select(
-      `
-          id,
-          created_at,
-          comment,
-          rating,
-          beer!inner(id, name, slug, style, hads, average, abv),
-          brewery!inner(id, name, state, slug),
-          venue(id, slug, name)
-        `,
-      {
-        count: 'exact',
-      },
-    );
+    let query = this.checkinsWithDataQuery(page);
 
     if (filters.style) {
       const mappedStyles = styles[filters.style];
@@ -459,10 +500,7 @@ export default class SupabaseClient {
         .gte('created_at', `${filters.year}-01-01`);
     }
 
-    const { data, error, count } = await query
-      .order('created_at', { ascending: false })
-      .range(rangeStart, rangeEnd)
-      .returns<CheckinWithData[]>();
+    const { data, error, count } = await query.returns<CheckinWithData[]>();
 
     if (error) throw error;
 
@@ -581,8 +619,8 @@ export default class SupabaseClient {
           created_at,
           comment,
           rating,
-          beer(id, name, slug, style),
-          brewery(id, name),
+          beer!inner(id, name, slug, style, hads, average, abv),
+          brewery!inner(id, name, state, slug),
           venue(id, name, slug)
         `,
         {
