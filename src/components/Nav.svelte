@@ -29,6 +29,7 @@
     bottom: var(--spacing-base);
     right: var(--spacing-base);
     display: flex;
+    z-index: 99;
   }
 
   .nav-button {
