@@ -15,7 +15,7 @@ export async function load({ fetch, params }) {
       slug: params.slug,
       beer,
       streamed: {
-        checkins: await req.get<PaginatedCheckins>(`beer/${beer.id}/checkins`),
+        checkins: req.get<PaginatedCheckins>(`beer/${beer.id}/checkins`),
       },
     };
   } catch (err) {
