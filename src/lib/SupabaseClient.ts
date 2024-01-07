@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
+import { mapCheckins } from '../utils/mapCheckins.ts';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
   User,
@@ -75,7 +76,7 @@ export default class SupabaseClient {
    *
    * @return void
    */
-  public async addBreweries(breweries: Partial<Brewery>[]): Promise<void> {
+  public async addBreweries(breweries: Brewery[]): Promise<void> {
     const { error } = await this.supabase.from('breweries').upsert(breweries);
     if (error) throw error;
   }
@@ -83,11 +84,11 @@ export default class SupabaseClient {
   /**
    * Adds venues to the database.
    *
-   * @param {Partial<Venue>[]} venues Venues to add.
+   * @param {Venue[]} venues Venues to add.
    *
    * @return void
    */
-  public async addVenues(venues: Partial<Venue>[]): Promise<void> {
+  public async addVenues(venues: Venue[]): Promise<void> {
     const { error } = await this.supabase.from('venues').upsert(venues);
     if (error) throw error;
   }
@@ -95,11 +96,11 @@ export default class SupabaseClient {
   /**
    * Adds beers to the database.
    *
-   * @param {Partial<Beer>[]} beers Beers to add.
+   * @param {Beer[]} beers Beers to add.
    *
    * @return void
    */
-  public async addBeers(beers: Partial<Beer>[]): Promise<void> {
+  public async addBeers(beers: Beer[]): Promise<void> {
     const { error } = await this.supabase.from('beers').upsert(beers);
     if (error) throw error;
   }
@@ -155,6 +156,33 @@ export default class SupabaseClient {
     if (error) throw error;
 
     return data;
+  }
+
+  /**
+   * Returns a list of the best and most popular brewries based on the most reent checkins.
+   *
+   * @return Brewery[]
+   */
+  public async getRecentBreweryRankings(): Promise<{
+    best: Brewery[];
+    popular: Brewery[];
+  }> {
+    const baseCheckinsPerPage = this.CHECKINS_PER_PAGE;
+    this.CHECKINS_PER_PAGE = 1000;
+    const { data, error } = await this.checkinsWithDataQuery().returns<CheckinWithData[]>();
+    this.CHECKINS_PER_PAGE = baseCheckinsPerPage;
+
+    if (error) throw error;
+
+    const { breweries } = mapCheckins(data);
+
+    const best = breweries.filter(b => b.hads > 3).slice(0, 20);
+    const popular = breweries.sort((a, b) => b.hads - a.hads).slice(0, 20);
+
+    return {
+      best,
+      popular,
+    };
   }
 
   /**
@@ -427,23 +455,7 @@ export default class SupabaseClient {
       };
     }
 
-    const rangeStart = (page - 1) * this.CHECKINS_PER_PAGE;
-    const rangeEnd = rangeStart + this.CHECKINS_PER_PAGE - 1;
-
-    let query = this.supabase.from('checkins').select(
-      `
-          id,
-          created_at,
-          comment,
-          rating,
-          beer!inner(id, name, slug, style, hads, average, abv),
-          brewery!inner(id, name, state, slug),
-          venue(id, slug, name)
-        `,
-      {
-        count: 'exact',
-      },
-    );
+    let query = this.checkinsWithDataQuery(page);
 
     if (filters.style) {
       const mappedStyles = styles[filters.style];
@@ -459,10 +471,7 @@ export default class SupabaseClient {
         .gte('created_at', `${filters.year}-01-01`);
     }
 
-    const { data, error, count } = await query
-      .order('created_at', { ascending: false })
-      .range(rangeStart, rangeEnd)
-      .returns<CheckinWithData[]>();
+    const { data, error, count } = await query.returns<CheckinWithData[]>();
 
     if (error) throw error;
 
@@ -581,8 +590,8 @@ export default class SupabaseClient {
           created_at,
           comment,
           rating,
-          beer(id, name, slug, style),
-          brewery(id, name),
+          beer!inner(id, name, slug, style, hads, average, abv),
+          brewery!inner(id, name, state, slug),
           venue(id, name, slug)
         `,
         {

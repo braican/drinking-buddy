@@ -15,7 +15,7 @@ export async function load({ fetch, params }) {
       slug: params.slug,
       venue,
       streamed: {
-        checkins: await req.get<PaginatedCheckins>(`venue/${venue.id}/checkins`),
+        checkins: req.get<PaginatedCheckins>(`venue/${venue.id}/checkins`),
       },
     };
   } catch (err) {
