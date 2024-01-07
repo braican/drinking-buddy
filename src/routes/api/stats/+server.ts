@@ -8,8 +8,8 @@ export async function GET({ setHeaders, url }): Promise<Response> {
     const timeframe = url.searchParams.get('timeframe') || 'all';
     const supabase = new SupabaseClient();
 
-    let bestBreweries: Partial<Brewery>[] = [];
-    let popularBreweries: Partial<Brewery>[] = [];
+    let bestBreweries: Brewery[] = [];
+    let popularBreweries: Brewery[] = [];
 
     if (timeframe === 'recent') {
       ({ best: bestBreweries, popular: popularBreweries } = await supabase.getRecentBreweryRankings());

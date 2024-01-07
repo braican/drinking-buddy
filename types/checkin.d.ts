@@ -15,9 +15,9 @@ export interface Checkin {
 
 // Type for the return of a checkin query.
 export interface CheckinWithData extends Checkin {
-  beer: Partial<Beer>;
-  brewery: Partial<Brewery>;
-  venue?: Partial<Venue>;
+  beer: Beer;
+  brewery: Brewery;
+  venue?: Venue;
 }
 
 export interface PaginatedCheckins {

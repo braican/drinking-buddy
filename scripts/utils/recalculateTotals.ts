@@ -7,8 +7,7 @@ dotenv.config();
 const supabase = new SupabaseClient();
 supabase.CHECKINS_PER_PAGE = 1000;
 
-type PartialTypes = Partial<Beer> | Partial<Brewery> | Partial<Venue>;
-function incrementRecord(record: PartialTypes, id: number, checkin: CheckinWithData): PartialTypes {
+function incrementRecord<T extends Beer | Brewery | Venue>(record: T, id: number, checkin: CheckinWithData): T {
   const rating = checkin.rating;
   const newHads = record ? record.hads + 1 : 1;
   const newRatedHads = record ? record.rated_hads + (rating ? 1 : 0) : rating ? 1 : 0;
@@ -21,7 +20,7 @@ function incrementRecord(record: PartialTypes, id: number, checkin: CheckinWithD
     rated_hads: newRatedHads,
     total_rating: totalRating,
     average,
-  };
+  } as T;
 }
 
 async function getAllCheckins(): Promise<CheckinWithData[]> {
@@ -73,24 +72,24 @@ export async function recalculateTotals({ beerIds, breweryIds, venueIds }: Recal
   const checkins: CheckinWithData[] = await getAllCheckins();
   console.log(`Fetched ${checkins.length} checkins.`);
 
-  const beers: { [id: number]: Partial<Beer> } = {};
-  const breweries: { [id: number]: Partial<Brewery> } = {};
-  const venues: { [id: number]: Partial<Venue> } = {};
+  const beers: { [id: number]: Beer } = {};
+  const breweries: { [id: number]: Brewery } = {};
+  const venues: { [id: number]: Venue } = {};
 
   checkins.forEach(ch => {
     const beer = ch.beer;
     const brewery = ch.brewery;
     const venue = ch.venue;
 
-    beers[beer.id] = incrementRecord(beers[beer.id], beer.id, ch);
+    beers[beer.id] = incrementRecord<Beer>(beers[beer.id], beer.id, ch);
     if (!beers[beer.id].last_had || beers[beer.id].last_had < ch.created_at) {
       beers[beer.id].last_had = ch.created_at;
     }
 
-    breweries[brewery.id] = incrementRecord(breweries[brewery.id], brewery.id, ch);
+    breweries[brewery.id] = incrementRecord<Brewery>(breweries[brewery.id], brewery.id, ch);
 
     if (venue) {
-      venues[venue.id] = incrementRecord(venues[venue.id], venue.id, ch);
+      venues[venue.id] = incrementRecord<Venue>(venues[venue.id], venue.id, ch);
     }
   });
 

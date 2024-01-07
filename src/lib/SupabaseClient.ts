@@ -76,7 +76,7 @@ export default class SupabaseClient {
    *
    * @return void
    */
-  public async addBreweries(breweries: Partial<Brewery>[]): Promise<void> {
+  public async addBreweries(breweries: Brewery[]): Promise<void> {
     const { error } = await this.supabase.from('breweries').upsert(breweries);
     if (error) throw error;
   }
@@ -84,11 +84,11 @@ export default class SupabaseClient {
   /**
    * Adds venues to the database.
    *
-   * @param {Partial<Venue>[]} venues Venues to add.
+   * @param {Venue[]} venues Venues to add.
    *
    * @return void
    */
-  public async addVenues(venues: Partial<Venue>[]): Promise<void> {
+  public async addVenues(venues: Venue[]): Promise<void> {
     const { error } = await this.supabase.from('venues').upsert(venues);
     if (error) throw error;
   }
@@ -96,11 +96,11 @@ export default class SupabaseClient {
   /**
    * Adds beers to the database.
    *
-   * @param {Partial<Beer>[]} beers Beers to add.
+   * @param {Beer[]} beers Beers to add.
    *
    * @return void
    */
-  public async addBeers(beers: Partial<Beer>[]): Promise<void> {
+  public async addBeers(beers: Beer[]): Promise<void> {
     const { error } = await this.supabase.from('beers').upsert(beers);
     if (error) throw error;
   }
@@ -164,8 +164,8 @@ export default class SupabaseClient {
    * @return Brewery[]
    */
   public async getRecentBreweryRankings(): Promise<{
-    best: Partial<Brewery>[];
-    popular: Partial<Brewery>[];
+    best: Brewery[];
+    popular: Brewery[];
   }> {
     const baseCheckinsPerPage = this.CHECKINS_PER_PAGE;
     this.CHECKINS_PER_PAGE = 1000;
