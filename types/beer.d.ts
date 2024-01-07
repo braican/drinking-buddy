@@ -17,7 +17,7 @@ export interface Beer {
 }
 
 export interface BeerWithData extends Beer {
-  brewery: Partial<Brewery>;
+  brewery: Brewery;
   checkins?: {
     date: Date;
     rating: number;
