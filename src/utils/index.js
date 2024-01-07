@@ -6,3 +6,4 @@ export { formatDate } from './formatDate.ts';
 export { incrementRecord } from './incrementRecord.ts';
 export { debounce } from './debounce.ts';
 export { createQueryString } from './createQueryString.ts';
+export { mapCheckins } from './mapCheckins.ts';

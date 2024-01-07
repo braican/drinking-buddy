@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
+import { mapCheckins } from '../utils/mapCheckins.ts';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
   User,
@@ -173,40 +174,10 @@ export default class SupabaseClient {
 
     if (error) throw error;
 
-    const breweryMap: { [slug: string]: Partial<Brewery> } = {};
+    const { breweries } = mapCheckins(data);
 
-    data.forEach(ch => {
-      const { brewery } = ch;
-
-      // Brewery map
-      if (!breweryMap[brewery.id]) {
-        breweryMap[brewery.id] = {
-          ...brewery,
-          hads: 1,
-          rated_hads: ch.rating ? 1 : 0,
-          total_rating: ch.rating,
-        };
-      } else {
-        breweryMap[brewery.id].hads += 1;
-        breweryMap[brewery.id].rated_hads += ch.rating ? 1 : 0;
-        breweryMap[brewery.id].total_rating += ch.rating;
-      }
-    });
-
-    const breweryItems = Object.values(breweryMap);
-
-    const best = breweryItems
-      .filter(b => b.hads > 3)
-      .map(b => ({ ...b, average: b.total_rating / b.rated_hads }))
-      .sort((a, b) => {
-        if (a.average === b.average) {
-          return b.hads - a.hads;
-        }
-        return b.average - a.average;
-      }).slice(0, 20);
-
-    const popular = breweryItems.sort((a, b) => b.hads - a.hads).slice(0, 20).map(b => ({ ...b, average: b.total_rating / b.rated_hads }))
-
+    const best = breweries.filter(b => b.hads > 3).slice(0, 20);
+    const popular = breweries.sort((a, b) => b.hads - a.hads).slice(0, 20);
 
     return {
       best,
