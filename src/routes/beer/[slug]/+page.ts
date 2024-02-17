@@ -8,7 +8,7 @@ export async function load({ fetch, params }) {
     const { beer } = await req.get<{ beer: BeerWithData }>(`beer?slug=${params.slug}`);
 
     if (!beer) {
-      throw error(404);
+      error(404);
     }
 
     return {
@@ -20,7 +20,7 @@ export async function load({ fetch, params }) {
     };
   } catch (err) {
     if (err.status === 404) {
-      throw error(404, 'Beer not found.');
+      error(404, 'Beer not found.');
     }
 
     return {};
