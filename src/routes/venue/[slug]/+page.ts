@@ -8,7 +8,7 @@ export async function load({ fetch, params }) {
     const { venue } = await req.get<{ venue: Venue }>(`venue?slug=${params.slug}`);
 
     if (!venue) {
-      throw error(404);
+      error(404);
     }
 
     return {
@@ -20,7 +20,7 @@ export async function load({ fetch, params }) {
     };
   } catch (err) {
     if (err.status === 404) {
-      throw error(404, 'Brewery not found.');
+      error(404, 'Brewery not found.');
     }
 
     return {};
