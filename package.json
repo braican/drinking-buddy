@@ -38,6 +38,7 @@
     "prettier": "^2.8.0",
     "prettier-plugin-svelte": "^2.10.1",
     "qs": "^6.11.2",
+    "sass": "^1.99.0",
     "supabase": "^1.113.2",
     "svelte": "^4.0.0",
     "svelte-check": "^3.4.3",
@@ -47,6 +48,7 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.86.1",
     "@supabase/supabase-js": "^2.39.0"
   },
   "type": "module"
