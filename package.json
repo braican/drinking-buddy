@@ -37,7 +37,7 @@
     "isomorphic-fetch": "^3.0.0",
     "prettier": "^2.8.0",
     "prettier-plugin-svelte": "^3.5.1",
-    "qs": "^6.11.2",
+    "qs": "^6.14.2",
     "supabase": "^2.88.1",
     "svelte": "^5.55.2",
     "svelte-check": "^3.8.6",
