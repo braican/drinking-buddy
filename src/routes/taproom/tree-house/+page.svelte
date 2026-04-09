@@ -68,7 +68,14 @@
     try {
       const raw = localStorage.getItem(CACHE_KEY(locationKey));
       if (!raw) return null;
-      return JSON.parse(raw) as CacheEntry;
+      const entry = JSON.parse(raw) as CacheEntry;
+      const cachedDate = new Date(entry.fetchedAt).toDateString();
+      const today = new Date().toDateString();
+      if (cachedDate !== today) {
+        localStorage.removeItem(CACHE_KEY(locationKey));
+        return null;
+      }
+      return entry;
     } catch {
       return null;
     }
@@ -283,10 +290,7 @@
 </div>
 
 {#if tapList.length > 0}
-  <button
-    class="chat-fab"
-    aria-label="Ask for a recommendation"
-    on:click={() => (chatOpen = true)}>
+  <button class="chat-fab" aria-label="Ask for a recommendation" on:click={() => (chatOpen = true)}>
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path
         d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z" />
@@ -294,11 +298,7 @@
   </button>
 {/if}
 
-<ChatDrawer
-  bind:open={chatOpen}
-  {tapList}
-  myBeers={chatBeers}
-  location={selectedLocation} />
+<ChatDrawer bind:open={chatOpen} {tapList} myBeers={chatBeers} location={selectedLocation} />
 
 <style lang="scss">
   .locations {
