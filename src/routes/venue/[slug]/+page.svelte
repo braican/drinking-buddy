@@ -1,6 +1,7 @@
 <script lang="ts">
   import { CheckinList } from '@components';
-  export let data;
+
+  let { data } = $props();
 </script>
 
 <div data-id={data.venue.id}>

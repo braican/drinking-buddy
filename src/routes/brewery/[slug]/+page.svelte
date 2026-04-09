@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Tabs, BeerList, CheckinList } from '@components';
 
-  export let data;
+  let { data } = $props();
 </script>
 
 <div data-id={data.brewery.id}>
@@ -21,21 +21,23 @@
     </p>
   </header>
 
-  <Tabs views={['Beers', 'Checkins']} let:view>
-    {#if view === 'Beers'}
-      <BeerList beers={data.beers} showBreweries={false} />
-    {:else if view === 'Checkins'}
-      <section class="list-section">
-        {#await data.streamed.checkins}
-          <p>Loading</p>
-        {:then paginatedCheckins}
-          {#if paginatedCheckins.checkins.length > 0}
-            <CheckinList checkinData={paginatedCheckins} breweryId={data.brewery.id} />
-          {:else}
-            <p class="margin-top-lg">No checkins</p>
-          {/if}
-        {/await}
-      </section>
-    {/if}
+  <Tabs views={['Beers', 'Checkins']}>
+    {#snippet children(view)}
+      {#if view === 'Beers'}
+        <BeerList beers={data.beers} showBreweries={false} />
+      {:else if view === 'Checkins'}
+        <section class="list-section">
+          {#await data.streamed.checkins}
+            <p>Loading</p>
+          {:then paginatedCheckins}
+            {#if paginatedCheckins.checkins.length > 0}
+              <CheckinList checkinData={paginatedCheckins} breweryId={data.brewery.id} />
+            {:else}
+              <p class="margin-top-lg">No checkins</p>
+            {/if}
+          {/await}
+        </section>
+      {/if}
+    {/snippet}
   </Tabs>
 </div>

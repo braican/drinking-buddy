@@ -1,21 +1,36 @@
 <script lang="ts">
   import { CheckinPlacard } from '@components';
   import { ApiRequest, createQueryString } from '@utils';
-  import type { PaginatedCheckins, FilterParameters } from '@types';
+  import type { PaginatedCheckins, FilterParameters, CheckinWithData } from '@types';
 
-  export let checkinData: PaginatedCheckins;
-  export let breweryId: number = null;
-  export let beerId: number = null;
-  export let venueId: number = null;
-  export let filterQuery: FilterParameters = null;
+  interface Props {
+    checkinData: PaginatedCheckins;
+    breweryId?: number;
+    beerId?: number;
+    venueId?: number;
+    filterQuery?: FilterParameters;
+  }
 
-  let { checkins } = checkinData;
-  const totalPages = Math.ceil(checkinData.count / checkins.length);
-  let currentPage = 1;
-  let loadingButtonText = `Load page ${currentPage + 1} of ${totalPages}`;
+  let {
+    checkinData,
+    breweryId = null,
+    beerId = null,
+    venueId = null,
+    filterQuery = null,
+  }: Props = $props();
+
+  let currentPage = $state(1);
+  let additionalCheckins = $state<CheckinWithData[]>([]);
+  let loading = $state(false);
+
+  const allCheckins = $derived([...checkinData.checkins, ...additionalCheckins]);
+  const totalPages = $derived(Math.ceil(checkinData.count / checkinData.checkins.length));
+  const loadingButtonText = $derived(
+    loading ? 'Loading...' : `Load page ${currentPage + 1} of ${totalPages}`,
+  );
 
   const loadMore = async () => {
-    loadingButtonText = 'Loading...';
+    loading = true;
 
     const req = new ApiRequest(fetch);
 
@@ -31,12 +46,10 @@
     }
 
     const newCheckins = await req.get<PaginatedCheckins>(endpoint);
-
     currentPage += 1;
-    loadingButtonText = `Load page ${currentPage + 1} of ${totalPages}`;
-
+    loading = false;
     if (newCheckins) {
-      checkins = [...checkins, ...newCheckins.checkins];
+      additionalCheckins = [...additionalCheckins, ...newCheckins.checkins];
     }
   };
 </script>
@@ -46,14 +59,14 @@
 </h2>
 
 <ul class="margin-top-lg">
-  {#each checkins as checkin}
+  {#each allCheckins as checkin}
     <li><CheckinPlacard {checkin} showVenue={venueId === null} light={beerId !== null} /></li>
   {/each}
 </ul>
 
 {#if (breweryId || beerId || venueId || filterQuery) && currentPage < totalPages}
   <p class="margin-top-lg">
-    <button class="button button-translucent button-full" on:click={loadMore}>
+    <button class="button button-translucent button-full" onclick={loadMore}>
       {loadingButtonText}
     </button>
   </p>

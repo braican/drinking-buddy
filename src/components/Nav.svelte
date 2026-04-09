@@ -6,12 +6,12 @@
 
   const { searchVisible } = viewStore;
 
-  $: isTreeHousePage = $page.url.pathname === '/taproom/tree-house';
+  const isTreeHousePage = $derived($page.url.pathname === '/taproom/tree-house');
 </script>
 
 {#if !isTreeHousePage}
   <nav class="nav">
-    <button class="nav-button" aria-label="Search" on:click={viewStore.showSearch}>
+    <button class="nav-button" aria-label="Search" onclick={viewStore.showSearch}>
       <SearchIcon />
     </button>
   </nav>

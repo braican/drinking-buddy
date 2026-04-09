@@ -1,8 +1,12 @@
 <script lang="ts">
-  import type { Beer } from '../../../../types/beer';
-  import ChatDrawer from '../../../components/ChatDrawer.svelte';
+  import type { Beer } from '@types';
+  import { ChatDrawer } from '@components';
 
-  export let data: { brewery: { name: string }; beers: Beer[] };
+  interface Props {
+    data: { brewery: { name: string }; beers: Beer[] };
+  }
+
+  let { data }: Props = $props();
 
   type TapBeer = {
     name: string;
@@ -23,46 +27,50 @@
 
   const LOCATIONS = [
     { key: 'charlton', name: 'Charlton' },
-    { key: 'tewksbury', name: 'Tewksbury' },
+    // { key: 'tewksbury', name: 'Tewksbury' }, // need another way to get this taplist.
     { key: 'prudential', name: 'Prudential Center (Boston)' },
     { key: 'sandwich', name: 'Sandwich (Cape Cod)' },
     { key: 'deerfield', name: 'Deerfield' },
-    { key: 'saratoga', name: 'Saratoga' },
+    // { key: 'saratoga', name: 'Saratoga' }, // need another way to get this taplist.
     { key: 'woodstock', name: 'Woodstock (CT)' },
   ];
 
   const CACHE_KEY = (loc: string) => `taplist:${loc}`;
 
-  let selectedLocation: string | null = null;
-  let tapList: TapBeer[] = [];
-  let tapListLoading = false;
-  let tapListError: string | null = null;
-  let fetchedAt: number | null = null;
+  let selectedLocation: string | null = $state(null);
+  let tapList: TapBeer[] = $state([]);
+  let tapListLoading = $state(false);
+  let tapListError: string | null = $state(null);
+  let fetchedAt: number | null = $state(null);
 
-  let expandedDescriptions = new Set<string>();
+  let expandedDescriptions = $state(new Set<string>());
 
-  let chatOpen = false;
+  let chatOpen = $state(false);
 
-  $: crossReferenced = tapList.map(tapBeer => ({
-    ...tapBeer,
-    myBeer: findMyBeer(tapBeer.name),
-  }));
+  const crossReferenced = $derived(
+    tapList.map(tapBeer => ({
+      ...tapBeer,
+      myBeer: findMyBeer(tapBeer.name),
+    })),
+  );
 
-  $: beersByBar = groupByBar(crossReferenced);
+  const beersByBar = $derived(groupByBar(crossReferenced));
 
-  $: triedCount = crossReferenced.filter(b => b.myBeer).length;
-  $: newCount = crossReferenced.filter(b => !b.myBeer).length;
+  const triedCount = $derived(crossReferenced.filter(b => b.myBeer).length);
+  const newCount = $derived(crossReferenced.filter(b => !b.myBeer).length);
 
-  $: fetchedAtLabel = fetchedAt ? timeAgo(fetchedAt) : null;
+  const fetchedAtLabel = $derived(fetchedAt ? timeAgo(fetchedAt) : null);
 
-  $: chatBeers = data.beers.map(b => ({
-    name: b.name,
-    style: b.style,
-    abv: b.abv,
-    average: b.average,
-    hads: b.hads,
-    last_had: b.last_had,
-  }));
+  const chatBeers = $derived(
+    data.beers.map(b => ({
+      name: b.name,
+      style: b.style,
+      abv: b.abv,
+      average: b.average,
+      hads: b.hads,
+      last_had: b.last_had,
+    })),
+  );
 
   function readCache(locationKey: string): CacheEntry | null {
     try {
@@ -180,7 +188,6 @@
     } else {
       expandedDescriptions.add(name);
     }
-    expandedDescriptions = expandedDescriptions;
   }
 </script>
 
@@ -199,7 +206,7 @@
         <button
           class="button button-translucent"
           class:button-translucent--active={selectedLocation === location.key}
-          on:click={() => fetchTapList(location.key)}
+          onclick={() => fetchTapList(location.key)}
           disabled={tapListLoading}>
           {location.name}
         </button>
@@ -221,7 +228,7 @@
           {#if fetchedAtLabel}fetched {fetchedAtLabel}{/if}
           <button
             class="button-refresh"
-            on:click={() => fetchTapList(selectedLocation, true)}
+            onclick={() => fetchTapList(selectedLocation, true)}
             disabled={tapListLoading}>
             Refresh
           </button>
@@ -255,7 +262,7 @@
                       <p class="fs-sm margin-top-xs description">
                         {expanded ? beer.description : teaser}
                         {#if hasMore}
-                          <button class="desc-toggle" on:click={() => toggleDescription(beer.name)}>
+                          <button class="desc-toggle" onclick={() => toggleDescription(beer.name)}>
                             {expanded ? 'Less' : 'More'}
                           </button>
                         {/if}
@@ -290,7 +297,7 @@
 </div>
 
 {#if tapList.length > 0}
-  <button class="chat-fab" aria-label="Ask for a recommendation" on:click={() => (chatOpen = true)}>
+  <button class="chat-fab" aria-label="Ask for a recommendation" onclick={() => (chatOpen = true)}>
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path
         d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z" />

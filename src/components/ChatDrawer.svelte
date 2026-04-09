@@ -25,17 +25,24 @@
     content: string;
   };
 
-  export let tapList: TapBeer[] = [];
-  export let myBeers: MyBeer[] = [];
-  export let open = false;
-  export let location: string | null = null;
+  interface Props {
+    tapList?: TapBeer[];
+    myBeers?: MyBeer[];
+    open?: boolean;
+    location?: string | null;
+  }
 
-  let chatMessages: ChatMessage[] = [];
-  let chatInput = '';
-  let chatLoading = false;
-  let chatContainer: HTMLDivElement;
+  let { tapList = [], myBeers = [], open = $bindable(false), location = null }: Props = $props();
 
-  $: location, resetChat();
+  let chatMessages: ChatMessage[] = $state([]);
+  let chatInput = $state('');
+  let chatLoading = $state(false);
+  let chatContainer: HTMLDivElement | undefined = $state(undefined);
+
+  $effect(() => {
+    location;
+    resetChat();
+  });
 
   function resetChat() {
     chatMessages = [];
@@ -89,7 +96,7 @@
 </script>
 
 <svelte:window
-  on:keydown={e => {
+  onkeydown={e => {
     if (e.key === 'Escape' && open) open = false;
   }} />
 
@@ -97,12 +104,13 @@
   <div
     class="backdrop"
     transition:fade={{ duration: 200 }}
-    on:click={() => (open = false)}
+    onclick={() => (open = false)}
     aria-hidden="true"
-    role="presentation" />
+    role="presentation">
+  </div>
 
   <div class="drawer" transition:fly={{ y: 600, duration: 320, easing: cubicOut }}>
-    <div class="handle" />
+    <div class="handle"></div>
 
     <div class="drawer-inner">
       <div class="drawer-top">
@@ -114,7 +122,7 @@
             </p>
           {/if}
         </div>
-        <button class="close-btn" on:click={() => (open = false)} aria-label="Close">
+        <button class="close-btn" onclick={() => (open = false)} aria-label="Close">
           <CloseIcon />
         </button>
       </div>
@@ -137,11 +145,16 @@
         </div>
       {/if}
 
-      <form on:submit|preventDefault={sendChatMessage} class="chat-form">
+      <form
+        onsubmit={e => {
+          e.preventDefault();
+          sendChatMessage();
+        }}
+        class="chat-form">
         <input
           type="text"
           bind:value={chatInput}
-          on:keydown={handleKeydown}
+          onkeydown={handleKeydown}
           placeholder="What should I drink?"
           disabled={chatLoading}
           class="chat-input" />
