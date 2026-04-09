@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Beer } from '../../../../types/beer';
-  import ChatDrawer from '../../../components/ChatDrawer.svelte';
+  import type { Beer } from '@types';
+  import { ChatDrawer } from '@components';
 
   interface Props {
     data: { brewery: { name: string }; beers: Beer[] };
@@ -27,11 +27,11 @@
 
   const LOCATIONS = [
     { key: 'charlton', name: 'Charlton' },
-    { key: 'tewksbury', name: 'Tewksbury' },
+    // { key: 'tewksbury', name: 'Tewksbury' }, // need another way to get this taplist.
     { key: 'prudential', name: 'Prudential Center (Boston)' },
     { key: 'sandwich', name: 'Sandwich (Cape Cod)' },
     { key: 'deerfield', name: 'Deerfield' },
-    { key: 'saratoga', name: 'Saratoga' },
+    // { key: 'saratoga', name: 'Saratoga' }, // need another way to get this taplist.
     { key: 'woodstock', name: 'Woodstock (CT)' },
   ];
 
