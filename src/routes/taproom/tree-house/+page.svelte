@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Beer } from '../../../../types/beer';
+  import ChatDrawer from '../../../components/ChatDrawer.svelte';
 
   export let data: { brewery: { name: string }; beers: Beer[] };
 
@@ -18,11 +19,6 @@
 
   type CrossReferencedBeer = TapBeer & {
     myBeer: Beer | null;
-  };
-
-  type ChatMessage = {
-    role: 'user' | 'assistant';
-    content: string;
   };
 
   const LOCATIONS = [
@@ -45,10 +41,7 @@
 
   let expandedDescriptions = new Set<string>();
 
-  let chatMessages: ChatMessage[] = [];
-  let chatInput = '';
-  let chatLoading = false;
-  let chatContainer: HTMLDivElement;
+  let chatOpen = false;
 
   $: crossReferenced = tapList.map(tapBeer => ({
     ...tapBeer,
@@ -61,6 +54,15 @@
   $: newCount = crossReferenced.filter(b => !b.myBeer).length;
 
   $: fetchedAtLabel = fetchedAt ? timeAgo(fetchedAt) : null;
+
+  $: chatBeers = data.beers.map(b => ({
+    name: b.name,
+    style: b.style,
+    abv: b.abv,
+    average: b.average,
+    hads: b.hads,
+    last_had: b.last_had,
+  }));
 
   function readCache(locationKey: string): CacheEntry | null {
     try {
@@ -127,7 +129,7 @@
 
     selectedLocation = locationKey;
     tapListError = null;
-    chatMessages = [];
+    chatOpen = false;
 
     if (!force) {
       const cached = readCache(locationKey);
@@ -160,50 +162,6 @@
     }
   }
 
-  async function sendChatMessage() {
-    if (!chatInput.trim() || chatLoading) return;
-
-    const userMessage: ChatMessage = { role: 'user', content: chatInput.trim() };
-    chatMessages = [...chatMessages, userMessage];
-    chatInput = '';
-    chatLoading = true;
-
-    try {
-      const response = await fetch('/api/tap-list/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: chatMessages,
-          tapList,
-          myBeers: data.beers.map(b => ({
-            name: b.name,
-            style: b.style,
-            abv: b.abv,
-            average: b.average,
-            hads: b.hads,
-            last_had: b.last_had,
-          })),
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        chatMessages = [...chatMessages, { role: 'assistant', content: result.data.reply }];
-        setTimeout(() => {
-          if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 0);
-      }
-    } catch {
-      chatMessages = [
-        ...chatMessages,
-        { role: 'assistant', content: 'Sorry, something went wrong. Try again.' },
-      ];
-    } finally {
-      chatLoading = false;
-    }
-  }
-
   function firstSentence(text: string): string {
     const match = text.match(/^.*?[.!?](?:\s|$)/);
     return match ? match[0].trim() : text;
@@ -216,13 +174,6 @@
       expandedDescriptions.add(name);
     }
     expandedDescriptions = expandedDescriptions;
-  }
-
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendChatMessage();
-    }
   }
 </script>
 
@@ -326,53 +277,28 @@
         </div>
       {/each}
     </section>
-
-    <section class="chat-section">
-      <header class="margin-bottom-lg">
-        <h2>Get Recommendations</h2>
-        <p class="fs-sm color-opacity-50 margin-top-sm">
-          Ask for a recommendation based on your taste profile.
-        </p>
-      </header>
-
-      {#if chatMessages.length > 0}
-        <div class="chat-messages margin-bottom-lg" bind:this={chatContainer}>
-          {#each chatMessages as message}
-            <div class="chat-message chat-message--{message.role} padding-base">
-              <p class="fs-xs fw-bold color-opacity-50 margin-bottom-xs">
-                {message.role === 'user' ? 'You' : 'Assistant'}
-              </p>
-              <p class="chat-text">{message.content}</p>
-            </div>
-          {/each}
-          {#if chatLoading}
-            <div class="chat-message chat-message--assistant padding-base">
-              <p class="color-opacity-50">...</p>
-            </div>
-          {/if}
-        </div>
-      {/if}
-
-      <form on:submit|preventDefault={sendChatMessage} class="chat-form">
-        <input
-          type="text"
-          bind:value={chatInput}
-          on:keydown={handleKeydown}
-          placeholder="What should I drink?"
-          disabled={chatLoading}
-          class="chat-input" />
-        <button
-          type="submit"
-          class="button button-orange"
-          disabled={chatLoading || !chatInput.trim()}>
-          Send
-        </button>
-      </form>
-    </section>
   {:else if selectedLocation && !tapListLoading}
     <p class="color-opacity-50">No beers found for this location.</p>
   {/if}
 </div>
+
+{#if tapList.length > 0}
+  <button
+    class="chat-fab"
+    aria-label="Ask for a recommendation"
+    on:click={() => (chatOpen = true)}>
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path
+        d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z" />
+    </svg>
+  </button>
+{/if}
+
+<ChatDrawer
+  bind:open={chatOpen}
+  {tapList}
+  myBeers={chatBeers}
+  location={selectedLocation} />
 
 <style lang="scss">
   .locations {
@@ -474,46 +400,26 @@
     }
   }
 
-  .chat-section {
-    border-top: 1px solid var(--color-white-15);
-    padding-top: var(--spacing-xl);
-  }
-
-  .chat-messages {
+  .chat-fab {
+    position: fixed;
+    bottom: var(--spacing-base);
+    right: var(--spacing-base);
+    z-index: 99;
+    height: 44px;
+    width: 44px;
+    border-radius: 50%;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    max-height: 400px;
-    overflow-y: auto;
-  }
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary);
 
-  .chat-message {
-    border-radius: var(--border-radius);
-
-    &--user {
-      background: var(--color-white-8);
+    svg {
+      width: 52%;
+      display: block;
     }
 
-    &--assistant {
-      background: var(--color-white-15);
+    &:hover {
+      background-color: var(--color-primary-hover);
     }
-  }
-
-  .chat-text {
-    white-space: pre-wrap;
-  }
-
-  .chat-form {
-    display: flex;
-    gap: var(--spacing-sm);
-  }
-
-  .chat-input {
-    flex: 1;
-    border-radius: var(--border-radius);
-  }
-
-  .chat-input::placeholder {
-    color: var(--color-white-15);
   }
 </style>

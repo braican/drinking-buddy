@@ -1,16 +1,21 @@
 <script>
+  import { page } from '$app/stores';
   import { viewStore } from '@stores';
   import { Search } from '@components';
   import { SearchIcon } from '@icons';
 
   const { searchVisible } = viewStore;
+
+  $: isTreeHousePage = $page.url.pathname === '/taproom/tree-house';
 </script>
 
-<nav class="nav">
-  <button class="nav-button" aria-label="Search" on:click={viewStore.showSearch}>
-    <SearchIcon />
-  </button>
-</nav>
+{#if !isTreeHousePage}
+  <nav class="nav">
+    <button class="nav-button" aria-label="Search" on:click={viewStore.showSearch}>
+      <SearchIcon />
+    </button>
+  </nav>
+{/if}
 
 {#if $searchVisible}
   <Search />
