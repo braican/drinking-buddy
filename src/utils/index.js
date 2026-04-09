@@ -7,3 +7,4 @@ export { incrementRecord } from './incrementRecord.ts';
 export { debounce } from './debounce.ts';
 export { createQueryString } from './createQueryString.ts';
 export { mapCheckins } from './mapCheckins.ts';
+export { renderStreamingMarkdown } from './markdown.ts';

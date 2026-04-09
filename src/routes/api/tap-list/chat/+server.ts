@@ -60,20 +60,35 @@ Guidelines:
 - If they've already had something on tap, acknowledge it and tell them whether to revisit it based on their rating`;
 
   try {
-    const response = await client.messages.create({
+    const stream = await client.messages.stream({
       model: 'claude-opus-4-6',
       max_tokens: 1024,
       system: systemPrompt,
-      messages: messages.map(m => ({
-        role: m.role,
-        content: m.content,
-      })),
+      messages: messages.map(m => ({ role: m.role, content: m.content })),
     });
 
-    const textBlock = response.content.find((b): b is Anthropic.TextBlock => b.type === 'text');
-    const reply = textBlock?.text ?? '';
+    // Pipe Anthropic's stream directly to the response
+    const readable = new ReadableStream({
+      async start(controller) {
+        for await (const event of stream) {
+          if (
+            event.type === 'content_block_delta' &&
+            event.delta.type === 'text_delta'
+          ) {
+            controller.enqueue(new TextEncoder().encode(event.delta.text));
+          }
+        }
+        controller.close();
+      },
+    });
 
-    return ApiResponse.success({ reply });
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
   } catch (error) {
     console.error('[Error in tap list chat]', error);
     return ApiResponse.error(error.message, 500);

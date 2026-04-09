@@ -2,6 +2,7 @@
   import { fly, fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
   import { CloseIcon } from '@icons';
+  import { renderStreamingMarkdown } from '@utils';
 
   type TapBeer = {
     name: string;
@@ -58,28 +59,35 @@
     chatInput = '';
     chatLoading = true;
 
+    chatMessages = [...chatMessages, { role: 'assistant', content: '' }];
+
     try {
       const response = await fetch('/api/tap-list/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: chatMessages,
-          tapList,
-          myBeers,
-        }),
+        body: JSON.stringify({ messages: chatMessages.slice(0, -1), tapList, myBeers }),
       });
 
-      const result = await response.json();
+      if (!response.ok || !response.body) throw new Error('Bad response');
 
-      if (result.success) {
-        chatMessages = [...chatMessages, { role: 'assistant', content: result.data.reply }];
-        setTimeout(() => {
-          if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 0);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        chatMessages = [
+          ...chatMessages.slice(0, -1),
+          { role: 'assistant', content: chatMessages.at(-1)!.content + chunk },
+        ];
+
+        if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
       }
     } catch {
       chatMessages = [
-        ...chatMessages,
+        ...chatMessages.slice(0, -1),
         { role: 'assistant', content: 'Sorry, something went wrong. Try again.' },
       ];
     } finally {
@@ -134,7 +142,13 @@
               <p class="fs-xs fw-bold color-opacity-50 margin-bottom-xs">
                 {message.role === 'user' ? 'You' : 'Assistant'}
               </p>
-              <p class="chat-text">{message.content}</p>
+              {#if message.role === 'assistant'}
+                <div class="chat-text markdown">
+                  {@html renderStreamingMarkdown(message.content)}
+                </div>
+              {:else}
+                <p class="chat-text">{message.content}</p>
+              {/if}
             </div>
           {/each}
           {#if chatLoading}
@@ -263,10 +277,6 @@
     &--assistant {
       background: var(--color-white-15);
     }
-  }
-
-  .chat-text {
-    white-space: pre-wrap;
   }
 
   .chat-form {

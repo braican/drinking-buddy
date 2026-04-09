@@ -158,3 +158,15 @@ $list-header-margin: 10px;
 .block-label {
   display: block;
 }
+
+// Markdown.
+.markdown {
+  > * + * {
+    margin-top: var(--spacing-sm);
+  }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+  code { font-family: monospace; background: var(--color-white-8); padding: 2px 5px; border-radius: 3px; }
+  ul, ol { padding-left: 1.25em; margin-bottom: var(--spacing-sm); }
+  li { margin-bottom: 2px; }
+}
