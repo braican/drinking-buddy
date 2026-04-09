@@ -89,7 +89,7 @@
 </script>
 
 <svelte:window
-  on:keydown={(e) => {
+  on:keydown={e => {
     if (e.key === 'Escape' && open) open = false;
   }} />
 
@@ -99,18 +99,20 @@
     transition:fade={{ duration: 200 }}
     on:click={() => (open = false)}
     aria-hidden="true"
-    role="presentation"></div>
+    role="presentation" />
 
   <div class="drawer" transition:fly={{ y: 600, duration: 320, easing: cubicOut }}>
-    <div class="handle"></div>
+    <div class="handle" />
 
     <div class="drawer-inner">
       <div class="drawer-top">
         <div>
-          <h2 class="drawer-title">Get Recommendations</h2>
-          <p class="fs-sm color-opacity-50 margin-top-xs">
-            Ask for a recommendation based on your taste profile.
-          </p>
+          <h2 class="drawer-title">Bartender</h2>
+          {#if chatMessages.length < 1}
+            <p class="empty-state fs-sm color-opacity-50 margin-top-sm">
+              Ask me anything about what's on tap...
+            </p>
+          {/if}
         </div>
         <button class="close-btn" on:click={() => (open = false)} aria-label="Close">
           <CloseIcon />
@@ -133,8 +135,6 @@
             </div>
           {/if}
         </div>
-      {:else}
-        <p class="empty-state fs-sm color-opacity-50">Ask me anything about what's on tap...</p>
       {/if}
 
       <form on:submit|preventDefault={sendChatMessage} class="chat-form">
