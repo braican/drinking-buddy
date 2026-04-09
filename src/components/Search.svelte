@@ -155,6 +155,7 @@
     font-size: var(--step-2);
     padding: 0.5em;
     background-color: var(--color-white-alpha-06);
+    border-radius: var(--border-radius);
   }
   .search-input::placeholder {
     opacity: 0.3;

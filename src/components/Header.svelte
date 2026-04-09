@@ -1,13 +1,23 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
-  import { RefreshIcon } from '@icons';
+  import { fly, fade } from 'svelte/transition';
+  import { page } from '$app/stores';
+  import { RefreshIcon, CloseIcon, MenuIcon, HomeIcon, FiltersIcon, BuildingIcon } from '@icons';
   import { ApiRequest, formatDate } from '@utils';
   import { userStore as user, checkinStore, breweryStore } from '@stores';
   import type { UntappdUser, UntappdCheckinData, User } from '@types';
 
+  let menuOpen = false;
   let isRefreshing = false;
   let refreshButtonText = 'Refresh';
   let refreshStatus = '';
+
+  $: if ($page) menuOpen = false;
+
+  const NAV_LINKS = [
+    { href: '/', label: 'Home', icon: HomeIcon },
+    { href: '/filters', label: 'Filters', icon: FiltersIcon },
+    { href: '/taproom/tree-house', label: 'Tree House Tap List', icon: BuildingIcon },
+  ];
 
   const resetButton = (statusText = '') => {
     if (statusText) {
@@ -67,6 +77,10 @@
 
 <header class="header padding-base">
   {#if $user}
+    <button class="menu-button" on:click={() => (menuOpen = true)} aria-label="Open menu">
+      <MenuIcon />
+    </button>
+
     <figure class="user-photo">
       <a href="/"><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
     </figure>
@@ -95,22 +109,75 @@
   {/if}
 </header>
 
+{#if menuOpen}
+  <div
+    class="menu-overlay"
+    on:click={() => (menuOpen = false)}
+    on:keydown={e => e.key === 'Escape' && (menuOpen = false)}
+    role="presentation"
+    transition:fade={{ duration: 200 }} />
+
+  <nav class="menu-panel" transition:fly={{ x: -320, duration: 250, opacity: 1 }}>
+    <div class="panel-header">
+      <button class="menu-close" on:click={() => (menuOpen = false)} aria-label="Close menu">
+        <CloseIcon />
+      </button>
+      <figure class="user-photo">
+        <a href="/"><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
+      </figure>
+    </div>
+
+    <ul class="menu-links">
+      {#each NAV_LINKS as link}
+        <li>
+          <a
+            href={link.href}
+            class="menu-link"
+            class:menu-link--active={$page.url.pathname === link.href}>
+            <span class="menu-link-icon"><svelte:component this={link.icon} /></span>
+            {link.label}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
+{/if}
+
 <style lang="scss">
   .header {
     border-top: 2px solid var(--color-primary);
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: var(--spacing-base);
   }
 
-  .stats {
-    text-align: right;
-    flex: 1;
+  .menu-button {
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    margin-left: -8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    opacity: 0.6;
+    margin-top: 12px;
+
+    :global(svg) {
+      display: block;
+      width: 100%;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .user-photo {
     width: 60px;
+    flex-shrink: 0;
     border-radius: 50%;
     overflow: hidden;
 
@@ -118,6 +185,12 @@
       display: block;
       width: 100%;
     }
+  }
+
+  .stats {
+    text-align: right;
+    flex: 1;
+    margin-left: auto;
   }
 
   .refresh-button {
@@ -150,6 +223,92 @@
     right: 0;
     top: 0;
     white-space: nowrap;
+  }
+
+  /* Slideout menu */
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 199;
+  }
+
+  .menu-panel {
+    position: fixed;
+    border-top: 2px solid var(--color-primary);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: var(--color-black);
+    border-right: 1px solid var(--color-white-15);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg) var(--spacing-base);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .menu-close {
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+
+    :global(svg) {
+      display: block;
+      width: 100%;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .menu-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-sm);
+    border-radius: var(--border-radius);
+    font-size: var(--step-0);
+    opacity: 0.7;
+    transition: opacity 0.15s, background 0.15s;
+
+    &:hover {
+      opacity: 1;
+      background: var(--color-white-8);
+    }
+
+    &--active {
+      opacity: 1;
+      color: var(--color-primary);
+    }
+  }
+
+  .menu-link-icon {
+    width: 20px;
+    flex-shrink: 0;
+
+    :global(svg) {
+      display: block;
+      width: 100%;
+    }
   }
 
   @keyframes spin {
