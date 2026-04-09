@@ -2,9 +2,13 @@
   import { formatDate } from '@utils';
   import type { BeerWithData, Beer } from '@types';
 
-  export let showBrewery = true;
-  export let beer: BeerWithData | Beer;
-  export let sublist = false;
+  interface Props {
+    showBrewery?: boolean;
+    beer: BeerWithData | Beer;
+    sublist?: boolean;
+  }
+
+  let { showBrewery = true, beer, sublist = false }: Props = $props();
 </script>
 
 <article data-beer-id={beer.id} class="beer padding-base" class:top-border={!sublist}>

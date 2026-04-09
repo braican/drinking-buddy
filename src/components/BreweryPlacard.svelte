@@ -3,10 +3,13 @@
   import { DownArrowIcon } from '@icons';
   import { BeerPlacard } from '@components';
 
-  export let brewery: Brewery;
-  export let filtered = false;
+  interface Props {
+    brewery: Brewery;
+    filtered?: boolean;
+  }
 
-  let expandedBeers = false;
+  let { brewery, filtered = false }: Props = $props();
+  let expandedBeers = $state(false);
 </script>
 
 <article data-brewery-id={brewery.id} class="brewery padding-base">
@@ -22,7 +25,7 @@
 
   <p class="brewery-count fs-sm color-opacity-50">
     {#if filtered}
-      <button class="expand-beers" on:click={() => (expandedBeers = !expandedBeers)}>
+      <button class="expand-beers" onclick={() => (expandedBeers = !expandedBeers)}>
         <span class="expand-beers-icon" class:flipped={expandedBeers}><DownArrowIcon /></span>
         {brewery.beers.length?.toLocaleString()} beer{brewery.beers.length > 1 ? 's' : ''},
         {brewery.hads?.toLocaleString()} checkin{brewery.hads > 1 ? 's' : ''}

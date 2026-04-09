@@ -6,12 +6,15 @@
   import { userStore as user, checkinStore, breweryStore } from '@stores';
   import type { UntappdUser, UntappdCheckinData, User } from '@types';
 
-  let menuOpen = false;
-  let isRefreshing = false;
-  let refreshButtonText = 'Refresh';
-  let refreshStatus = '';
+  let menuOpen = $state(false);
+  let isRefreshing = $state(false);
+  let refreshButtonText = $state('Refresh');
+  let refreshStatus = $state('');
 
-  $: if ($page) menuOpen = false;
+  $effect(() => {
+    $page;
+    menuOpen = false;
+  });
 
   const NAV_LINKS = [
     { href: '/', label: 'Home', icon: HomeIcon },
@@ -77,7 +80,7 @@
 
 <header class="header padding-base">
   {#if $user}
-    <button class="menu-button" on:click={() => (menuOpen = true)} aria-label="Open menu">
+    <button class="menu-button" onclick={() => (menuOpen = true)} aria-label="Open menu">
       <MenuIcon />
     </button>
 
@@ -91,7 +94,7 @@
 
       <button
         aria-label="Refresh checkins"
-        on:click={refresh}
+        onclick={refresh}
         class:loading={isRefreshing}
         class="button refresh-button button-orange">
         <RefreshIcon />
@@ -112,14 +115,15 @@
 {#if menuOpen}
   <div
     class="menu-overlay"
-    on:click={() => (menuOpen = false)}
-    on:keydown={e => e.key === 'Escape' && (menuOpen = false)}
+    onclick={() => (menuOpen = false)}
+    onkeydown={e => e.key === 'Escape' && (menuOpen = false)}
     role="presentation"
-    transition:fade={{ duration: 200 }} />
+    transition:fade={{ duration: 200 }}>
+  </div>
 
   <nav class="menu-panel" transition:fly={{ x: -320, duration: 250, opacity: 1 }}>
     <div class="panel-header">
-      <button class="menu-close" on:click={() => (menuOpen = false)} aria-label="Close menu">
+      <button class="menu-close" onclick={() => (menuOpen = false)} aria-label="Close menu">
         <CloseIcon />
       </button>
       <figure class="user-photo">
@@ -129,12 +133,13 @@
 
     <ul class="menu-links">
       {#each NAV_LINKS as link}
+        {@const Icon = link.icon}
         <li>
           <a
             href={link.href}
             class="menu-link"
             class:menu-link--active={$page.url.pathname === link.href}>
-            <span class="menu-link-icon"><svelte:component this={link.icon} /></span>
+            <span class="menu-link-icon"><Icon /></span>
             {link.label}
           </a>
         </li>
@@ -288,7 +293,9 @@
     border-radius: var(--border-radius);
     font-size: var(--step-0);
     opacity: 0.7;
-    transition: opacity 0.15s, background 0.15s;
+    transition:
+      opacity 0.15s,
+      background 0.15s;
 
     &:hover {
       opacity: 1;

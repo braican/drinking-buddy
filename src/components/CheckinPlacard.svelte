@@ -3,22 +3,28 @@
   import { formatDate } from '@utils';
   import { BuildingIcon } from '@icons';
 
-  export let checkin: CheckinWithData;
-  export let light: boolean = false;
-  export let showVenue: boolean = true;
+  interface Props {
+    checkin: CheckinWithData;
+    light?: boolean;
+    showVenue?: boolean;
+  }
 
-  $: ratingClasses = new Array(5).fill('').map((v, i) => {
-    const diff = checkin.rating - i;
-    return diff >= 1
-      ? 'fill'
-      : diff === 0.75
-      ? 'three-quarter'
-      : diff === 0.5
-      ? 'half'
-      : diff === 0.25
-      ? 'quarter'
-      : '';
-  });
+  let { checkin, light = false, showVenue = true }: Props = $props();
+
+  const ratingClasses = $derived(
+    new Array(5).fill('').map((_, i) => {
+      const diff = checkin.rating - i;
+      return diff >= 1
+        ? 'fill'
+        : diff === 0.75
+          ? 'three-quarter'
+          : diff === 0.5
+            ? 'half'
+            : diff === 0.25
+              ? 'quarter'
+              : '';
+    }),
+  );
 </script>
 
 <article data-checkin-id={checkin.id} class="checkin padding-base top-border">
@@ -51,7 +57,7 @@
   <div class="rating margin-top-sm">
     {#if checkin.rating}
       {#each ratingClasses as cl}
-        <span class={cl} />
+        <span class={cl}></span>
       {/each}
     {:else}
       <p class="fs-xs">No rating!</p>
