@@ -100,11 +100,12 @@ function parseTapList(markdown: string): TapBeer[] {
     if (!imageMatch) continue;
 
     const name = imageMatch[1].trim();
-    const key = name.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
+    const nameKey = name.toLowerCase();
+    const seenKey = `${currentBar}:${nameKey}`;
+    if (seen.has(seenKey)) continue;
+    seen.add(seenKey);
 
-    const full = fullEntries.get(key);
+    const full = fullEntries.get(nameKey);
     if (full) {
       beers.push({ name, bar: currentBar, style: full.style, abv: full.abv, description: full.description });
     } else {

@@ -43,6 +43,8 @@
   let tapListError: string | null = null;
   let fetchedAt: number | null = null;
 
+  let expandedDescriptions = new Set<string>();
+
   let chatMessages: ChatMessage[] = [];
   let chatInput = '';
   let chatLoading = false;
@@ -95,9 +97,7 @@
     return data.beers.find(b => b.name?.toLowerCase().trim() === normalized) ?? null;
   }
 
-  function groupByBar(
-    beers: CrossReferencedBeer[],
-  ): [string, [string, CrossReferencedBeer[]][]][] {
+  function groupByBar(beers: CrossReferencedBeer[]): [string, [string, CrossReferencedBeer[]][]][] {
     const barMap = new Map<string, Map<string, CrossReferencedBeer[]>>();
 
     for (const beer of beers) {
@@ -204,6 +204,20 @@
     }
   }
 
+  function firstSentence(text: string): string {
+    const match = text.match(/^.*?[.!?](?:\s|$)/);
+    return match ? match[0].trim() : text;
+  }
+
+  function toggleDescription(name: string) {
+    if (expandedDescriptions.has(name)) {
+      expandedDescriptions.delete(name);
+    } else {
+      expandedDescriptions.add(name);
+    }
+    expandedDescriptions = expandedDescriptions;
+  }
+
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -268,8 +282,7 @@
                     <p class="fw-bold">
                       <span
                         class="status-badge"
-                        title={beer.myBeer ? "You've had this" : 'New to you'}
-                      >
+                        title={beer.myBeer ? "You've had this" : 'New to you'}>
                         {beer.myBeer ? '✓' : '★'}
                       </span>
                       {beer.name}
@@ -278,7 +291,17 @@
                       <p class="fs-sm color-opacity-50 margin-top-xs">{beer.abv}% ABV</p>
                     {/if}
                     {#if beer.description}
-                      <p class="fs-sm margin-top-xs description">{beer.description}</p>
+                      {@const teaser = firstSentence(beer.description)}
+                      {@const hasMore = teaser.length < beer.description.length}
+                      {@const expanded = expandedDescriptions.has(beer.name)}
+                      <p class="fs-sm margin-top-xs description">
+                        {expanded ? beer.description : teaser}
+                        {#if hasMore}
+                          <button class="desc-toggle" on:click={() => toggleDescription(beer.name)}>
+                            {expanded ? 'Less' : 'More'}
+                          </button>
+                        {/if}
+                      </p>
                     {/if}
                   </div>
                   {#if beer.myBeer}
@@ -354,8 +377,12 @@
 <style lang="scss">
   .locations {
     display: flex;
-    flex-wrap: wrap;
+    overflow: auto;
     gap: var(--spacing-sm);
+
+    > button {
+      white-space: nowrap;
+    }
   }
 
   .bar-heading {
@@ -434,6 +461,19 @@
     max-width: 60ch;
   }
 
+  .desc-toggle {
+    margin-left: 0.25em;
+    font-size: inherit;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   .chat-section {
     border-top: 1px solid var(--color-white-15);
     padding-top: var(--spacing-xl);
@@ -470,5 +510,10 @@
 
   .chat-input {
     flex: 1;
+    border-radius: var(--border-radius);
+  }
+
+  .chat-input::placeholder {
+    color: var(--color-white-15);
   }
 </style>
