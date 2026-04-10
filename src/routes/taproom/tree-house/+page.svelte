@@ -43,7 +43,7 @@
   let tapListError: string | null = $state(null);
   let fetchedAt: number | null = $state(null);
 
-  let expandedDescriptions = $state(new Set<string>());
+  let expandedDescriptions = $state<Record<string, boolean>>({});
 
   let chatOpen = $state(false);
 
@@ -145,6 +145,7 @@
     selectedLocation = locationKey;
     tapListError = null;
     chatOpen = false;
+    expandedDescriptions = {};
 
     if (!force) {
       const cached = readCache(locationKey);
@@ -183,11 +184,7 @@
   }
 
   function toggleDescription(name: string) {
-    if (expandedDescriptions.has(name)) {
-      expandedDescriptions.delete(name);
-    } else {
-      expandedDescriptions.add(name);
-    }
+    expandedDescriptions[name] = !expandedDescriptions[name];
   }
 </script>
 
@@ -222,7 +219,8 @@
     <section class="margin-bottom-xl">
       <div class="tap-list-meta margin-bottom-lg">
         <p class="fs-sm color-opacity-50">
-          {tapList.length} beers on tap &mdash; {newCount} new to you, {triedCount} you've had
+          {tapList.length} beers on tap
+          <br />{newCount} new to you, {triedCount} you've had
         </p>
         <p class="fs-sm color-opacity-50 meta-refresh">
           {#if fetchedAtLabel}fetched {fetchedAtLabel}{/if}
@@ -242,9 +240,9 @@
             <div class="style-group margin-bottom-lg">
               <h3 class="style-heading fs-xs tt-uppercase margin-bottom-sm">{style}</h3>
               {#each beers as beer}
-                <article class="tap-beer padding-base top-border">
+                <article class="tap-beer top-border">
                   <div class="tap-beer-info">
-                    <p class="fw-bold">
+                    <p class="fw-bold tap-beer-name">
                       <span
                         class="status-badge"
                         title={beer.myBeer ? "You've had this" : 'New to you'}>
@@ -258,7 +256,7 @@
                     {#if beer.description}
                       {@const teaser = firstSentence(beer.description)}
                       {@const hasMore = teaser.length < beer.description.length}
-                      {@const expanded = expandedDescriptions.has(beer.name)}
+                      {@const expanded = !!expandedDescriptions[beer.name]}
                       <p class="fs-sm margin-top-xs description">
                         {expanded ? beer.description : teaser}
                         {#if hasMore}
@@ -326,7 +324,7 @@
   .bar-heading {
     font-size: var(--step-1);
     padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--color-white-25);
+    text-transform: uppercase;
   }
 
   .tap-list-meta {
@@ -368,6 +366,7 @@
   .tap-beer {
     display: flex;
     gap: var(--spacing-lg);
+    padding: var(--spacing-base) var(--spacing-sm);
     justify-content: space-between;
     align-items: flex-start;
   }
@@ -377,13 +376,16 @@
     min-width: 0;
   }
 
+  .tap-beer-name {
+    display: flex;
+    gap: 0.6em;
+  }
+
   .tap-beer-history {
     flex-shrink: 0;
   }
 
   .status-badge {
-    display: inline-block;
-    margin-right: 0.25em;
     color: var(--color-primary);
   }
 
