@@ -312,6 +312,11 @@
     display: flex;
     overflow: auto;
     gap: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+    margin-left: calc(var(--spacing-base) * -1);
+    margin-right: calc(var(--spacing-base) * -1);
+    padding-left: var(--spacing-base);
+    padding-right: var(--spacing-base);
 
     > button {
       white-space: nowrap;
