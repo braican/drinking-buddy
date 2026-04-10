@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fly, fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
-  import { CloseIcon } from '@icons';
+  import { CloseIcon, LoadingIcon } from '@icons';
   import { renderStreamingMarkdown } from '@utils';
 
   type TapBeer = {
@@ -138,24 +138,23 @@
       {#if chatMessages.length > 0}
         <div class="chat-messages" bind:this={chatContainer}>
           {#each chatMessages as message}
-            <div class="chat-message chat-message--{message.role} padding-base">
+            <div class="chat-message chat-message--{message.role}">
               <p class="fs-xs fw-bold color-opacity-50 margin-bottom-xs">
-                {message.role === 'user' ? 'You' : 'Assistant'}
+                {message.role === 'user' ? 'You' : ''}
               </p>
               {#if message.role === 'assistant'}
                 <div class="chat-text markdown">
-                  {@html renderStreamingMarkdown(message.content)}
+                  {#if message.content}
+                    {@html renderStreamingMarkdown(message.content)}
+                  {:else}
+                    <LoadingIcon />
+                  {/if}
                 </div>
               {:else}
                 <p class="chat-text">{message.content}</p>
               {/if}
             </div>
           {/each}
-          {#if chatLoading}
-            <div class="chat-message chat-message--assistant padding-base">
-              <p class="color-opacity-50">...</p>
-            </div>
-          {/if}
         </div>
       {/if}
 
@@ -197,9 +196,9 @@
     left: 0;
     right: 0;
     z-index: 101;
-    background: var(--color-black);
+    background: var(--color-black-90);
     border-radius: 20px 20px 0 0;
-    max-height: 72vh;
+    max-height: 68vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.7);
@@ -219,17 +218,15 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-base);
-    padding-top: var(--spacing-sm);
-    gap: var(--spacing-base);
   }
 
   .drawer-top {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-base);
     flex-shrink: 0;
+    padding: var(--spacing-sm) var(--spacing-base);
   }
 
   .drawer-title {
@@ -265,17 +262,25 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
+    border-top: 1px solid var(--color-white-8);
+    padding: var(--spacing-base) var(--spacing-base) var(--spacing-lg);
+    font-size: var(--step--1);
   }
 
   .chat-message {
     border-radius: var(--border-radius);
 
-    &--user {
-      background: var(--color-white-8);
+    + .chat-message {
+      margin-top: var(--spacing-base);
     }
 
+    &--user {
+      background: var(--color-white-8);
+      padding: var(--spacing-base);
+    }
     &--assistant {
-      background: var(--color-white-15);
+      padding-left: var(--spacing-sm);
+      padding-right: var(--spacing-sm);
     }
   }
 
@@ -283,11 +288,14 @@
     display: flex;
     gap: var(--spacing-sm);
     flex-shrink: 0;
+    padding: var(--spacing-base);
+    background: var(--color-black);
   }
 
   .chat-input {
     flex: 1;
     border-radius: var(--border-radius);
+    background: var(--color-black);
   }
 
   .chat-input::placeholder {

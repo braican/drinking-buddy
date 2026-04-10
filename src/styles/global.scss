@@ -32,9 +32,10 @@
   --color-white-8: color-mix(in srgb, var(--color-white) 8%, transparent);
   --color-white-15: color-mix(in srgb, var(--color-white) 15%, transparent);
   --color-white-25: color-mix(in srgb, var(--color-white) 25%, transparent);
+  --color-black-90: #2a2a2a;
   --color-primary: #f19d0a;
   --color-primary-hover: color-mix(in srgb, var(--color-primary), var(--color-black) 10%);
   --color-accent: #fa2d02;
 
-  --border-radius: 2px;
+  --border-radius: 6px;
 }

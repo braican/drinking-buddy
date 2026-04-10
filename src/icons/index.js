@@ -7,3 +7,4 @@ export { default as RefreshIcon } from './Refresh.svelte';
 export { default as RightArrowIcon } from './RightArrow.svelte';
 export { default as DownArrowIcon } from './DownArrow.svelte';
 export { default as SearchIcon } from './Search.svelte';
+export { default as LoadingIcon} from './Loading.svelte';
