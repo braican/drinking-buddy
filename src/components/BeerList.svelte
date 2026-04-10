@@ -2,24 +2,28 @@
   import { BeerPlacard } from '@components';
   import type { BeerWithData, Beer } from '@types';
 
-  export let beers: BeerWithData[] | Beer[];
-  export let showBreweries = true;
-  let sort = 'Alphabetical';
+  interface Props {
+    beers: BeerWithData[] | Beer[];
+    showBreweries?: boolean;
+  }
+
+  let { beers, showBreweries = true }: Props = $props();
+  let sort = $state('Alphabetical');
 
   const sortOptions = ['Alphabetical', 'Highest rated', 'Most hads', 'Most recent'];
 
-  $: sortedBeers = async () => {
+  const sortedBeers = $derived.by(() => {
     switch (sort) {
       case 'Alphabetical':
-        return beers.sort((a, b) => (a.name > b.name ? 1 : -1));
+        return [...beers].sort((a, b) => (a.name > b.name ? 1 : -1));
       case 'Highest rated':
-        return beers.sort((a, b) => (a.average > b.average ? -1 : 1));
+        return [...beers].sort((a, b) => (a.average > b.average ? -1 : 1));
       case 'Most recent':
-        return beers.sort((a, b) => (a.last_had > b.last_had ? -1 : 1));
+        return [...beers].sort((a, b) => (a.last_had > b.last_had ? -1 : 1));
       default:
-        return beers.sort((a, b) => (a.hads > b.hads ? -1 : 1));
+        return [...beers].sort((a, b) => (a.hads > b.hads ? -1 : 1));
     }
-  };
+  });
 </script>
 
 <section class="list-section">
@@ -35,17 +39,15 @@
     </div>
   </header>
 
-  {#await sortedBeers() then sortedBeers}
-    {#if sortedBeers}
-      <ul class="margin-top-lg">
-        {#each sortedBeers as beer}
-          <li><BeerPlacard {beer} showBrewery={showBreweries} /></li>
-        {/each}
-      </ul>
-    {:else}
-      <p>No beers.</p>
-    {/if}
-  {/await}
+  {#if sortedBeers.length > 0}
+    <ul class="margin-top-lg">
+      {#each sortedBeers as beer}
+        <li><BeerPlacard {beer} showBrewery={showBreweries} /></li>
+      {/each}
+    </ul>
+  {:else}
+    <p>No beers.</p>
+  {/if}
 </section>
 
 <style lang="scss">

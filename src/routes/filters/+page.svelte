@@ -2,31 +2,31 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { states, styleOptGroups, styles } from '@utils/constants';
+  import { states, styleOptGroups } from '@utils/constants';
   import { ApiRequest, createQueryString } from '@utils';
   import { Tabs, BeerList, CheckinList, BreweryPlacard } from '@components';
   import { FiltersIcon } from '@icons';
   import type { BeerWithData, Brewery, PaginatedCheckins, FilterParameters } from '@types';
 
-  const filterControls: FilterParameters = {
+  const filterControls: FilterParameters = $state({
     style: '',
     state: '',
     year: '',
-  };
+  });
 
-  let filters: FilterParameters = {
+  let filters: FilterParameters = $state({
     style: '',
     state: '',
     year: '',
-  };
+  });
 
-  let paginatedCheckins: PaginatedCheckins = null;
-  let beers: BeerWithData[] = [];
-  let breweries: (Brewery & { beers: BeerWithData[] })[] = [];
-  let filteredAverage = null;
+  let paginatedCheckins: PaginatedCheckins = $state(null);
+  let beers: BeerWithData[] = $state([]);
+  let breweries: (Brewery & { beers: BeerWithData[] })[] = $state([]);
+  let filteredAverage = $state(null);
 
-  let filtered = false;
-  let loading = true;
+  let filtered = $state(false);
+  let loading = $state(true);
 
   onMount(async () => {
     const queryFilters = $page.url.searchParams;
@@ -122,7 +122,7 @@
   {#if Object.values(filterControls).some(v => v)}
     <p class="margin-top-md">
       <button
-        on:click={filter}
+        onclick={filter}
         disabled={loading || Object.entries(filterControls).every(([k, v]) => v === filters[k])}
         class="button button-translucent button-inline-icon">
         {#if filterControls.year && !filterControls.style && !filterControls.state}
@@ -167,27 +167,29 @@
       <strong>{filteredAverage}</strong>.
     </p>
 
-    <Tabs views={['Beers', 'Checkins', 'Breweries']} let:view>
-      {#if view === 'Checkins'}
-        {#if paginatedCheckins?.checkins.length > 0}
-          <CheckinList checkinData={paginatedCheckins} filterQuery={filterControls} />
-        {/if}
-      {:else if view === 'Beers'}
-        <BeerList {beers} />
-      {:else if view === 'Breweries'}
-        <h2 class="list-header">
-          {breweries.length.toLocaleString()} Brewer{breweries.length === 1 ? 'y' : 'ies'}
-        </h2>
-        <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
+    <Tabs views={['Beers', 'Checkins', 'Breweries']}>
+      {#snippet children(view)}
+        {#if view === 'Checkins'}
+          {#if paginatedCheckins?.checkins.length > 0}
+            <CheckinList checkinData={paginatedCheckins} filterQuery={filterControls} />
+          {/if}
+        {:else if view === 'Beers'}
+          <BeerList {beers} />
+        {:else if view === 'Breweries'}
+          <h2 class="list-header">
+            {breweries.length.toLocaleString()} Brewer{breweries.length === 1 ? 'y' : 'ies'}
+          </h2>
+          <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
 
-        <ul class="margin-top-lg">
-          {#each breweries as brewery}
-            <li>
-              <BreweryPlacard {brewery} filtered={true} />
-            </li>
-          {/each}
-        </ul>
-      {/if}
+          <ul class="margin-top-lg">
+            {#each breweries as brewery}
+              <li>
+                <BreweryPlacard {brewery} filtered={true} />
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      {/snippet}
     </Tabs>
   {:else}
     <p>

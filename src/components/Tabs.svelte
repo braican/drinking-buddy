@@ -1,6 +1,14 @@
 <script lang="ts">
-  export let views = [];
-  let activeView = views[0] || null;
+  import type { Snippet } from 'svelte';
+
+  interface Props {
+    views?: string[];
+    children: Snippet<[string | null]>;
+  }
+
+  let { views = [], children }: Props = $props();
+  let selectedView = $state<string | null>(null);
+  let activeView = $derived(selectedView ?? views[0] ?? null);
 </script>
 
 <nav class="margin-bottom-xl">
@@ -11,13 +19,13 @@
           class:button-translucent--active={view === activeView}
           class="button button-translucent"
           aria-label={`Change to ${view} view`}
-          on:click={() => (activeView = view)}>{view}</button>
+          onclick={() => (activeView = view)}>{view}</button>
       </li>
     {/each}
   </ul>
 </nav>
 
-<slot view={activeView} />
+{@render children(activeView)}
 
 <style lang="scss">
   .tabs {

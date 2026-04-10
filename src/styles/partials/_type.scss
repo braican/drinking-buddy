@@ -158,3 +158,34 @@ $list-header-margin: 10px;
 .block-label {
   display: block;
 }
+
+// Markdown.
+.markdown {
+  > * + * {
+    margin-top: var(--spacing-sm);
+    display: block;
+  }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+  code { font-family: monospace; background: var(--color-white-8); padding: 2px 5px; border-radius: 3px; }
+  ul, ol { padding-left: 1.25em; margin-bottom: var(--spacing-sm); list-style: disc; }
+  li { margin-bottom: .25rem; }
+
+  h1,h2,h3 {
+    margin-top: var(--spacing-base);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1 {
+    font-size: 1.16rem;
+  }
+  h2 {
+    font-size: 1.12rem;
+  }
+  h3 {
+    font-size: 1.05rem;
+  }
+}

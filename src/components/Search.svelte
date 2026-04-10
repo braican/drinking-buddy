@@ -6,11 +6,11 @@
   import { ApiRequest, debounce } from '@utils';
   import type { SearchResult } from '@types';
 
-  let query = '';
-  let inputEl = null;
-  let loading = false;
-  let breweryResults: SearchResult[] = [];
-  let beerResults: SearchResult[] = [];
+  let query = $state('');
+  let inputEl = $state(null);
+  let loading = $state(false);
+  let breweryResults: SearchResult[] = $state([]);
+  let beerResults: SearchResult[] = $state([]);
   let abortController;
   const QUERY_LENGTH_THRESHOLD = 3;
 
@@ -64,7 +64,7 @@
 </script>
 
 <div class="modal padding-base" transition:fade={{ duration: 100 }}>
-  <button class="close-button padding-bottom-lg" on:click={viewStore.hideSearch}>
+  <button class="close-button padding-bottom-lg" onclick={viewStore.hideSearch}>
     <span class="fs-xs">Close search</span>
     <CloseIcon />
   </button>
@@ -74,7 +74,7 @@
     type="text"
     bind:this={inputEl}
     bind:value={query}
-    on:input={onInput}
+    oninput={onInput}
     placeholder="Search for a brewery or beer..." />
 
   <div>
@@ -155,6 +155,7 @@
     font-size: var(--step-2);
     padding: 0.5em;
     background-color: var(--color-white-alpha-06);
+    border-radius: var(--border-radius);
   }
   .search-input::placeholder {
     opacity: 0.3;

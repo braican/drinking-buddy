@@ -1,21 +1,26 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { Header, Nav } from '@components';
   import { userStore as user, viewStore } from '@stores';
   import '../styles/global.scss';
+  import type { Snippet } from 'svelte';
+  import type { User } from '@types';
 
-  export let data;
-
-  $: user.set(data?.user);
-
-  // Check if the code is running on the client side (frontend)
-  if (!import.meta.env.SSR) {
-    const unsubscribePage = page.subscribe(value => {
-      viewStore.hideSearch();
-    });
-    onDestroy(unsubscribePage);
+  interface Props {
+    data: { user?: User };
+    children: Snippet;
   }
+
+  let { data, children }: Props = $props();
+
+  $effect(() => {
+    user.set(data?.user);
+  });
+
+  $effect(() => {
+    page.url;
+    viewStore.hideSearch();
+  });
 </script>
 
 <div class="app">
@@ -24,7 +29,7 @@
   <Nav />
 
   <main class="padding-base">
-    <slot />
+    {@render children()}
   </main>
 </div>
 

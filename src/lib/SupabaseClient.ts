@@ -50,7 +50,7 @@ export default class SupabaseClient {
       .from('users')
       .upsert({ ...user, last_updated: new Date() })
       .select()
-      .returns<User>();
+      .single();
 
     if (error) throw error;
 
