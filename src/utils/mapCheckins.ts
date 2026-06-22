@@ -48,10 +48,18 @@ export const mapCheckins = (checkins: CheckinWithData[]): {
   });
 
   const beers = Object.values(beerMap).sort((a, b) => b.average - a.average);
+
+  const beersByBrewery = new Map<number, BeerWithData[]>();
+  for (const beer of beers) {
+    const bid = beer.brewery.id;
+    if (!beersByBrewery.has(bid)) beersByBrewery.set(bid, []);
+    beersByBrewery.get(bid)!.push(beer);
+  }
+
   const breweries = Object.values(breweryMap)
     .map(brewery => ({
       ...brewery,
-      beers: beers.filter(beer => beer.brewery.id === brewery.id),
+      beers: beersByBrewery.get(brewery.id) ?? [],
       average: brewery.total_rating / brewery.rated_hads
     }))
     .sort((a, b) => {

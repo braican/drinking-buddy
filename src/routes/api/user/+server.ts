@@ -6,6 +6,7 @@ export async function GET({ setHeaders }) {
   try {
     const supabase = new SupabaseClient();
     const user = await supabase.getUser();
+    setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ user });
   } catch (error) {
     console.error('[Error in GET api/user]', error);

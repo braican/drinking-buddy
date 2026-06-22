@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
-import { mapCheckins } from '../utils/mapCheckins.ts';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
   User,
@@ -159,7 +158,8 @@ export default class SupabaseClient {
   }
 
   /**
-   * Returns a list of the best and most popular brewries based on the most reent checkins.
+   * Returns a list of the best and most popular breweries based on the most recent checkins.
+   * Uses a server-side SQL function to avoid shipping 1,000 full checkin rows.
    *
    * @return Brewery[]
    */
@@ -167,22 +167,18 @@ export default class SupabaseClient {
     best: Brewery[];
     popular: Brewery[];
   }> {
-    const baseCheckinsPerPage = this.CHECKINS_PER_PAGE;
-    this.CHECKINS_PER_PAGE = 1000;
-    const { data, error } = await this.checkinsWithDataQuery().returns<CheckinWithData[]>();
-    this.CHECKINS_PER_PAGE = baseCheckinsPerPage;
+    const { data, error } = await this.supabase.rpc('get_recent_brewery_rankings');
 
     if (error) throw error;
 
-    const { breweries } = mapCheckins(data);
+    const breweries = data as Brewery[];
+    const best = [...breweries]
+      .filter(b => b.hads > 3)
+      .sort((a, b) => b.average - a.average)
+      .slice(0, 20);
+    const popular = [...breweries].sort((a, b) => b.hads - a.hads).slice(0, 20);
 
-    const best = breweries.filter(b => b.hads > 3).slice(0, 20);
-    const popular = breweries.sort((a, b) => b.hads - a.hads).slice(0, 20);
-
-    return {
-      best,
-      popular,
-    };
+    return { best, popular };
   }
 
   /**
