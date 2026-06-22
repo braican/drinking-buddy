@@ -8,6 +8,7 @@ export async function GET({ setHeaders, params }) {
     const supabase = new SupabaseClient();
     const beers = await supabase.getBreweryBeers(breweryId);
 
+    setHeaders({ 'cache-control': 'private, max-age=600' });
     return ApiResponse.success({ beers });
   } catch (error) {
     console.error('[Error in GET api/brewery/<breweryId>/beers]', error);

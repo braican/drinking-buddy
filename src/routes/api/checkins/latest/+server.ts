@@ -6,6 +6,7 @@ export async function GET({ setHeaders }): Promise<Response> {
   try {
     const supabase = new SupabaseClient();
     const { checkins } = await supabase.getCheckins();
+    setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ checkins });
   } catch (error) {
     console.error('[Error in GET api/checkins/latest]', error);

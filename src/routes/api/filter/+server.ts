@@ -11,22 +11,23 @@ export async function GET({ setHeaders, url }) {
 
     const supabase = new SupabaseClient();
     supabase.CHECKINS_PER_PAGE = 1000;
-    const checkins: CheckinWithData[] = [];
-    let page = 1;
 
     const initialFetch = await supabase.getFilteredCheckins({ style, state, year });
-    checkins.push(...initialFetch.checkins);
+    const checkins: CheckinWithData[] = [...initialFetch.checkins];
 
-    // Keep fetching checkins in this filter until we have the right number.
-    while (checkins.length < initialFetch.count) {
-      page += 1;
-      const nextPageFetch = await supabase.getFilteredCheckins({ style, state, year }, page);
-      checkins.push(...nextPageFetch.checkins);
+    if (checkins.length < initialFetch.count) {
+      const totalPages = Math.ceil(initialFetch.count / supabase.CHECKINS_PER_PAGE);
+      const remainingPages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);
+      const remaining = await Promise.all(
+        remainingPages.map(p => supabase.getFilteredCheckins({ style, state, year }, p)),
+      );
+      checkins.push(...remaining.flatMap(r => r.checkins));
     }
 
     const ratedCheckins = checkins.filter(ch => ch.rating);
     const { beers, breweries } = mapCheckins(checkins);
 
+    setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({
       beers,
       breweries,

@@ -9,6 +9,7 @@ export async function GET({ setHeaders, params, url }) {
     const supabase = new SupabaseClient();
     const { checkins, count } = await supabase.getBreweryCheckins(breweryId, parseInt(page));
 
+    setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ checkins, count });
   } catch (error) {
     console.error('[Error in GET api/brewery/<breweryId>/checkins]', error);

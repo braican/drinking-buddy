@@ -12,6 +12,7 @@ export async function GET({ setHeaders, url }) {
       return ApiResponse.error('Beer not found.', 404);
     }
 
+    setHeaders({ 'cache-control': 'private, max-age=600' });
     return ApiResponse.success({ beer });
   } catch (error) {
     console.error('[Error in GET api/beer]', error);

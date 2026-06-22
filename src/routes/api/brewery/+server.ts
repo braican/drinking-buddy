@@ -12,7 +12,9 @@ export async function GET({ setHeaders, url }) {
       return ApiResponse.error('Brewery not found.', 404);
     }
 
-    return ApiResponse.success({ brewery });
+    const beers = await supabase.getBreweryBeers(String(brewery.id));
+    setHeaders({ 'cache-control': 'private, max-age=600' });
+    return ApiResponse.success({ brewery, beers });
   } catch (error) {
     console.error('[Error in GET api/brewery]', error);
     return ApiResponse.error(error.message, error.status);

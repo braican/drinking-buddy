@@ -5,13 +5,13 @@ import type { Brewery, Beer, PaginatedCheckins } from '@types';
 export async function load({ fetch, params }) {
   try {
     const req = new ApiRequest(fetch);
-    const { brewery } = await req.get<{ brewery: Brewery }>(`brewery?slug=${params.slug}`);
+    const { brewery, beers } = await req.get<{ brewery: Brewery; beers: Beer[] }>(
+      `brewery?slug=${params.slug}`,
+    );
 
     if (!brewery) {
       error(404);
     }
-
-    const { beers } = await req.get<{ beers: Beer[] }>(`brewery/${brewery.id}/beers`);
 
     return {
       brewery,

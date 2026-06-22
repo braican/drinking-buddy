@@ -19,6 +19,7 @@ export async function GET({ setHeaders, url }): Promise<Response> {
       }
     });
 
+    setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ breweryResults, beerResults });
   } catch (error) {
     console.error('[Error in GET api/breweries/search]', error);

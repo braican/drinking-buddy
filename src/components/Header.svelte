@@ -1,9 +1,10 @@
 <script lang="ts">
   import { fly, fade } from 'svelte/transition';
   import { page } from '$app/stores';
+  import { invalidateAll } from '$app/navigation';
   import { RefreshIcon, CloseIcon, MenuIcon, HomeIcon, FiltersIcon, BuildingIcon } from '@icons';
   import { ApiRequest, formatDate } from '@utils';
-  import { userStore as user, checkinStore, breweryStore } from '@stores';
+  import { userStore as user } from '@stores';
   import type { UntappdUser, UntappdCheckinData, User } from '@types';
 
   let menuOpen = $state(false);
@@ -67,8 +68,12 @@
       ]);
 
       user.set(newUser);
-      await checkinStore.refresh();
-      await breweryStore.refresh();
+      await Promise.all([
+        fetch('/api/checkins/latest', { cache: 'reload' }),
+        fetch('/api/stats', { cache: 'reload' }),
+        fetch('/api/stats?timeframe=recent', { cache: 'reload' }),
+      ]);
+      await invalidateAll();
 
       resetButton(`Added ${totalAdded} checkins to database.`);
     } catch (error) {

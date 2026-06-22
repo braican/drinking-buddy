@@ -15,6 +15,7 @@ export async function GET({ setHeaders, url }) {
       parseInt(page),
     );
 
+    setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ checkins, count });
   } catch (error) {
     console.error('[Error in GET api/filter]', error);
