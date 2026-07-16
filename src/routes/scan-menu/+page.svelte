@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import { BeerPlacard } from '@components';
+  import { CloseIcon } from '@icons';
   import type { BeerWithData, SearchResult, Brewery } from '@types';
   import { debounce } from '@utils';
 
@@ -9,6 +11,7 @@
   let extractedNames: string[] = $state([]);
   let matchedBeers: BeerWithData[] = $state([]);
   let error: string | null = $state(null);
+  let showPhotoModal = $state(false);
 
   // Brewery filtering
   let breweryQuery = $state('');
@@ -27,6 +30,7 @@
     extractedNames = [];
     matchedBeers = [];
     error = null;
+    showPhotoModal = false;
   }
 
   const searchBreweries = debounce(async (query: string) => {
@@ -129,6 +133,7 @@
 
       const { data: analyzeData } = await analyzeResponse.json();
       extractedNames = analyzeData.beerNames;
+      console.log('Extracted beer names from menu scan:', extractedNames);
 
       // Step 2: Match beer names against database
       await matchBeers();
@@ -149,20 +154,25 @@
     extractedNames = [];
     matchedBeers = [];
     error = null;
+    showPhotoModal = false;
     clearBrewery();
   }
 </script>
 
-<div class="container">
-  <h1 class="margin-bottom-lg">Scan Menu</h1>
+<div>
+  <header class="padding-bottom-lg">
+    <h1>Scan Menu</h1>
+  </header>
 
   {#if !imagePreview}
     <div class="upload-section">
-      <p class="margin-bottom-base">
+      <p class="margin-bottom-md">
         Take a photo of a beer menu or upload an image to see which beers you've already had.
       </p>
 
-      <label class="button button-primary" for="menu-upload"> Choose Photo or Take Photo </label>
+      <label class="button button-translucent" for="menu-upload">
+        Choose Photo or Take Photo
+      </label>
       <input
         id="menu-upload"
         type="file"
@@ -173,9 +183,15 @@
     </div>
   {:else}
     <div class="preview-section">
-      {#if extractedNames.length > 0}
+      {#if extractedNames.length === 0}
+        <div class="image-preview margin-bottom-md">
+          <img src={imagePreview} alt="Menu preview" />
+        </div>
+
         <div class="brewery-filter margin-bottom-lg">
-          <label for="brewery-search" class="fs-sm margin-bottom-xs"> Filter by brewery </label>
+          <label for="brewery-search" class="fs-sm margin-bottom-xs">
+            Filter by brewery <span class="color-opacity-50">(optional)</span>
+          </label>
           <div class="autocomplete-wrapper">
             <input
               id="brewery-search"
@@ -205,17 +221,13 @@
         </div>
       {/if}
 
-      <div class="image-preview margin-bottom-base">
-        <img src={imagePreview} alt="Menu preview" />
-      </div>
-
       {#if !analyzing && extractedNames.length === 0}
-        <button class="button button-primary" onclick={analyzeMenu}>Analyze Menu</button>
+        <button class="button button-orange" onclick={analyzeMenu}>Scan Menu</button>
         <button class="button button-translucent margin-left-sm" onclick={reset}> Cancel </button>
       {/if}
 
       {#if analyzing}
-        <p class="margin-top-base">Analyzing menu...</p>
+        <p class="margin-top-base">Scanning menu...</p>
       {/if}
 
       {#if error}
@@ -227,14 +239,17 @@
 
       {#if extractedNames.length > 0}
         <div class="results margin-top-lg">
-          <h2 class="margin-bottom-base">
-            Results
-            {#if selectedBrewery}
-              <span class="fs-sm fw-normal">
-                (filtered by {selectedBrewery.name})
-              </span>
-            {/if}
-          </h2>
+          <div class="results-header margin-bottom-md">
+            <h2>
+              Results
+              {#if selectedBrewery}
+                <span class="fs-sm fw-normal">(filtered by {selectedBrewery.name})</span>
+              {/if}
+            </h2>
+            <button class="button button-translucent fs-sm" onclick={() => (showPhotoModal = true)}>
+              View Photo
+            </button>
+          </div>
 
           {#if matchedBeers.length > 0}
             <section class="margin-bottom-xl">
@@ -248,38 +263,87 @@
               </ul>
             </section>
           {:else}
-            <p class="margin-bottom-base">No matches found in your history.</p>
+            <p class="margin-bottom-md">No matches found in your history.</p>
           {/if}
 
-          <section>
-            <h3 class="margin-bottom-sm">
-              All Beers Found ({extractedNames.length})
-            </h3>
-            <ul class="beer-names">
-              {#each extractedNames as name, i (i)}
-                <li>{name}</li>
-              {/each}
-            </ul>
-          </section>
-
-          <button class="button margin-top-lg" onclick={reset}>Scan Another Menu</button>
+          <button class="button button-translucent margin-top-lg" onclick={reset}
+            >Scan Another Menu</button>
         </div>
       {/if}
     </div>
   {/if}
 </div>
 
-<style lang="scss">
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--spacing-lg);
-  }
+{#if showPhotoModal && imagePreview}
+  <div class="photo-modal" transition:fade={{ duration: 150 }}>
+    <button
+      class="photo-modal-close"
+      onclick={() => (showPhotoModal = false)}
+      aria-label="Close photo">
+      <CloseIcon />
+    </button>
+    <img src={imagePreview} alt="Scanned menu" class="photo-modal-image" />
+  </div>
+{/if}
 
+<svelte:window
+  onkeydown={e => {
+    if (e.key === 'Escape' && showPhotoModal) showPhotoModal = false;
+  }} />
+
+<style lang="scss">
   .brewery-filter {
     label {
       display: block;
       font-weight: 500;
+    }
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-base);
+    flex-wrap: wrap;
+  }
+
+  .photo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .photo-modal-image {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    border-radius: var(--border-radius);
+  }
+
+  .photo-modal-close {
+    position: absolute;
+    top: var(--spacing-base);
+    right: var(--spacing-base);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    opacity: 0.7;
+
+    :global(svg) {
+      width: 20px;
+      display: block;
+    }
+
+    &:hover {
+      opacity: 1;
     }
   }
 
@@ -353,13 +417,6 @@
     }
   }
 
-  .upload-section {
-    text-align: center;
-    padding: var(--spacing-xl);
-    border: 2px dashed var(--color-border);
-    border-radius: var(--radius-base);
-  }
-
   .image-preview {
     max-width: 100%;
     border-radius: var(--radius-base);
@@ -378,15 +435,6 @@
     border: 1px solid var(--color-error, #c33);
     border-radius: var(--radius-base);
     color: var(--color-error, #c33);
-  }
-
-  .beer-names {
-    list-style: disc;
-    padding-left: var(--spacing-lg);
-
-    li {
-      margin-bottom: var(--spacing-xs);
-    }
   }
 
   ul {
