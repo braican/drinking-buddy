@@ -13,7 +13,7 @@
           <h2 class="list-header">Latest checkins</h2>
           {#if data.latestCheckins?.length}
             <ul class="margin-top-lg">
-              {#each data.latestCheckins as checkin}
+              {#each data.latestCheckins as checkin (checkin.id)}
                 <li><CheckinPlacard {checkin} /></li>
               {/each}
             </ul>
@@ -46,7 +46,7 @@
             <section class="list-section">
               <h2 class="list-header">Highest Rated</h2>
               <ul class="margin-top-lg">
-                {#each data.bestBreweries.allTime as brewery}
+                {#each data.bestBreweries.allTime as brewery (brewery.id)}
                   <li><BreweryPlacard {brewery} /></li>
                 {/each}
               </ul>
@@ -55,7 +55,7 @@
             <section class="list-section">
               <h2 class="list-header">Most Popular</h2>
               <ul class="margin-top-lg">
-                {#each data.popularBreweries.allTime as brewery}
+                {#each data.popularBreweries.allTime as brewery (brewery.id)}
                   <li><BreweryPlacard {brewery} /></li>
                 {/each}
               </ul>
@@ -69,7 +69,7 @@
               <section class="list-section">
                 <h2 class="list-header">Highest Rated</h2>
                 <ul class="margin-top-lg">
-                  {#each recentStats?.bestBreweries ?? [] as brewery}
+                  {#each recentStats?.bestBreweries ?? [] as brewery (brewery.id)}
                     <li><BreweryPlacard {brewery} /></li>
                   {/each}
                 </ul>
@@ -78,7 +78,7 @@
               <section class="list-section">
                 <h2 class="list-header">Most Popular</h2>
                 <ul class="margin-top-lg">
-                  {#each recentStats?.popularBreweries ?? [] as brewery}
+                  {#each recentStats?.popularBreweries ?? [] as brewery (brewery.id)}
                     <li><BreweryPlacard {brewery} /></li>
                   {/each}
                 </ul>

@@ -29,7 +29,7 @@
   const NAV_LINKS = [
     { href: '/', label: 'Home', icon: HomeIcon },
     { href: '/filters', label: 'Filters', icon: FiltersIcon },
-    { href: '/menu-scan', label: 'Scan Menu', icon: CameraIcon },
+    { href: '/scan-menu', label: 'Scan Menu', icon: CameraIcon },
     { href: '/taproom/tree-house', label: 'Tree House Tap List', icon: BuildingIcon },
   ] as const;
 

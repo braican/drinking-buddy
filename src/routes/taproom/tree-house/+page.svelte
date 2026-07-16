@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import { SvelteMap } from 'svelte/reactivity';
   import type { Beer } from '@types';
   import { ChatDrawer } from '@components';
 
@@ -115,7 +117,7 @@
   }
 
   function groupByBar(beers: CrossReferencedBeer[]): [string, [string, CrossReferencedBeer[]][]][] {
-    const barMap = new Map<string, Map<string, CrossReferencedBeer[]>>();
+    const barMap = new SvelteMap<string, Map<string, CrossReferencedBeer[]>>();
 
     for (const beer of beers) {
       const bar = beer.bar || 'Drafts';
@@ -191,7 +193,8 @@
 <div>
   <header class="padding-bottom-lg">
     <p class="color-opacity-50 margin-bottom-sm">
-      <a class="link" href="/brewery/tree-house-brewing-company">{data.brewery.name}</a>
+      <a class="link" href={resolve('/brewery/[slug]', { slug: 'tree-house-brewing-company' })}
+        >{data.brewery.name}</a>
     </p>
     <h1>Tap List</h1>
   </header>
@@ -199,7 +202,7 @@
   <section class="margin-bottom-xl">
     <p class="fs-sm fw-bold tt-uppercase color-opacity-50 margin-bottom-md">Select a location</p>
     <div class="locations">
-      {#each LOCATIONS as location}
+      {#each LOCATIONS as location (location.key)}
         <button
           class="button button-translucent"
           class:button-translucent--active={selectedLocation === location.key}
@@ -233,13 +236,13 @@
         </p>
       </div>
 
-      {#each beersByBar as [bar, styleGroups]}
+      {#each beersByBar as [bar, styleGroups] (bar)}
         <div class="bar-group margin-bottom-xl">
           <h2 class="bar-heading margin-bottom-lg">{bar}</h2>
-          {#each styleGroups as [style, beers]}
+          {#each styleGroups as [style, beers] (style)}
             <div class="style-group margin-bottom-lg">
               <h3 class="style-heading fs-xs tt-uppercase margin-bottom-sm">{style}</h3>
-              {#each beers as beer}
+              {#each beers as beer (beer.name)}
                 <article class="tap-beer top-border">
                   <div class="tap-beer-info">
                     <p class="fw-bold tap-beer-name">

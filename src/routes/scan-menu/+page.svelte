@@ -102,7 +102,7 @@
   // Re-match when brewery filter changes
   $effect(() => {
     if (extractedNames.length > 0) {
-      selectedBrewery;
+      void selectedBrewery;
       matchBeers();
     }
   });
@@ -162,25 +162,20 @@
         Take a photo of a beer menu or upload an image to see which beers you've already had.
       </p>
 
-      <label class="button button-primary" for="menu-upload">
-        Choose Photo or Take Photo
-      </label>
+      <label class="button button-primary" for="menu-upload"> Choose Photo or Take Photo </label>
       <input
         id="menu-upload"
         type="file"
         accept="image/*"
         capture="environment"
         onchange={handleFileChange}
-        style="display: none;"
-      />
+        style="display: none;" />
     </div>
   {:else}
     <div class="preview-section">
       {#if extractedNames.length > 0}
         <div class="brewery-filter margin-bottom-lg">
-          <label for="brewery-search" class="fs-sm margin-bottom-xs">
-            Filter by brewery
-          </label>
+          <label for="brewery-search" class="fs-sm margin-bottom-xs"> Filter by brewery </label>
           <div class="autocomplete-wrapper">
             <input
               id="brewery-search"
@@ -189,8 +184,7 @@
               bind:value={breweryQuery}
               onfocus={() => breweryQuery && (showBreweryResults = true)}
               onblur={() => setTimeout(() => (showBreweryResults = false), 200)}
-              class="input"
-            />
+              class="input" />
             {#if selectedBrewery}
               <button class="clear-brewery" onclick={clearBrewery} aria-label="Clear brewery">
                 ✕
@@ -198,7 +192,7 @@
             {/if}
             {#if showBreweryResults && breweryResults.length > 0}
               <ul class="autocomplete-results">
-                {#each breweryResults as result}
+                {#each breweryResults as result (result.slug)}
                   <li>
                     <button onclick={() => selectBrewery(result)} class="autocomplete-item">
                       {result.brewery_name}
@@ -217,9 +211,7 @@
 
       {#if !analyzing && extractedNames.length === 0}
         <button class="button button-primary" onclick={analyzeMenu}>Analyze Menu</button>
-        <button class="button button-translucent margin-left-sm" onclick={reset}>
-          Cancel
-        </button>
+        <button class="button button-translucent margin-left-sm" onclick={reset}> Cancel </button>
       {/if}
 
       {#if analyzing}
@@ -250,7 +242,7 @@
                 Beers You've Had ({matchedBeers.length})
               </h3>
               <ul>
-                {#each matchedBeers as beer}
+                {#each matchedBeers as beer (beer.id)}
                   <li><BeerPlacard {beer} /></li>
                 {/each}
               </ul>
@@ -264,7 +256,7 @@
               All Beers Found ({extractedNames.length})
             </h3>
             <ul class="beer-names">
-              {#each extractedNames as name}
+              {#each extractedNames as name, i (i)}
                 <li>{name}</li>
               {/each}
             </ul>

@@ -18,7 +18,7 @@
   });
 
   $effect(() => {
-    page.url;
+    void page.url;
     viewStore.hideSearch();
   });
 </script>

@@ -51,4 +51,12 @@ export default [
       },
     },
   },
+
+  // CommonJS config files
+  {
+    files: ['**/*.cjs'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 ];

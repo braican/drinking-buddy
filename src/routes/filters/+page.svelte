@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { states, styleOptGroups } from '@utils/constants';
   import { ApiRequest, createQueryString } from '@utils';
   import { Tabs, BeerList, CheckinList, BreweryPlacard } from '@components';
@@ -65,7 +66,7 @@
       }
     });
 
-    goto(`?${$page.url.searchParams.toString()}`);
+    goto(resolve(`/filters?${$page.url.searchParams.toString()}`, {}));
 
     beers = filterData.beers;
     breweries = filterData.breweries;
@@ -86,9 +87,9 @@
       <select bind:value={filterControls.style} id="filter-style">
         <option value="">Choose Style</option>
 
-        {#each styleOptGroups as group}
+        {#each styleOptGroups as group (group.group)}
           <optgroup label={group.group}>
-            {#each group.styles as style}
+            {#each group.styles as style (style)}
               <option value={style}>{style}</option>
             {/each}
           </optgroup>
@@ -101,7 +102,7 @@
       <select bind:value={filterControls.state} id="filter-state">
         <option value="">Choose State</option>
 
-        {#each Object.entries(states) as [code, state]}
+        {#each Object.entries(states) as [code, state] (code)}
           <option value={code}>{state}</option>
         {/each}
       </select>
@@ -112,7 +113,7 @@
       <select bind:value={filterControls.year} id="filter-year">
         <option value="">Choose Year</option>
 
-        {#each Array.from({ length: new Date().getFullYear() - 2013 + 1 }, (_, index) => 2013 + index) as yr}
+        {#each Array.from({ length: new Date().getFullYear() - 2013 + 1 }, (_, index) => 2013 + index) as yr (yr)}
           <option value={yr.toString()}>{yr}</option>
         {/each}
       </select>
@@ -182,7 +183,7 @@
           <p class="fs-sm color-opacity-50 list-header-subhead">listed by rating</p>
 
           <ul class="margin-top-lg">
-            {#each breweries as brewery}
+            {#each breweries as brewery (brewery.id)}
               <li>
                 <BreweryPlacard {brewery} filtered={true} />
               </li>
