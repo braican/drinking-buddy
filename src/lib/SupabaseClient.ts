@@ -566,6 +566,58 @@ export default class SupabaseClient {
     return data;
   }
 
+  /**
+   * Finds beers that match any of the provided beer names using fuzzy matching.
+   *
+   * @param {string[]} beerNames Beer names to search for.
+   * @param {number} breweryId Optional brewery ID to filter results.
+   *
+   * @return BeerWithData[]
+   */
+  public async findBeersByNames(
+    beerNames: string[],
+    breweryId?: number,
+  ): Promise<BeerWithData[]> {
+    if (!beerNames.length) {
+      return [];
+    }
+
+    // Normalize and sanitize beer names (lowercase, remove special chars that break queries)
+    const sanitizedNames = beerNames.map(name =>
+      name.toLowerCase().replace(/[&%_]/g, ' ').trim(),
+    );
+
+    // Use textSearch on the name field for better fuzzy matching
+    // This avoids issues with special characters in OR queries
+    const allMatches = await Promise.all(
+      sanitizedNames.map(async name => {
+        let query = this.beersWithDataQuery().ilike('name', `%${name}%`);
+
+        // Filter by brewery if provided
+        if (breweryId) {
+          query = query.eq('brewery', breweryId);
+        }
+
+        const { data, error } = await query.returns<BeerWithData[]>();
+
+        if (error) {
+          console.error(`Error searching for "${name}":`, error);
+          return [];
+        }
+
+        return data || [];
+      }),
+    );
+
+    // Flatten and deduplicate results by beer ID
+    const uniqueBeers = new Map<number, BeerWithData>();
+    allMatches.flat().forEach(beer => {
+      uniqueBeers.set(beer.id, beer);
+    });
+
+    return Array.from(uniqueBeers.values());
+  }
+
   // ==============================
   // Helpers
 

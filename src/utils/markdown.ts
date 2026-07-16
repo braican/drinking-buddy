@@ -1,13 +1,14 @@
 // lib/utils/markdown.ts
 import { marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 
 // Patterns that might be incomplete at the end of a chunk
 const INCOMPLETE_PATTERNS = [
-  /\*{1,2}[^*]*$/,        // bold/italic: ** or *
-  /_{1,2}[^_]*$/,         // bold/italic: __ or _
-  /`{1,3}[^`]*$/,         // inline code or code fence
-  /\[([^\]]*$)/,           // link text
-  /#{1,6}\s*[^\n]*$/,     // heading with no newline yet
+  /\*{1,2}[^*]*$/, // bold/italic: ** or *
+  /_{1,2}[^_]*$/, // bold/italic: __ or _
+  /`{1,3}[^`]*$/, // inline code or code fence
+  /\[([^\]]*$)/, // link text
+  /#{1,6}\s*[^\n]*$/, // heading with no newline yet
 ];
 
 export function renderStreamingMarkdown(text: string): string {
@@ -32,12 +33,9 @@ export function renderStreamingMarkdown(text: string): string {
 
   const html = marked.parse(safe, { async: false }) as string;
   // Append the "in-progress" tail as plain escaped text
-  return html + (tail ? `<span>${escapeHtml(tail)}</span>` : '');
+  return DOMPurify.sanitize(html) + (tail ? `<span>${escapeHtml(tail)}</span>` : '');
 }
 
 function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }

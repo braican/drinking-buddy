@@ -41,7 +41,7 @@
   let chatContainer: HTMLDivElement | undefined = $state(undefined);
 
   $effect(() => {
-    location;
+    void location;
     resetChat();
   });
 
@@ -137,7 +137,7 @@
 
       {#if chatMessages.length > 0}
         <div class="chat-messages" bind:this={chatContainer}>
-          {#each chatMessages as message}
+          {#each chatMessages as message, i (i)}
             <div class="chat-message chat-message--{message.role}">
               <p class="fs-xs fw-bold color-opacity-50 margin-bottom-xs">
                 {message.role === 'user' ? 'You' : ''}
@@ -145,6 +145,7 @@
               {#if message.role === 'assistant'}
                 <div class="chat-text markdown">
                   {#if message.content}
+                    <!-- eslint-disable-next-line svelte/no-at-html-tags -- renderStreamingMarkdown sanitizes its output with DOMPurify -->
                     {@html renderStreamingMarkdown(message.content)}
                   {:else}
                     <LoadingIcon />

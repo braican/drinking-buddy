@@ -31,8 +31,8 @@
     <h2 class="list-header">{beers.length.toLocaleString()} beers</h2>
     <div class="text-align-right">
       <label class="fs-xs block-label" for="brewery-beer-sort">Sort by:</label>
-      <select bind:value={sort} id="brweery-beer-sort">
-        {#each sortOptions as sortOption}
+      <select bind:value={sort} id="brewery-beer-sort">
+        {#each sortOptions as sortOption (sortOption)}
           <option value={sortOption}>{sortOption}</option>
         {/each}
       </select>
@@ -41,7 +41,7 @@
 
   {#if sortedBeers.length > 0}
     <ul class="margin-top-lg">
-      {#each sortedBeers as beer}
+      {#each sortedBeers as beer (beer.id)}
         <li><BeerPlacard {beer} showBrewery={showBreweries} /></li>
       {/each}
     </ul>
