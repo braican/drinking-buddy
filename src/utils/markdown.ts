@@ -1,6 +1,10 @@
 // lib/utils/markdown.ts
 import { marked } from 'marked';
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from 'dompurify';
+
+// Browser-only build: sanitize() is a no-op pass-through when there's no `window`
+// (SSR). Safe here because ChatDrawer's chat history starts empty, so this only
+// ever runs client-side — but don't call this from server-rendered content.
 
 // Patterns that might be incomplete at the end of a chunk
 const INCOMPLETE_PATTERNS = [
