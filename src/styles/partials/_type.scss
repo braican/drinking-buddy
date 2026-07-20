@@ -69,7 +69,7 @@ button {
   padding: var(--spacing-sm);
   font-size: var(--fs-sm);
 
-  :global(svg) {
+  svg {
     width: 20px;
   }
 }
