@@ -52,6 +52,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
     "@supabase/supabase-js": "^2.103.0",
+    "dompurify": "^3.4.12",
     "marked": "^18.0.0"
   },
   "type": "module"

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { CheckinList } from '@components';
 
   let { data } = $props();
@@ -7,7 +8,7 @@
 <div data-id={data.beer.id}>
   <header class="beer-header padding-bottom-lg">
     <p class="brewery-name">
-      <a class="link" href={`/brewery/${data.beer.brewery.slug}`}
+      <a class="link" href={resolve('/brewery/[slug]', { slug: data.beer.brewery.slug })}
         >&larr; {data.beer.brewery.name}</a>
     </p>
 

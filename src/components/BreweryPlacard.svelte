@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import type { Brewery } from '@types';
   import { DownArrowIcon } from '@icons';
   import { BeerPlacard } from '@components';
@@ -14,7 +15,7 @@
 
 <article data-brewery-id={brewery.id} class="brewery padding-base">
   <span class="brewery-name fs-lg">
-    <a href={`/brewery/${brewery.slug}`} class="link">{brewery.name}</a>
+    <a href={resolve('/brewery/[slug]', { slug: brewery.slug })} class="link">{brewery.name}</a>
   </span>
   <div class="brewery-average">
     <span class="fs-lg ff-mono">{brewery.average ? brewery.average.toFixed(2) : '-'}</span>
@@ -37,7 +38,7 @@
 
   {#if expandedBeers}
     <ul class="beer-list">
-      {#each brewery.beers as beer}
+      {#each brewery.beers as beer (beer.id)}
         <li>
           <BeerPlacard {beer} showBrewery={false} sublist={true} />
         </li>

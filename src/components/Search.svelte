@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { viewStore } from '@stores';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
@@ -88,9 +89,11 @@
           <p class="padding-top-bottom-base fs-sm tt-uppercase"><strong>Breweries</strong></p>
 
           <ul>
-            {#each breweryResults as breweryResult}
+            {#each breweryResults as breweryResult (breweryResult.slug)}
               <li class="top-border">
-                <a class="result-link padding-base fs-lg" href={`/brewery/${breweryResult.slug}`}>
+                <a
+                  class="result-link padding-base fs-lg"
+                  href={resolve('/brewery/[slug]', { slug: breweryResult.slug })}>
                   {breweryResult.brewery_name}
                 </a>
               </li>
@@ -103,9 +106,11 @@
         <div class="margin-top-lg">
           <p class="padding-top-bottom-base fs-sm tt-uppercase"><strong>Beers</strong></p>
           <ul>
-            {#each beerResults as beerResult}
+            {#each beerResults as beerResult (beerResult.slug)}
               <li class="top-border">
-                <a class="result-link padding-base fs-lg" href={`/beer/${beerResult.slug}`}>
+                <a
+                  class="result-link padding-base fs-lg"
+                  href={resolve('/beer/[slug]', { slug: beerResult.slug })}>
                   <span class="fs-sm color-opacity-50">{beerResult.brewery_name}</span><br />
                   {beerResult.beer_name}
                 </a>

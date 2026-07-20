@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { formatDate } from '@utils';
   import type { BeerWithData, Beer } from '@types';
 
@@ -14,7 +15,7 @@
 <article data-beer-id={beer.id} class="beer padding-base" class:top-border={!sublist}>
   <div class="beer-stats">
     <p class="beer-name">
-      <a class="link" href={`/beer/${beer.slug}`}>
+      <a class="link" href={resolve('/beer/[slug]', { slug: beer.slug })}>
         {#if showBrewery && typeof beer.brewery === 'object'}
           <span class="brewery-name">{beer.brewery.name}</span>
         {/if}

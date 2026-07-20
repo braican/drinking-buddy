@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import type { CheckinWithData } from '@types';
   import { formatDate } from '@utils';
   import { BuildingIcon } from '@icons';
@@ -30,7 +31,7 @@
 <article data-checkin-id={checkin.id} class="checkin padding-base top-border">
   {#if !light}
     <p>
-      <a class="link" href={`/beer/${checkin.beer.slug}`}>
+      <a class="link" href={resolve('/beer/[slug]', { slug: checkin.beer.slug })}>
         <span class="brewery-name">{checkin.brewery.name}</span>
         <span class="beer-name"><strong>{checkin.beer.name}</strong></span>
       </a>
@@ -50,13 +51,14 @@
 
   {#if checkin.venue && showVenue}
     <p class="fs-sm venue">
-      <BuildingIcon /><a href={`/venue/${checkin.venue.slug}`} class="link">{checkin.venue.name}</a>
+      <BuildingIcon /><a href={resolve('/venue/[slug]', { slug: checkin.venue.slug })} class="link"
+        >{checkin.venue.name}</a>
     </p>
   {/if}
 
   <div class="rating margin-top-sm">
     {#if checkin.rating}
-      {#each ratingClasses as cl}
+      {#each ratingClasses as cl, i (i)}
         <span class={cl}></span>
       {/each}
     {:else}

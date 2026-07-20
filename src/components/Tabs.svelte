@@ -13,7 +13,7 @@
 
 <nav class="margin-bottom-xl">
   <ul class="tabs">
-    {#each views as view}
+    {#each views as view (view)}
       <li>
         <button
           class:button-translucent--active={view === activeView}
