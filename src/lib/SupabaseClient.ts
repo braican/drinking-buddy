@@ -587,7 +587,7 @@ export default class SupabaseClient {
     }
 
     const [beers, breweries] = await Promise.all([
-      this.fetchAllRows<MatchableBeer>('beers', 'id,name,brewery,hads'),
+      this.fetchAllRows<MatchableBeer>('beers', 'id,name,slug,brewery,hads'),
       this.fetchAllRows<MatchableBrewery>('breweries', 'id,name'),
     ]);
 
@@ -611,6 +611,8 @@ export default class SupabaseClient {
       item: items[result.index],
       beer: result.beerId ? (beerData.get(result.beerId) ?? null) : null,
       score: result.score,
+      breweryMatched: result.breweryMatched,
+      alternatives: result.alternatives,
     }));
   }
 

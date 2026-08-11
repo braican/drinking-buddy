@@ -1,8 +1,16 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import { CloseIcon } from '@icons';
+  import { resolve } from '$app/paths';
   import { LoadingMessage, MenuBeerPlacard } from '@components';
-  import type { Brewery, SearchResult, MenuItem, MenuMatch, MenuScanUsage } from '@types';
+  import type {
+    Brewery,
+    SearchResult,
+    MenuItem,
+    MenuMatch,
+    MenuMatchCandidate,
+    MenuScanUsage,
+  } from '@types';
   import { debounce, formatUsd } from '@utils';
 
   // The long edge Claude's vision tier renders at — resizing past this costs
@@ -27,6 +35,10 @@
 
   // Declared once (the script body runs on instantiation, not per update) so the
   // array identity stays stable and the cycling effect never restarts mid-scan.
+  // At or above this, the names agreed closely enough that showing the runners-up
+  // would be noise rather than reassurance.
+  const CONFIDENT_MATCH = 0.95;
+
   const SCANNING_MESSAGES = [
     'Reading the menu...',
     'Squinting at the handwriting...',
@@ -267,6 +279,19 @@
   }
 </script>
 
+<!-- Near-misses, linked so a questionable call can be checked against the beer page. -->
+{#snippet candidates(list: MenuMatchCandidate[])}
+  {#each list as candidate, i (candidate.beerId)}
+    {#if i > 0}<span>, </span>{/if}
+    {#if candidate.slug}
+      <a class="link" href={resolve('/beer/[slug]', { slug: candidate.slug })}>{candidate.name}</a>
+    {:else}
+      <span>{candidate.name}</span>
+    {/if}
+    <span class="color-opacity-50">({Math.round(candidate.score * 100)}%)</span>
+  {/each}
+{/snippet}
+
 <div>
   <header class="padding-bottom-lg">
     <h1>Scan Menu</h1>
@@ -391,7 +416,9 @@
                     <span class="badge fs-sm">{match.item.status.replace('_', ' ')}</span>
                   {/if}
                   {#if match.item.confidence === 'low'}
-                    <span class="badge badge-warn fs-sm">unsure</span>
+                    <!-- The photo was hard to read. Distinct from the matcher's own
+                         uncertainty, which shows up under the name. -->
+                    <span class="badge badge-warn fs-sm">hard to read</span>
                   {/if}
                 {/snippet}
 
@@ -399,11 +426,32 @@
                   {#if match.item.brewery}
                     <p class="fs-sm color-opacity-50 margin-top-xs">{match.item.brewery}</p>
                   {/if}
-                  {#if match.beer && match.beer.name !== match.item.name}
-                    <!-- The canonical name differs from what the menu printed, so say
-                         what it resolved to rather than leaving the match unexplained. -->
+
+                  {#if match.beer}
+                    {#if match.beer.name !== match.item.name}
+                      <!-- The canonical name differs from what the menu printed, so say
+                           what it resolved to rather than leaving the match unexplained. -->
+                      <p class="fs-sm color-opacity-50 margin-top-xs">
+                        matched to "{match.beer.name}"
+                      </p>
+                    {/if}
+                    {#if match.score < CONFIDENT_MATCH}
+                      <p class="fs-sm margin-top-xs unsure-note">
+                        {Math.round(match.score * 100)}% sure
+                        {#if match.alternatives.length}
+                          · also considered {@render candidates(match.alternatives)}
+                        {/if}
+                      </p>
+                    {/if}
+                  {:else if match.item.brewery && !match.breweryMatched}
+                    <!-- Nothing resembling this brewery is in the history, which is a
+                         different miss from "had the brewery, not this beer". -->
                     <p class="fs-sm color-opacity-50 margin-top-xs">
-                      matched to "{match.beer.name}"
+                      no beers from this brewery in your history
+                    </p>
+                  {:else if match.alternatives.length}
+                    <p class="fs-sm margin-top-xs unsure-note">
+                      closest: {@render candidates(match.alternatives)}
                     </p>
                   {/if}
                 {/snippet}
@@ -475,6 +523,11 @@
   .badge-warn {
     background: var(--color-primary);
     color: var(--color-black);
+  }
+
+  .unsure-note {
+    color: var(--color-primary);
+    opacity: 0.85;
   }
 
   .photo-modal {

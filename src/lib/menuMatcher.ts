@@ -11,6 +11,8 @@
 // is not "Marie", so scoring has to stay tight enough to reject near-spellings
 // while absorbing the differences above.
 
+import type { MenuMatchCandidate } from '@types';
+
 // ==============================
 // Normalization
 
@@ -164,7 +166,15 @@ function editDistance(a: string, b: string): number {
  *  typo from a different beer — "Pils" vs "Pilz", "Mary" vs "Marc". */
 const MIN_EDIT_DISTANCE_LENGTH = 6;
 
+/**
+ * Only compares single words. Across multi-word names edit distance is far too
+ * generous: "brick and feather" sits 8 edits from "dry and bitter", which reads as
+ * 53% similar and is enough to make an unrelated brewery look like a candidate.
+ * Token overlap and trigrams are the right tools once there's more than one word.
+ */
 function editSimilarity(a: string, b: string): number {
+  if (a.includes(' ') || b.includes(' ')) return 0;
+
   const longest = Math.max(a.length, b.length);
   if (Math.min(a.length, b.length) < MIN_EDIT_DISTANCE_LENGTH) return 0;
 
@@ -187,6 +197,8 @@ export interface MatchableBeer {
   name: string;
   brewery: number | null;
   hads?: number | null;
+  /** Carried through only so a near-miss can be linked for inspection. */
+  slug?: string | null;
 }
 
 export interface MatchableBrewery {
@@ -206,9 +218,14 @@ export interface MenuMatchResult {
   score: number;
   /** Score of the brewery the winning beer belongs to, for debugging thresholds. */
   breweryScore: number;
-  /** Next-best beer id, when one came close. Useful while tuning. */
-  runnerUpBeerId: number | null;
-  runnerUpScore: number;
+  /** Whether the credited brewery resolved to anything in the catalog at all. This
+   *  separates "never had this brewery" from "had the brewery, not this beer". */
+  breweryMatched: boolean;
+  /**
+   * Beers that were considered and lost, best first, excluding the winner. For a
+   * miss these are what it nearly matched; for a hit they're what it chose over.
+   */
+  alternatives: MenuMatchCandidate[];
 }
 
 // A brewery only has to be plausible — the beer name is the real gate, so this
@@ -219,6 +236,12 @@ const MATCH_THRESHOLD = 0.82;
 /** Required when the menu credited no brewery at all and the whole catalog is in
  *  play. A bare name match across 4,800 beers is otherwise a coin flip. */
 const UNCORROBORATED_THRESHOLD = 0.95;
+/** Worth reporting as "this is what it nearly was". Below this, a candidate shares
+ *  so little with the menu name that naming it would be misleading rather than
+ *  informative. */
+const NEAR_MISS_FLOOR = 0.55;
+/** Enough to explain a decision without turning a menu row into a report. */
+const MAX_ALTERNATIVES = 3;
 
 interface PreparedBeer extends MatchableBeer {
   variants: string[];
@@ -296,15 +319,17 @@ export function matchMenuItems(
       : itemFull;
     const itemVariants = [...new Set([itemFull, itemBare])].filter(Boolean);
 
+    const miss = (breweryMatched: boolean): MenuMatchResult => ({
+      index,
+      beerId: null,
+      score: 0,
+      breweryScore: 0,
+      breweryMatched,
+      alternatives: [],
+    });
+
     if (!itemVariants.length) {
-      return {
-        index,
-        beerId: null,
-        score: 0,
-        breweryScore: 0,
-        runnerUpBeerId: null,
-        runnerUpScore: 0,
-      };
+      return miss(false);
     }
 
     // Precision beats recall here: telling someone they've had a beer they
@@ -313,29 +338,24 @@ export function matchMenuItems(
     // enough to claim a match. When the credited brewery resolves to nothing, the
     // user has had nothing from them, so there is nothing to find.
     if (namedBrewery && !breweryScores.size) {
-      return {
-        index,
-        beerId: null,
-        score: 0,
-        breweryScore: 0,
-        runnerUpBeerId: null,
-        runnerUpScore: 0,
-      };
+      return miss(false);
     }
 
     // Only reachable with no credited brewery, where the whole catalog is in play.
     // Short generic names ("Mary", "Pils") are too collidable to trust there.
     const distinctive = itemFull.length >= 6 || tokenize(itemFull).length > 1;
 
-    const qualifying: Ranked[] = [];
+    const required = namedBrewery ? MATCH_THRESHOLD : UNCORROBORATED_THRESHOLD;
+
+    // Collected down to NEAR_MISS_FLOOR rather than to the match threshold, so a
+    // miss can still say what it nearly was.
+    const considered: Ranked[] = [];
 
     for (const beer of prepared) {
       const breweryScore = beer.brewery !== null ? (breweryScores.get(beer.brewery) ?? 0) : 0;
 
       if (namedBrewery && breweryScore === 0) continue;
       if (!namedBrewery && !distinctive) continue;
-
-      const required = namedBrewery ? MATCH_THRESHOLD : UNCORROBORATED_THRESHOLD;
 
       let score = 0;
       for (const itemVariant of itemVariants) {
@@ -345,22 +365,36 @@ export function matchMenuItems(
         }
       }
 
-      if (score < required) continue;
+      if (score < NEAR_MISS_FLOOR) continue;
 
-      qualifying.push({ score, beer, breweryScore });
+      considered.push({ score, beer, breweryScore });
     }
 
-    qualifying.sort((a, b) => (outranks(a, b) ? -1 : outranks(b, a) ? 1 : 0));
+    considered.sort((a, b) => (outranks(a, b) ? -1 : outranks(b, a) ? 1 : 0));
 
-    const [best, runnerUp] = qualifying;
+    // `required` is per item, not per beer, so the top-scoring candidate is the
+    // match whenever anything qualifies at all.
+    const best = considered[0]?.score >= required ? considered[0] : null;
+    const alternatives = (best ? considered.slice(1) : considered)
+      .slice(0, MAX_ALTERNATIVES)
+      .map(candidate => ({
+        beerId: candidate.beer.id,
+        name: candidate.beer.name,
+        slug: candidate.beer.slug ?? null,
+        brewery:
+          candidate.beer.brewery !== null
+            ? (breweryNames.get(candidate.beer.brewery) ?? null)
+            : null,
+        score: candidate.score,
+      }));
 
     return {
       index,
       beerId: best?.beer.id ?? null,
       score: best?.score ?? 0,
       breweryScore: best?.breweryScore ?? 0,
-      runnerUpBeerId: runnerUp?.beer.id ?? null,
-      runnerUpScore: runnerUp?.score ?? 0,
+      breweryMatched: breweryScores.size > 0,
+      alternatives,
     };
   });
 }

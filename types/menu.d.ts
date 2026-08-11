@@ -33,6 +33,15 @@ export interface MenuScanResult {
   usage: MenuScanUsage;
 }
 
+/** A beer the matcher weighed up but did not settle on. */
+export interface MenuMatchCandidate {
+  beerId: number;
+  name: string;
+  slug: string | null;
+  brewery: string | null;
+  score: number;
+}
+
 /** One menu item paired with the beer it resolved to, if any. */
 export interface MenuMatch {
   item: MenuItem;
@@ -40,4 +49,11 @@ export interface MenuMatch {
   beer: BeerWithData | null;
   /** Match confidence in 0..1. 1 means the normalized names were identical. */
   score: number;
+  /**
+   * Whether any brewery in your history resembles the one the menu credited.
+   * False means you've had nothing from them, which is why nothing matched.
+   */
+  breweryMatched: boolean;
+  /** What else was in contention, best first. Empty when nothing came close. */
+  alternatives: MenuMatchCandidate[];
 }
