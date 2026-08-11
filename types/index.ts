@@ -4,6 +4,7 @@ export * from './brewery';
 export * from './checkin';
 export * from './database';
 export * from './filters';
+export * from './menu';
 export * from './search';
 export * from './untappd';
 export * from './user';

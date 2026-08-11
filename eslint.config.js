@@ -41,9 +41,11 @@ export default [
     },
   },
 
-  // TypeScript parser inside Svelte <script> blocks
+  // TypeScript parser inside Svelte <script> blocks, and in the .svelte.ts modules
+  // that hold runes-based state — those need the TS sub-parser too, or the Svelte
+  // parser chokes on the type annotations.
   {
-    files: ['**/*.svelte'],
+    files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
     languageOptions: {
       parser: svelteParser,
       parserOptions: {

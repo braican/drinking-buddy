@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
+import { matchMenuItems } from './menuMatcher.ts';
+import type { MatchableBeer, MatchableBrewery } from './menuMatcher.ts';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
   User,
@@ -14,6 +16,8 @@ import type {
   Venue,
   SearchResult,
   FilterParameters,
+  MenuItem,
+  MenuMatch,
 } from '@types';
 
 dotenv.config();
@@ -189,9 +193,8 @@ export default class SupabaseClient {
    * @return PaginatedCheckins
    */
   public async getCheckins(page = 1): Promise<PaginatedCheckins> {
-    const { data, error, count } = await this.checkinsWithDataQuery(page).returns<
-      CheckinWithData[]
-    >();
+    const { data, error, count } =
+      await this.checkinsWithDataQuery(page).returns<CheckinWithData[]>();
 
     if (error) throw error;
 
@@ -567,55 +570,74 @@ export default class SupabaseClient {
   }
 
   /**
-   * Finds beers that match any of the provided beer names using fuzzy matching.
+   * Matches menu items scanned from a photo against beers in the database.
    *
-   * @param {string[]} beerNames Beer names to search for.
-   * @param {number} breweryId Optional brewery ID to filter results.
+   * Pulls the full name catalog and matches in-process rather than issuing a
+   * query per item. The catalog is small (a few thousand rows of id and name), and
+   * having all of it in memory is what lets the matcher weigh every candidate and
+   * pick the best one instead of taking the first `ilike` hit.
    *
-   * @return BeerWithData[]
+   * @param {MenuItem[]} items Items read off the menu.
+   *
+   * @return MenuMatch[] One entry per input item, in order, beer null when unmatched.
    */
-  public async findBeersByNames(
-    beerNames: string[],
-    breweryId?: number,
-  ): Promise<BeerWithData[]> {
-    if (!beerNames.length) {
+  public async findMenuMatches(items: MenuItem[]): Promise<MenuMatch[]> {
+    if (!items.length) {
       return [];
     }
 
-    // Normalize and sanitize beer names (lowercase, remove special chars that break queries)
-    const sanitizedNames = beerNames.map(name =>
-      name.toLowerCase().replace(/[&%_]/g, ' ').trim(),
-    );
+    const [beers, breweries] = await Promise.all([
+      this.fetchAllRows<MatchableBeer>('beers', 'id,name,slug,brewery,hads'),
+      this.fetchAllRows<MatchableBrewery>('breweries', 'id,name'),
+    ]);
 
-    // Use textSearch on the name field for better fuzzy matching
-    // This avoids issues with special characters in OR queries
-    const allMatches = await Promise.all(
-      sanitizedNames.map(async name => {
-        let query = this.beersWithDataQuery().ilike('name', `%${name}%`);
+    const results = matchMenuItems(items, beers, breweries);
 
-        // Filter by brewery if provided
-        if (breweryId) {
-          query = query.eq('brewery', breweryId);
-        }
+    // Only the winners need their full record — labels, ratings, brewery slugs.
+    const matchedIds = [...new Set(results.map(r => r.beerId).filter((id): id is number => !!id))];
+    const beerData = new Map<number, BeerWithData>();
 
-        const { data, error } = await query.returns<BeerWithData[]>();
+    if (matchedIds.length) {
+      const { data, error } = await this.beersWithDataQuery()
+        .in('id', matchedIds)
+        .returns<BeerWithData[]>();
 
-        if (error) {
-          console.error(`Error searching for "${name}":`, error);
-          return [];
-        }
+      if (error) throw error;
 
-        return data || [];
-      }),
-    );
+      data.forEach(beer => beerData.set(beer.id, beer));
+    }
 
-    // Flatten and deduplicate results by beer ID
-    const uniqueBeers = new Map<number, BeerWithData>();
-    allMatches.flat().forEach(beer => {
-      uniqueBeers.set(beer.id, beer);
-    });
+    return results.map(result => ({
+      item: items[result.index],
+      beer: result.beerId ? (beerData.get(result.beerId) ?? null) : null,
+      score: result.score,
+      breweryMatched: result.breweryMatched,
+      alternatives: result.alternatives,
+    }));
+  }
 
-    return Array.from(uniqueBeers.values());
+  /**
+   * Reads every row of a table, paging around the API's 1,000-row response cap.
+   */
+  private async fetchAllRows<T>(table: 'beers' | 'breweries', columns: string): Promise<T[]> {
+    const PAGE_SIZE = 1000;
+    const rows: T[] = [];
+
+    for (let from = 0; ; from += PAGE_SIZE) {
+      const { data, error } = await this.supabase
+        .from(table)
+        .select(columns)
+        .range(from, from + PAGE_SIZE - 1)
+        .returns<T[]>();
+
+      if (error) throw error;
+
+      rows.push(...data);
+
+      if (data.length < PAGE_SIZE) break;
+    }
+
+    return rows;
   }
 
   // ==============================
