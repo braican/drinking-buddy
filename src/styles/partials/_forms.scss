@@ -1,4 +1,59 @@
-input[type='text'] {
-  border: 1px solid var(--color-white-alpha-20);
+// The reset applies `all: unset` to form controls, which strips their border,
+// background, padding and — on selects — the native dropdown arrow. Everything
+// here is rebuilding that from scratch rather than tweaking UA styles.
+//
+// Wrapped in :where() so these carry zero specificity: a component that wants a
+// different look (Search, ChatDrawer) overrides them without !important.
+
+$fields: 'input[type="text"], input[type="search"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], input[type="password"], input[type="date"], textarea, select';
+
+:where(#{$fields}) {
   padding: var(--spacing-sm);
+  border: 1px solid var(--field-border);
+  border-radius: var(--border-radius);
+  background-color: var(--field-bg);
+  color: var(--color-white);
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+:where(#{$fields}):hover:not(:disabled) {
+  border-color: var(--field-border-hover);
+}
+
+:where(#{$fields}):focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+:where(#{$fields}):disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// Not wrapped in :where() — pseudo-elements are invalid inside it, which would
+// silently drop the rule. A component's own `.foo::placeholder` still outranks this.
+::placeholder {
+  color: var(--color-white-25);
+}
+
+// Custom chevron, since `appearance` is unset by the reset and the native one
+// is gone. `stroke='white'` avoids a `#` that would need escaping in the URI.
+:where(select) {
+  appearance: none;
+  padding-right: calc(var(--spacing-base) + 10px);
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%206'%3E%3Cpath%20d='M1%201l4%204%204-4'%20fill='none'%20stroke='white'%20stroke-width='1.5'%20stroke-linecap='round'%20opacity='.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-sm) center;
+  background-size: 10px;
+  cursor: pointer;
+}
+
+// The dropdown popup is painted by the OS on Windows and Linux and won't inherit
+// the translucent field background, so give it real colors.
+:where(option, optgroup) {
+  background-color: var(--color-black);
+  color: var(--color-white);
 }

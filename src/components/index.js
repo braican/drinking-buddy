@@ -5,6 +5,8 @@ export { default as ChatDrawer } from './ChatDrawer.svelte';
 export { default as CheckinList } from './CheckinList.svelte';
 export { default as CheckinPlacard } from './CheckinPlacard.svelte';
 export { default as Header } from './Header.svelte';
+export { default as LoadingMessage } from './LoadingMessage.svelte';
+export { default as MenuBeerPlacard } from './MenuBeerPlacard.svelte';
 export { default as Nav } from './Nav.svelte';
 export { default as Search } from './Search.svelte';
 export { default as Tabs } from './Tabs.svelte';

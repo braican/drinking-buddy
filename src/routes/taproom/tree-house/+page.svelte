@@ -2,7 +2,7 @@
   import { resolve } from '$app/paths';
   import { SvelteMap } from 'svelte/reactivity';
   import type { Beer } from '@types';
-  import { ChatDrawer } from '@components';
+  import { ChatDrawer, MenuBeerPlacard } from '@components';
 
   interface Props {
     data: { brewery: { name: string }; beers: Beer[] };
@@ -243,16 +243,8 @@
             <div class="style-group margin-bottom-lg">
               <h3 class="style-heading fs-xs tt-uppercase margin-bottom-sm">{style}</h3>
               {#each beers as beer (beer.name)}
-                <article class="tap-beer top-border">
-                  <div class="tap-beer-info">
-                    <p class="fw-bold tap-beer-name">
-                      <span
-                        class="status-badge"
-                        title={beer.myBeer ? "You've had this" : 'New to you'}>
-                        {beer.myBeer ? '✓' : '★'}
-                      </span>
-                      {beer.name}
-                    </p>
+                <MenuBeerPlacard name={beer.name} beer={beer.myBeer}>
+                  {#snippet details()}
                     {#if beer.abv != null}
                       <p class="fs-sm color-opacity-50 margin-top-xs">{beer.abv}% ABV</p>
                     {/if}
@@ -269,23 +261,8 @@
                         {/if}
                       </p>
                     {/if}
-                  </div>
-                  {#if beer.myBeer}
-                    <div class="tap-beer-history text-align-right">
-                      <p class="ff-mono fs-lg">
-                        {beer.myBeer.average != null ? beer.myBeer.average.toFixed(2) : '—'}
-                      </p>
-                      <p class="fs-sm color-opacity-50 margin-top-xs">
-                        {beer.myBeer.hads}
-                        {beer.myBeer.hads === 1 ? 'had' : 'hads'}
-                      </p>
-                    </div>
-                  {:else}
-                    <div class="tap-beer-history text-align-right">
-                      <p class="fs-sm new-badge">New</p>
-                    </div>
-                  {/if}
-                </article>
+                  {/snippet}
+                </MenuBeerPlacard>
               {/each}
             </div>
           {/each}
@@ -364,39 +341,6 @@
     opacity: 0.4;
     border-bottom: 1px solid var(--color-white-15);
     padding-bottom: var(--spacing-xs);
-  }
-
-  .tap-beer {
-    display: flex;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-base) var(--spacing-sm);
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .tap-beer-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .tap-beer-name {
-    display: flex;
-    gap: 0.6em;
-  }
-
-  .tap-beer-history {
-    flex-shrink: 0;
-  }
-
-  .status-badge {
-    color: var(--color-primary);
-  }
-
-  .new-badge {
-    color: var(--color-accent);
-    font-weight: var(--fw-bold);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
   }
 
   .description {
