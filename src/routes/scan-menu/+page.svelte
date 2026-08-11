@@ -3,42 +3,20 @@
   import { CloseIcon } from '@icons';
   import { resolve } from '$app/paths';
   import { LoadingMessage, MenuBeerPlacard } from '@components';
-  import type {
-    Brewery,
-    SearchResult,
-    MenuItem,
-    MenuMatch,
-    MenuMatchCandidate,
-    MenuScanUsage,
-  } from '@types';
+  import { scanStore } from '@stores';
+  import type { SearchResult, MenuMatchCandidate } from '@types';
   import { debounce, formatUsd } from '@utils';
 
   // The long edge Claude's vision tier renders at — resizing past this costs
   // upload time and image tokens without adding detail.
   const MAX_EDGE = 2576;
 
-  let imageFile: File | null = $state(null);
-  let imagePreview: string | null = $state(null);
-  let analyzing = $state(false);
-  let error: string | null = $state(null);
-  let showPhotoModal = $state(false);
-
-  let items: MenuItem[] = $state([]);
-  let menuBrewery: string | null = $state(null);
-  let scanned = $state(false);
-
-  let matches: MenuMatch[] = $state([]);
-  let matching = $state(false);
-
-  const had = $derived(matches.filter(match => match.beer));
-  const notHad = $derived(matches.filter(match => !match.beer));
-
-  // Declared once (the script body runs on instantiation, not per update) so the
-  // array identity stays stable and the cycling effect never restarts mid-scan.
   // At or above this, the names agreed closely enough that showing the runners-up
   // would be noise rather than reassurance.
   const CONFIDENT_MATCH = 0.95;
 
+  // Declared once (the script body runs on instantiation, not per update) so the
+  // array identity stays stable and the cycling effect never restarts mid-scan.
   const SCANNING_MESSAGES = [
     'Reading the menu...',
     'Squinting at the handwriting...',
@@ -47,19 +25,17 @@
     'Double-checking the taps...',
   ];
 
-  let usage: MenuScanUsage | null = $state(null);
-  // Running totals for the page's lifetime, so repeat scans show what they add up to.
-  let sessionCost = $state(0);
-  let scanCount = $state(0);
-
-  // Brewery scoping
-  let breweryQuery = $state('');
-  let selectedBrewery: Brewery | null = $state(null);
+  // The scan itself lives in scanStore so it survives navigating away and back.
+  // Everything below is transient interface state that should reset on remount.
+  let showPhotoModal = $state(false);
   let breweryResults: SearchResult[] = $state([]);
   let showBreweryResults = $state(false);
   /** Keyboard-highlighted result, -1 when none. */
   let activeIndex = $state(-1);
   let comboboxEl: HTMLElement | null = $state(null);
+
+  const had = $derived(scanStore.matches.filter(match => match.beer));
+  const notHad = $derived(scanStore.matches.filter(match => !match.beer));
 
   /**
    * Re-encodes the photo to a JPEG no larger than MAX_EDGE on its long edge.
@@ -97,9 +73,8 @@
 
     if (!file) return;
 
-    resetResults();
-    imageFile = await normalizeImage(file);
-    imagePreview = URL.createObjectURL(imageFile);
+    scanStore.clearResults();
+    scanStore.setImage(await normalizeImage(file));
   }
 
   const searchBreweries = debounce(async (query: string) => {
@@ -117,7 +92,7 @@
 
       // Drop a response that arrived after the query moved on or a brewery was
       // picked — otherwise a request already in flight reopens the list.
-      if (query !== breweryQuery || selectedBrewery) return;
+      if (query !== scanStore.breweryQuery || scanStore.selectedBrewery) return;
 
       breweryResults = data.breweryResults || [];
       showBreweryResults = breweryResults.length > 0;
@@ -133,7 +108,7 @@
   // list with the brewery that was just picked.
   function onBreweryInput(event: Event) {
     // Typing invalidates whatever was selected before.
-    selectedBrewery = null;
+    scanStore.selectedBrewery = null;
     activeIndex = -1;
     searchBreweries((event.currentTarget as HTMLInputElement).value);
   }
@@ -169,8 +144,8 @@
       if (!response.ok) return;
 
       const { data } = await response.json();
-      selectedBrewery = data.brewery;
-      breweryQuery = selectedBrewery.name;
+      scanStore.selectedBrewery = data.brewery;
+      scanStore.breweryQuery = scanStore.selectedBrewery.name;
       breweryResults = [];
       closeBreweryResults();
     } catch (err) {
@@ -179,23 +154,25 @@
   }
 
   function clearBrewery() {
-    selectedBrewery = null;
-    breweryQuery = '';
+    scanStore.selectedBrewery = null;
+    scanStore.breweryQuery = '';
     breweryResults = [];
     closeBreweryResults();
   }
 
   async function analyzeMenu() {
-    if (!imageFile) return;
+    if (!scanStore.imageFile) return;
 
-    analyzing = true;
-    error = null;
+    // Drop the previous results first, so a re-scan shows the loading note instead
+    // of sitting on a stale list until the new one lands.
+    scanStore.clearResults();
+    scanStore.analyzing = true;
 
     try {
       const formData = new FormData();
-      formData.append('image', imageFile);
-      if (selectedBrewery) {
-        formData.append('breweryName', selectedBrewery.name);
+      formData.append('image', scanStore.imageFile);
+      if (scanStore.selectedBrewery) {
+        formData.append('breweryName', scanStore.selectedBrewery.name);
       }
 
       const response = await fetch('/api/menu/analyze', {
@@ -209,36 +186,36 @@
         throw new Error(message || 'Failed to analyze the menu image.');
       }
 
-      items = data.items || [];
-      menuBrewery = data.menuBrewery;
-      usage = data.usage;
-      scanned = true;
+      scanStore.items = data.items || [];
+      scanStore.menuBrewery = data.menuBrewery;
+      scanStore.usage = data.usage;
+      scanStore.scanned = true;
 
-      sessionCost += usage?.usd ?? 0;
-      scanCount += 1;
+      scanStore.sessionCost += scanStore.usage?.usd ?? 0;
+      scanStore.scanCount += 1;
 
       console.log('Menu scan:', data);
 
       await matchItems();
     } catch (err) {
-      error = err instanceof Error ? err.message : 'An error occurred';
+      scanStore.error = err instanceof Error ? err.message : 'An error occurred';
       console.error(err);
     } finally {
-      analyzing = false;
+      scanStore.analyzing = false;
     }
   }
 
   /** Resolves the scanned names against the beer history. No AI, no extra cost. */
   async function matchItems() {
-    if (!items.length) return;
+    if (!scanStore.items.length) return;
 
-    matching = true;
+    scanStore.matching = true;
 
     try {
       const response = await fetch('/api/menu/match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, menuBrewery }),
+        body: JSON.stringify({ items: scanStore.items, menuBrewery: scanStore.menuBrewery }),
       });
 
       const { success, data, message } = await response.json();
@@ -247,35 +224,22 @@
         throw new Error(message || 'Failed to match beers.');
       }
 
-      matches = data.matches;
+      scanStore.matches = data.matches;
       console.log('Menu matches:', data);
     } catch (err) {
-      error = err instanceof Error ? err.message : 'An error occurred';
+      scanStore.error = err instanceof Error ? err.message : 'An error occurred';
       console.error(err);
     } finally {
-      matching = false;
+      scanStore.matching = false;
     }
   }
 
-  // Deliberately leaves sessionCost and scanCount alone — they track the page,
-  // not the current photo.
-  function resetResults() {
-    items = [];
-    matches = [];
-    menuBrewery = null;
-    usage = null;
-    scanned = false;
-    error = null;
-    showPhotoModal = false;
-  }
-
+  /** Back to an empty page, ready for a new menu. Session totals survive. */
   function reset() {
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    imageFile = null;
-    imagePreview = null;
-    resetResults();
+    scanStore.clear();
+    showPhotoModal = false;
+    breweryResults = [];
+    closeBreweryResults();
   }
 </script>
 
@@ -311,12 +275,12 @@
         aria-controls="brewery-results"
         aria-autocomplete="list"
         aria-activedescendant={activeIndex >= 0 ? `brewery-option-${activeIndex}` : undefined}
-        bind:value={breweryQuery}
+        bind:value={scanStore.breweryQuery}
         oninput={onBreweryInput}
         onkeydown={onBreweryKeydown}
         onfocus={() => breweryResults.length > 0 && (showBreweryResults = true)}
         class="input" />
-      {#if selectedBrewery}
+      {#if scanStore.selectedBrewery}
         <button class="clear-brewery" onclick={clearBrewery} aria-label="Clear brewery"> ✕ </button>
       {/if}
       {#if showBreweryResults && breweryResults.length > 0}
@@ -339,7 +303,7 @@
     </div>
   </div>
 
-  {#if !imagePreview}
+  {#if !scanStore.imagePreview}
     <div class="upload-section">
       <p class="margin-bottom-md">Take a photo of a beer menu or upload an image.</p>
 
@@ -356,12 +320,12 @@
     </div>
   {:else}
     <div class="preview-section">
-      {#if !scanned}
+      {#if !scanStore.scanned}
         <div class="image-preview margin-bottom-md">
-          <img src={imagePreview} alt="Menu preview" />
+          <img src={scanStore.imagePreview} alt="Menu preview" />
         </div>
 
-        {#if !analyzing}
+        {#if !scanStore.analyzing}
           <button class="button button-orange" onclick={analyzeMenu}>Scan Menu</button>
           <button class="button button-translucent margin-left-sm" onclick={reset}>Cancel</button>
         {:else}
@@ -371,20 +335,20 @@
         {/if}
       {/if}
 
-      {#if error}
+      {#if scanStore.error}
         <div class="error margin-top-base">
-          <p><strong>Error:</strong> {error}</p>
+          <p><strong>Error:</strong> {scanStore.error}</p>
           <button class="button margin-top-sm" onclick={reset}>Try Again</button>
         </div>
       {/if}
 
-      {#if scanned}
+      {#if scanStore.scanned}
         <div class="results">
           <div class="results-header margin-bottom-md">
             <h2>
-              {items.length} on the menu
-              {#if menuBrewery}
-                <span class="fs-sm fw-normal color-opacity-50">— {menuBrewery}</span>
+              {scanStore.items.length} on the menu
+              {#if scanStore.menuBrewery}
+                <span class="fs-sm fw-normal color-opacity-50">— {scanStore.menuBrewery}</span>
               {/if}
             </h2>
             <button class="button button-translucent fs-sm" onclick={() => (showPhotoModal = true)}>
@@ -393,23 +357,23 @@
           </div>
 
           <p class="cost margin-bottom-md fs-sm color-opacity-50">
-            {#if !matching}
+            {#if !scanStore.matching}
               {notHad.length} new to you, {had.length} you've had<br />
             {/if}
-            {formatUsd(usage?.usd ?? null)} this scan
-            {#if scanCount > 1}
-              · {formatUsd(sessionCost)} across {scanCount} scans
+            {formatUsd(scanStore.usage?.usd ?? null)} this scan
+            {#if scanStore.scanCount > 1}
+              · {formatUsd(scanStore.sessionCost)} across {scanStore.scanCount} scans
             {/if}
           </p>
 
-          {#if items.length === 0}
+          {#if scanStore.items.length === 0}
             <p>No drinks found in this photo.</p>
-          {:else if matching}
+          {:else if scanStore.matching}
             <!-- One message: this step is fast, so it just throbs rather than cycling. -->
             <LoadingMessage messages={['Checking your history...']} />
           {:else}
             <!-- One list, in the order the menu listed them. -->
-            {#each matches as match, i (`${match.item.name}-${i}`)}
+            {#each scanStore.matches as match, i (`${match.item.name}-${i}`)}
               <MenuBeerPlacard name={match.item.name} beer={match.beer}>
                 {#snippet badges()}
                   {#if match.item.status !== 'available'}
@@ -471,7 +435,7 @@
   {/if}
 </div>
 
-{#if showPhotoModal && imagePreview}
+{#if showPhotoModal && scanStore.imagePreview}
   <div class="photo-modal" transition:fade={{ duration: 150 }}>
     <button
       class="photo-modal-close"
@@ -479,7 +443,7 @@
       aria-label="Close photo">
       <CloseIcon />
     </button>
-    <img src={imagePreview} alt="Scanned menu" class="photo-modal-image" />
+    <img src={scanStore.imagePreview} alt="Scanned menu" class="photo-modal-image" />
   </div>
 {/if}
 
