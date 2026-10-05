@@ -1,4 +1,4 @@
-import type { ApiResponse as ApiResponseObject } from '@types';
+import type { ApiResponse as ApiResponseObject } from '#types';
 
 export default class ApiResponse {
   static success(data) {

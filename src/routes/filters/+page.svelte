@@ -3,11 +3,11 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { states, styleOptGroups } from '@utils/constants';
-  import { ApiRequest, createQueryString } from '@utils';
-  import { Tabs, BeerList, CheckinList, BreweryPlacard } from '@components';
-  import { FiltersIcon } from '@icons';
-  import type { BeerWithData, Brewery, PaginatedCheckins, FilterParameters } from '@types';
+  import { states, styleOptGroups } from '#utils/constants.ts';
+  import { ApiRequest, createQueryString } from '#utils';
+  import { Tabs, BeerList, CheckinList, BreweryPlacard } from '#components';
+  import { FiltersIcon } from '#icons';
+  import type { BeerWithData, Brewery, PaginatedCheckins, FilterParameters } from '#types';
 
   const filterControls: FilterParameters = $state({
     style: '',

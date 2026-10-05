@@ -11,10 +11,10 @@
     FiltersIcon,
     BuildingIcon,
     CameraIcon,
-  } from '@icons';
-  import { ApiRequest, formatDate } from '@utils';
-  import { userStore as user } from '@stores';
-  import type { UntappdUser, UntappdCheckinData, User } from '@types';
+  } from '#icons';
+  import { ApiRequest, formatDate } from '#utils';
+  import { userStore as user } from '#stores';
+  import type { UntappdUser, UntappdCheckinData, User } from '#types';
 
   let menuOpen = $state(false);
   let isRefreshing = $state(false);

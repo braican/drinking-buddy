@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { ApiResponse, estimateCost } from '@utils';
-import type { MenuScanResult } from '@types';
+import { ApiResponse, estimateCost } from '#utils';
+import type { MenuScanResult } from '#types';
 
 const MODEL = 'claude-opus-5';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;

@@ -1,4 +1,4 @@
-import type { CheckinWithData, BeerWithData, Brewery } from '@types';
+import type { CheckinWithData, BeerWithData, Brewery } from '#types';
 
 /**
  * Map checkins to beers and breweries.

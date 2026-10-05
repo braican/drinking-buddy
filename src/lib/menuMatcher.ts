@@ -11,7 +11,7 @@
 // is not "Marie", so scoring has to stay tight enough to reject near-spellings
 // while absorbing the differences above.
 
-import type { MenuMatchCandidate } from '@types';
+import type { MenuMatchCandidate } from '#types';
 
 // ==============================
 // Normalization

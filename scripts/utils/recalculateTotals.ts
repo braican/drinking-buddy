@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import SupabaseClient from '../../src/lib/SupabaseClient.ts';
-import type { CheckinWithData, Beer, Brewery, Venue } from '@types';
+import type { CheckinWithData, Beer, Brewery, Venue } from '#types';
 
 dotenv.config();
 

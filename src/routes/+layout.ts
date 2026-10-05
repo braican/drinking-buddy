@@ -1,5 +1,5 @@
-import { ApiRequest } from '@utils';
-import type { User } from '@types';
+import { ApiRequest } from '#utils';
+import type { User } from '#types';
 
 export async function load({ fetch }) {
   try {

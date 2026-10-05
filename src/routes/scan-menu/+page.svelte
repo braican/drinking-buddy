@@ -1,11 +1,11 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
-  import { CloseIcon } from '@icons';
+  import { CloseIcon } from '#icons';
   import { resolve } from '$app/paths';
-  import { LoadingMessage, MenuBeerPlacard } from '@components';
-  import { scanStore } from '@stores';
-  import type { SearchResult, MenuMatchCandidate } from '@types';
-  import { debounce, formatUsd } from '@utils';
+  import { LoadingMessage, MenuBeerPlacard } from '#components';
+  import { scanStore } from '#stores';
+  import type { SearchResult, MenuMatchCandidate } from '#types';
+  import { debounce, formatUsd } from '#utils';
 
   // The long edge Claude's vision tier renders at — resizing past this costs
   // upload time and image tokens without adding detail.

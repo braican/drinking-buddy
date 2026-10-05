@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { ApiResponse } from '@utils';
+import { ApiResponse } from '#utils';
 
 type TapBeer = {
   name: string;

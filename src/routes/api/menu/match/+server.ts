@@ -1,5 +1,5 @@
-import SupabaseClient from '@lib/SupabaseClient';
-import { ApiResponse } from '@utils';
+import SupabaseClient from '#lib/SupabaseClient.ts';
+import { ApiResponse } from '#utils';
 
 /**
  * Resolves menu items from a photo scan against the beer history.

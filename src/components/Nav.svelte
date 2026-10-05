@@ -1,8 +1,8 @@
 <script>
   import { page } from '$app/state';
-  import { viewStore } from '@stores';
-  import { Search } from '@components';
-  import { SearchIcon } from '@icons';
+  import { viewStore } from '#stores';
+  import { Search } from '#components';
+  import { SearchIcon } from '#icons';
 
   const { searchVisible } = viewStore;
 

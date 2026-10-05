@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Header, Nav } from '@components';
-  import { userStore as user, viewStore } from '@stores';
+  import { Header, Nav } from '#components';
+  import { userStore as user, viewStore } from '#stores';
   import '../styles/global.scss';
   import type { Snippet } from 'svelte';
-  import type { User } from '@types';
+  import type { User } from '#types';
 
   interface Props {
     data: { user?: User };

@@ -1,5 +1,5 @@
-import { UntappdClient, SupabaseClient } from '@lib';
-import { ApiResponse } from '@utils';
+import { UntappdClient, SupabaseClient } from '#lib';
+import { ApiResponse } from '#utils';
 import { UNTAPPD_ACCESS_TOKEN } from '$app/env/private';
 
 /** @type {import('./$types').RequestHandler} */

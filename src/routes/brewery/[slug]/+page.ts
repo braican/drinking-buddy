@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { ApiRequest } from '@utils';
-import type { Brewery, Beer, PaginatedCheckins } from '@types';
+import { ApiRequest } from '#utils';
+import type { Brewery, Beer, PaginatedCheckins } from '#types';
 
 export async function load({ fetch, params }) {
   try {

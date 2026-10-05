@@ -7,7 +7,7 @@
   // carry the other's fields.
   import { resolve } from '$app/paths';
   import type { Snippet } from 'svelte';
-  import type { Beer, BeerWithData } from '@types';
+  import type { Beer, BeerWithData } from '#types';
 
   interface Props {
     /** The name as printed on the menu, which may differ from the canonical one. */

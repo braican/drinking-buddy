@@ -1,4 +1,4 @@
-import { ApiResponse } from '@utils';
+import { ApiResponse } from '#utils';
 
 type TapBeer = {
   name: string;

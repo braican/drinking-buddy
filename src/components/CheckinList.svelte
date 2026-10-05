@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { CheckinPlacard } from '@components';
-  import { ApiRequest, createQueryString } from '@utils';
-  import type { PaginatedCheckins, FilterParameters, CheckinWithData } from '@types';
+  import { CheckinPlacard } from '#components';
+  import { ApiRequest, createQueryString } from '#utils';
+  import type { PaginatedCheckins, FilterParameters, CheckinWithData } from '#types';
 
   interface Props {
     checkinData: PaginatedCheckins;

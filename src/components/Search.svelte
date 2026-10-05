@@ -1,11 +1,11 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { viewStore } from '@stores';
+  import { viewStore } from '#stores';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { CloseIcon } from '@icons';
-  import { ApiRequest, debounce } from '@utils';
-  import type { SearchResult } from '@types';
+  import { CloseIcon } from '#icons';
+  import { ApiRequest, debounce } from '#utils';
+  import type { SearchResult } from '#types';
 
   let query = $state('');
   let inputEl = $state(null);
