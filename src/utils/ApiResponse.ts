@@ -1,9 +1,8 @@
-import { json } from '@sveltejs/kit';
 import type { ApiResponse as ApiResponseObject } from '@types';
 
 export default class ApiResponse {
   static success(data) {
-    return json({
+    return Response.json({
       success: true,
       data,
     });
@@ -19,6 +18,6 @@ export default class ApiResponse {
       returnData.status = status;
     }
 
-    return json(returnData);
+    return Response.json(returnData);
   }
 }

@@ -1,12 +1,12 @@
 <script>
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { viewStore } from '@stores';
   import { Search } from '@components';
   import { SearchIcon } from '@icons';
 
   const { searchVisible } = viewStore;
 
-  const isTreeHousePage = $derived($page.url.pathname === '/taproom/tree-house');
+  const isTreeHousePage = $derived(page.url.pathname === '/taproom/tree-house');
 </script>
 
 {#if !isTreeHousePage}
