@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tabs, BreweryPlacard, CheckinPlacard } from '@components';
+  import { Tabs, BreweryPlacard, CheckinPlacard } from '#components';
 
   let { data } = $props();
   let allTime = $state(false);

@@ -1,12 +1,14 @@
-/// <reference types="@sveltejs/kit" />
-import { build, files, version } from '$service-worker';
+import { self } from '$app/service-worker';
+import { version } from '$app/env';
+import { immutable, assets } from '$app/manifest';
+import { resolve } from '$app/paths';
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
 const ASSETS = [
-  ...build, // the app itself
-  ...files, // everything in `static`
+  ...immutable.map(asset => resolve(asset.path)), // the app itself
+  ...assets.map(asset => resolve(asset.path)), // everything in `static`
 ];
 
 self.addEventListener('install', event => {
@@ -38,7 +40,7 @@ self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     const cache = await caches.open(CACHE);
 
-    // `build`/`files` can always be served from the cache
+    // `immutable`/`assets` can always be served from the cache
     if (ASSETS.includes(url.pathname)) {
       return cache.match(url.pathname);
     }

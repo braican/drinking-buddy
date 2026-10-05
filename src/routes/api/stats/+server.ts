@@ -1,6 +1,6 @@
-import { SupabaseClient } from '@lib';
-import { ApiResponse } from '@utils';
-import type { Brewery } from '@types';
+import { SupabaseClient } from '#lib';
+import { ApiResponse } from '#utils';
+import type { Brewery } from '#types';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }): Promise<Response> {

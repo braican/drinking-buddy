@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tabs, BeerList, CheckinList } from '@components';
+  import { Tabs, BeerList, CheckinList } from '#components';
 
   let { data } = $props();
 </script>

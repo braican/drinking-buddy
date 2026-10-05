@@ -1,7 +1,7 @@
 <script lang="ts">
   // A loading note that cycles through a few phrasings beside the filling pint, for
   // waits long enough that a static line reads as a hung page.
-  import { LoadingIcon } from '@icons';
+  import { LoadingIcon } from '#icons';
 
   interface Props {
     /** Shown in order, looping. The first one should be the literal, useful one. */

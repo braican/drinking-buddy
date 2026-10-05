@@ -1,6 +1,6 @@
-import { SupabaseClient } from '@lib';
-import { ApiResponse, mapCheckins } from '@utils';
-import type { CheckinWithData } from '@types';
+import { SupabaseClient } from '#lib';
+import { ApiResponse, mapCheckins } from '#utils';
+import type { CheckinWithData } from '#types';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }) {

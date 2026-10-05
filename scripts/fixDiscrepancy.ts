@@ -7,7 +7,7 @@ import SupabaseClient from '../src/lib/SupabaseClient.ts';
 import UntappdClient from '../src/lib/UntappdClient.ts';
 import Mapper from '../src/utils/Mapper.ts';
 import { recalculateTotals } from './utils/recalculateTotals.ts';
-import type { UntappdUserCheckinsResponse } from '@types';
+import type { UntappdUserCheckinsResponse } from '#types';
 
 dotenv.config();
 

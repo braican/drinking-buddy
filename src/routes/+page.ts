@@ -1,5 +1,5 @@
-import { ApiRequest } from '@utils';
-import type { CheckinWithData, Brewery } from '@types';
+import { ApiRequest } from '#utils';
+import type { CheckinWithData, Brewery } from '#types';
 
 type StatsResponse = { bestBreweries: Brewery[]; popularBreweries: Brewery[] };
 

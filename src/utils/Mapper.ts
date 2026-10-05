@@ -1,4 +1,4 @@
-import type { UntappdCheckinData, UntappdUser, Checkin, Beer, Brewery, Venue, User } from '@types';
+import type { UntappdCheckinData, UntappdUser, Checkin, Beer, Brewery, Venue, User } from '#types';
 
 /**
  * Map data from the Untappd API to the database schema.

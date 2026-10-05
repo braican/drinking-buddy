@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { states, styleOptGroups } from '@utils/constants';
-  import { ApiRequest, createQueryString } from '@utils';
-  import { Tabs, BeerList, CheckinList, BreweryPlacard } from '@components';
-  import { FiltersIcon } from '@icons';
-  import type { BeerWithData, Brewery, PaginatedCheckins, FilterParameters } from '@types';
+  import { states, styleOptGroups } from '#utils/constants.ts';
+  import { ApiRequest, createQueryString } from '#utils';
+  import { Tabs, BeerList, CheckinList, BreweryPlacard } from '#components';
+  import { FiltersIcon } from '#icons';
+  import type { BeerWithData, Brewery, PaginatedCheckins, FilterParameters } from '#types';
 
   const filterControls: FilterParameters = $state({
     style: '',
@@ -30,7 +30,7 @@
   let loading = $state(true);
 
   onMount(async () => {
-    const queryFilters = $page.url.searchParams;
+    const queryFilters = page.url.searchParams;
 
     Object.keys(filterControls).forEach(key => {
       filterControls[key] = queryFilters.get(key) || '';
@@ -58,15 +58,17 @@
       req.get<PaginatedCheckins>(`filter/checkins?${createQueryString(filterControls)}`),
     ]);
 
+    const url = new URL(page.url.href);
+
     Object.entries(filterControls).forEach(([k, v]) => {
       if (v) {
-        $page.url.searchParams.set(k, v);
+        url.searchParams.set(k, v);
       } else {
-        $page.url.searchParams.delete(k);
+        url.searchParams.delete(k);
       }
     });
 
-    goto(resolve(`/filters?${$page.url.searchParams.toString()}`, {}));
+    goto(resolve(`/filters?${url.searchParams.toString()}`));
 
     beers = filterData.beers;
     breweries = filterData.breweries;

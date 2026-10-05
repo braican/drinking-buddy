@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { ApiRequest } from '@utils';
-import type { Brewery, Beer } from '@types';
+import { ApiRequest } from '#utils';
+import type { Brewery, Beer } from '#types';
 
 const BREWERY_SLUG = 'tree-house-brewing-company';
 

@@ -25,8 +25,8 @@
   "main": "index.js",
   "devDependencies": {
     "@eslint/js": "^9.0.0",
-    "@sveltejs/adapter-auto": "^7.0.1",
-    "@sveltejs/kit": "^2.70.1",
+    "@sveltejs/adapter-auto": "^8.0.0",
+    "@sveltejs/kit": "^3.0.0",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.58.1",
@@ -42,8 +42,8 @@
     "qs": "^6.15.1",
     "sass": "^1.99.0",
     "supabase": "^2.109.1",
-    "svelte": "^5.56.3",
-    "svelte-check": "^4.4.6",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.7.5",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "typescript": "^6.0.2",
@@ -55,5 +55,15 @@
     "dompurify": "^3.4.16",
     "marked": "^18.0.0"
   },
-  "type": "module"
+  "type": "module",
+  "imports": {
+    "#types": "./types/index.ts",
+    "#components": "./src/components/index.js",
+    "#icons": "./src/icons/index.js",
+    "#utils": "./src/utils/index.js",
+    "#utils/*": "./src/utils/*",
+    "#lib": "./src/lib/index.js",
+    "#lib/*": "./src/lib/*",
+    "#stores": "./src/stores/index.js"
+  }
 }

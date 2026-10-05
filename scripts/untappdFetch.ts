@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import UntappdClient from '../src/lib/UntappdClient.ts';
 import Mapper from '../src/utils/Mapper.ts';
-import type { UntappdUserCheckinsResponse } from '@types';
+import type { UntappdUserCheckinsResponse } from '#types';
 
 dotenv.config();
 

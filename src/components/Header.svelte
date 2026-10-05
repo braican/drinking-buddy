@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fly, fade } from 'svelte/transition';
-  import { page } from '$app/stores';
-  import { invalidateAll } from '$app/navigation';
+  import { page } from '$app/state';
+  import { refreshAll } from '$app/navigation';
   import { resolve } from '$app/paths';
   import {
     RefreshIcon,
@@ -11,10 +11,10 @@
     FiltersIcon,
     BuildingIcon,
     CameraIcon,
-  } from '@icons';
-  import { ApiRequest, formatDate } from '@utils';
-  import { userStore as user } from '@stores';
-  import type { UntappdUser, UntappdCheckinData, User } from '@types';
+  } from '#icons';
+  import { ApiRequest, formatDate } from '#utils';
+  import { userStore as user } from '#stores';
+  import type { UntappdUser, UntappdCheckinData, User } from '#types';
 
   let menuOpen = $state(false);
   let isRefreshing = $state(false);
@@ -22,7 +22,7 @@
   let refreshStatus = $state('');
 
   $effect(() => {
-    void $page;
+    void page.url;
     menuOpen = false;
   });
 
@@ -83,7 +83,7 @@
         fetch('/api/stats', { cache: 'reload' }),
         fetch('/api/stats?timeframe=recent', { cache: 'reload' }),
       ]);
-      await invalidateAll();
+      await refreshAll();
 
       resetButton(`Added ${totalAdded} checkins to database.`);
     } catch (error) {
@@ -100,7 +100,7 @@
     </button>
 
     <figure class="user-photo">
-      <a href={resolve('/', {})}><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
+      <a href={resolve('/')}><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
     </figure>
 
     <div class="stats">
@@ -142,7 +142,7 @@
         <CloseIcon />
       </button>
       <figure class="user-photo">
-        <a href={resolve('/', {})}
+        <a href={resolve('/')}
           ><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
       </figure>
     </div>
@@ -152,9 +152,9 @@
         {@const Icon = link.icon}
         <li>
           <a
-            href={resolve(link.href, {})}
+            href={resolve(link.href)}
             class="menu-link"
-            class:menu-link--active={$page.url.pathname === link.href}>
+            class:menu-link--active={page.url.pathname === link.href}>
             <span class="menu-link-icon"><Icon /></span>
             {link.label}
           </a>

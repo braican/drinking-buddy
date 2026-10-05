@@ -1,8 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import type { CheckinWithData } from '@types';
-  import { formatDate } from '@utils';
-  import { BuildingIcon } from '@icons';
+  import type { CheckinWithData } from '#types';
+  import { formatDate } from '#utils';
+  import { BuildingIcon } from '#icons';
 
   interface Props {
     checkin: CheckinWithData;

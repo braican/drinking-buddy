@@ -1,8 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import type { Brewery } from '@types';
-  import { DownArrowIcon } from '@icons';
-  import { BeerPlacard } from '@components';
+  import type { Brewery } from '#types';
+  import { DownArrowIcon } from '#icons';
+  import { BeerPlacard } from '#components';
 
   interface Props {
     brewery: Brewery;

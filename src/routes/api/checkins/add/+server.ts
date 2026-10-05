@@ -1,6 +1,6 @@
-import { SupabaseClient } from '@lib';
-import { Mapper, ApiResponse, incrementRecord } from '@utils';
-import type { Beer, Brewery, UntappdCheckinData, Venue } from '@types';
+import { SupabaseClient } from '#lib';
+import { Mapper, ApiResponse, incrementRecord } from '#utils';
+import type { Beer, Brewery, UntappdCheckinData, Venue } from '#types';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {

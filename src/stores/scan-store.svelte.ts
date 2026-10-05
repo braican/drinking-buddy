@@ -11,7 +11,7 @@
 // server is shared across requests, so anything written during load or SSR would
 // leak between visitors. Keep the writes client-side.
 
-import type { Brewery, MenuItem, MenuMatch, MenuScanUsage } from '@types';
+import type { Brewery, MenuItem, MenuMatch, MenuScanUsage } from '#types';
 
 class ScanStore {
   // The photo. `preview` is an object URL, valid for the life of the document.

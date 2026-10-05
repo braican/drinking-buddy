@@ -1,4 +1,4 @@
-import type { Checkin } from '@types';
+import type { Checkin } from '#types';
 
 /**
  * Increment a record's hads, total_rating, and average.

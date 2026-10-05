@@ -1,8 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { SvelteMap } from 'svelte/reactivity';
-  import type { Beer } from '@types';
-  import { ChatDrawer, MenuBeerPlacard } from '@components';
+  import type { Beer } from '#types';
+  import { ChatDrawer, MenuBeerPlacard } from '#components';
 
   interface Props {
     data: { brewery: { name: string }; beers: Beer[] };

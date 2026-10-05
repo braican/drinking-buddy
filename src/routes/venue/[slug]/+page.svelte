@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CheckinList } from '@components';
+  import { CheckinList } from '#components';
 
   let { data } = $props();
 </script>

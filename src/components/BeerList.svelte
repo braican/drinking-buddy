@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { BeerPlacard } from '@components';
-  import type { BeerWithData, Beer } from '@types';
+  import { BeerPlacard } from '#components';
+  import type { BeerWithData, Beer } from '#types';
 
   interface Props {
     beers: BeerWithData[] | Beer[];

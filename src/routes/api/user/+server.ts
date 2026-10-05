@@ -1,5 +1,5 @@
-import { SupabaseClient } from '@lib';
-import { ApiResponse, Mapper } from '@utils';
+import { SupabaseClient } from '#lib';
+import { ApiResponse, Mapper } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders }) {

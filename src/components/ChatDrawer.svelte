@@ -1,8 +1,8 @@
 <script lang="ts">
   import { fly, fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
-  import { CloseIcon, LoadingIcon } from '@icons';
-  import { renderStreamingMarkdown } from '@utils';
+  import { CloseIcon, LoadingIcon } from '#icons';
+  import { renderStreamingMarkdown } from '#utils';
 
   type TapBeer = {
     name: string;

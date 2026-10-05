@@ -7,7 +7,7 @@ import type {
   UntappdUserInfoResponse,
   UntappdUserCheckinsResponse,
   UntappdCheckinData,
-} from '@types';
+} from '#types';
 
 export default class UntappdClient {
   BASE = 'https://api.untappd.com/v4';

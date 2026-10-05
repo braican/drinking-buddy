@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { formatDate } from '@utils';
-  import type { BeerWithData, Beer } from '@types';
+  import { formatDate } from '#utils';
+  import type { BeerWithData, Beer } from '#types';
 
   interface Props {
     showBrewery?: boolean;

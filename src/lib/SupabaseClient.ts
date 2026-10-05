@@ -18,7 +18,7 @@ import type {
   FilterParameters,
   MenuItem,
   MenuMatch,
-} from '@types';
+} from '#types';
 
 dotenv.config();
 
