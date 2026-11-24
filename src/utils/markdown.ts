@@ -1,4 +1,3 @@
-// lib/utils/markdown.ts
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
@@ -6,40 +5,48 @@ import DOMPurify from 'dompurify';
 // (SSR). Safe here because ChatDrawer's chat history starts empty, so this only
 // ever runs client-side — but don't call this from server-rendered content.
 
-// Patterns that might be incomplete at the end of a chunk
-const INCOMPLETE_PATTERNS = [
-  /\*{1,2}[^*]*$/, // bold/italic: ** or *
-  /_{1,2}[^_]*$/, // bold/italic: __ or _
-  /`{1,3}[^`]*$/, // inline code or code fence
-  /\[([^\]]*$)/, // link text
-  /#{1,6}\s*[^\n]*$/, // heading with no newline yet
-];
-
-export function renderStreamingMarkdown(text: string): string {
-  // Check if the text ends with something that looks incomplete
-  const incomplete = INCOMPLETE_PATTERNS.some(p => p.test(text));
-
-  // If the tail looks incomplete, only render everything up to the last
-  // newline (or safe boundary) and leave the rest as plain text
-  let safe = text;
-  let tail = '';
-
-  if (incomplete) {
-    const lastNewline = text.lastIndexOf('\n');
-    if (lastNewline !== -1) {
-      safe = text.slice(0, lastNewline);
-      tail = text.slice(lastNewline);
-    } else {
-      // Nothing safe to render yet, return plain text
-      return `<span>${text}</span>`;
-    }
-  }
-
-  const html = marked.parse(safe, { async: false }) as string;
-  // Append the "in-progress" tail as plain escaped text
-  return DOMPurify.sanitize(html) + (tail ? `<span>${escapeHtml(tail)}</span>` : '');
+/**
+ * Renders markdown that may still be streaming in.
+ *
+ * While `streaming` is true, the text can end mid-token (an opened `**` with no
+ * closer yet, half a link). Rather than show raw markers until the closer arrives,
+ * we temporarily close whatever is open so the partial text renders as it will
+ * look once complete. Once streaming ends, the text is rendered as-is.
+ */
+export function renderStreamingMarkdown(text: string, streaming = false): string {
+  const source = streaming ? closeOpenMarkdown(text) : text;
+  const html = marked.parse(source, { async: false, breaks: true }) as string;
+  return DOMPurify.sanitize(html);
 }
 
-function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function closeOpenMarkdown(text: string): string {
+  // An unterminated code fence: close it and skip inline fixes (it's all code).
+  const fences = text.match(/^\s*```/gm)?.length ?? 0;
+  if (fences % 2 === 1) return `${text}\n\`\`\``;
+
+  let result = text;
+
+  // A half-written link — `[text` or `[text](url` — is dropped until it completes.
+  result = result.replace(/\[[^\]\n]*(?:\]\([^)\n]*)?$/, '');
+
+  // A marker with nothing after it yet (e.g. text ending in "**") is dropped, so we
+  // don't render an empty pair.
+  result = result.replace(/(\*{1,2}|`)\s*$/, '');
+
+  // Ignore inline code when counting emphasis markers.
+  const withoutCode = result.replace(/`[^`]*`/g, '');
+  if ((result.match(/`/g)?.length ?? 0) % 2 === 1) return `${result}\``;
+
+  const bold = withoutCode.match(/\*\*/g)?.length ?? 0;
+  // Single `*` that aren't part of `**` and aren't list bullets.
+  const italic =
+    withoutCode
+      .replace(/\*\*/g, '')
+      .replace(/^\s*\* /gm, '')
+      .match(/\*/g)?.length ?? 0;
+
+  if (italic % 2 === 1) result += '*';
+  if (bold % 2 === 1) result += '**';
+
+  return result;
 }

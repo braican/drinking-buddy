@@ -11,8 +11,10 @@
   let { data }: Props = $props();
 
   type TapBeer = {
+    untappdId: number | null;
     name: string;
     bar: string | null;
+    section: string | null;
     style: string | null;
     abv: number | null;
     description: string | null;
@@ -29,15 +31,15 @@
 
   const LOCATIONS = [
     { key: 'charlton', name: 'Charlton' },
-    // { key: 'tewksbury', name: 'Tewksbury' }, // need another way to get this taplist.
+    { key: 'tewksbury', name: 'Tewksbury' },
     { key: 'prudential', name: 'Prudential Center (Boston)' },
     { key: 'sandwich', name: 'Sandwich (Cape Cod)' },
     { key: 'deerfield', name: 'Deerfield' },
-    // { key: 'saratoga', name: 'Saratoga' }, // need another way to get this taplist.
+    { key: 'saratoga', name: 'Saratoga' },
     { key: 'woodstock', name: 'Woodstock (CT)' },
   ];
 
-  const CACHE_KEY = (loc: string) => `taplist:${loc}`;
+  const CACHE_KEY = (loc: string) => `taplist:v2:${loc}`;
 
   let selectedLocation: string | null = $state(null);
   let tapList: TapBeer[] = $state([]);
@@ -52,7 +54,7 @@
   const crossReferenced = $derived(
     tapList.map(tapBeer => ({
       ...tapBeer,
-      myBeer: findMyBeer(tapBeer.name),
+      myBeer: findMyBeer(tapBeer),
     })),
   );
 
@@ -62,6 +64,26 @@
   const newCount = $derived(crossReferenced.filter(b => !b.myBeer).length);
 
   const fetchedAtLabel = $derived(fetchedAt ? timeAgo(fetchedAt) : null);
+
+  // Each tap beer carries your history for it, so the bartender doesn't have to
+  // match names against your history itself.
+  const chatTapList = $derived(
+    crossReferenced.map(({ name, bar, section, style, abv, description, myBeer }) => ({
+      name,
+      bar,
+      section,
+      style,
+      abv,
+      description,
+      had: myBeer
+        ? {
+            average: myBeer.average ?? null,
+            hads: myBeer.hads ?? null,
+            last_had: myBeer.last_had ?? null,
+          }
+        : null,
+    })),
+  );
 
   const chatBeers = $derived(
     data.beers.map(b => ({
@@ -111,8 +133,14 @@
     return `${h}h ago`;
   }
 
-  function findMyBeer(name: string): Beer | null {
-    const normalized = name.toLowerCase().trim();
+  // Beer IDs in the database are Untappd IDs, so match on that first; fall back to the
+  // name in case the menu links a different Untappd entry than the one checked in.
+  function findMyBeer(tapBeer: TapBeer): Beer | null {
+    if (tapBeer.untappdId != null) {
+      const byId = data.beers.find(b => b.id === tapBeer.untappdId);
+      if (byId) return byId;
+    }
+    const normalized = tapBeer.name.toLowerCase().trim();
     return data.beers.find(b => b.name?.toLowerCase().trim() === normalized) ?? null;
   }
 
@@ -121,7 +149,7 @@
 
     for (const beer of beers) {
       const bar = beer.bar || 'Drafts';
-      const style = beer.style || 'Other';
+      const style = beer.section || beer.style || 'Other';
       if (!barMap.has(bar)) barMap.set(bar, new Map());
       const styleMap = barMap.get(bar)!;
       if (!styleMap.has(style)) styleMap.set(style, []);
@@ -245,8 +273,12 @@
               {#each beers as beer (beer.name)}
                 <MenuBeerPlacard name={beer.name} beer={beer.myBeer}>
                   {#snippet details()}
-                    {#if beer.abv != null}
-                      <p class="fs-sm color-opacity-50 margin-top-xs">{beer.abv}% ABV</p>
+                    {#if beer.style || beer.abv != null}
+                      <p class="fs-sm color-opacity-50 margin-top-xs">
+                        {[beer.style, beer.abv != null ? `${beer.abv}% ABV` : null]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </p>
                     {/if}
                     {#if beer.description}
                       {@const teaser = firstSentence(beer.description)}
@@ -283,7 +315,11 @@
   </button>
 {/if}
 
-<ChatDrawer bind:open={chatOpen} {tapList} myBeers={chatBeers} location={selectedLocation} />
+<ChatDrawer
+  bind:open={chatOpen}
+  tapList={chatTapList}
+  myBeers={chatBeers}
+  location={selectedLocation} />
 
 <style lang="scss">
   .locations {
