@@ -58,16 +58,59 @@ ${JSON.stringify(myBeers)}
 </my_history>`;
 }
 
+// Caps on what the client can send, so one request can't run up a large bill. Normal use
+// (60-beer list, ~200-beer history, a short conversation) is well under each.
+const LIMITS = {
+  bodyBytes: 400_000,
+  messages: 20,
+  messageChars: 8_000,
+  tapBeers: 150,
+  historyBeers: 1_000,
+};
+
+function invalid(message: string) {
+  return Response.json({ success: false, message, status: 400 }, { status: 400 });
+}
+
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
-  const { messages, tapList, myBeers } = (await request.json()) as {
-    messages: ChatMessage[];
-    tapList: TapBeer[];
-    myBeers: MyBeer[];
-  };
+  const declaredLength = Number(request.headers.get('content-length') ?? 0);
+  if (declaredLength > LIMITS.bodyBytes) return invalid('Request too large.');
 
-  if (!messages?.length || messages.at(-1)?.role !== 'user') {
-    return ApiResponse.error('No question provided.', 400);
+  const raw = await request.text();
+  if (raw.length > LIMITS.bodyBytes) return invalid('Request too large.');
+
+  let body: { messages?: ChatMessage[]; tapList?: TapBeer[]; myBeers?: MyBeer[] };
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return invalid('Invalid request.');
+  }
+
+  const { messages, tapList = [], myBeers = [] } = body;
+
+  if (
+    !Array.isArray(messages) ||
+    !messages.length ||
+    messages.length > LIMITS.messages ||
+    messages.at(-1)?.role !== 'user' ||
+    !messages.every(
+      m =>
+        (m?.role === 'user' || m?.role === 'assistant') &&
+        typeof m.content === 'string' &&
+        m.content.length <= LIMITS.messageChars,
+    )
+  ) {
+    return invalid('Invalid or too-long conversation.');
+  }
+
+  if (
+    !Array.isArray(tapList) ||
+    tapList.length > LIMITS.tapBeers ||
+    !Array.isArray(myBeers) ||
+    myBeers.length > LIMITS.historyBeers
+  ) {
+    return invalid('Tap list or history too large.');
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -86,7 +129,7 @@ export async function POST({ request }) {
     system: [
       {
         type: 'text',
-        text: buildSystemPrompt(tapList ?? [], myBeers ?? []),
+        text: buildSystemPrompt(tapList, myBeers),
         cache_control: { type: 'ephemeral' },
       },
     ],

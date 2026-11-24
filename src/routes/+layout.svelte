@@ -30,9 +30,11 @@
 </script>
 
 <div class="app">
-  <Header />
+  {#if page.url.pathname !== '/login'}
+    <Header />
 
-  <Nav />
+    <Nav />
+  {/if}
 
   <main class="padding-base">
     {@render children()}

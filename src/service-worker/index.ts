@@ -50,7 +50,9 @@ self.addEventListener('fetch', event => {
     try {
       const response = await fetch(event.request);
 
-      if (response.status === 200) {
+      // A redirected response is the login page standing in for what was asked for;
+      // don't cache it under the original URL.
+      if (response.status === 200 && !response.redirected) {
         cache.put(event.request, response.clone());
       }
 
