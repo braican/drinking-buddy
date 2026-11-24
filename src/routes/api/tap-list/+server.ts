@@ -1,356 +1,152 @@
 import { ApiResponse } from '#utils';
 
 type TapBeer = {
+  /** Untappd beer ID — the same ID as `beers.id` in the database. */
+  untappdId: number | null;
   name: string;
+  /** The menu tab the beer is listed under, e.g. "Main Bar Drafts". */
   bar: string | null;
+  /** The section within the tab, e.g. "IPA", "Nitro", "Side Pull Drafts". */
+  section: string | null;
+  /** Untappd style, e.g. "IPA - Imperial". */
   style: string | null;
   abv: number | null;
   description: string | null;
 };
 
-// Known Untappd primary style categories, ordered so multi-word names match before single words
-// (e.g. "Pale Ale" must be checked before "Ale")
-const PRIMARY_STYLES = [
-  'Pale Ale',
-  'Brown Ale',
-  'Farmhouse Ale',
-  'Barleywine-Style Ale',
-  'Wheat Beer',
-  'Sour Ale',
-  'Session Ale',
-  'Golden Ale',
-  'Session IPA',
-  'IPA',
-  'Stout',
-  'Ale',
-  'Lager',
-  'Pilsner',
-  'Porter',
-  'Cider',
-  'Saison',
-  'Bock',
-  'Wheat',
-  'Sour',
-  'Barleywine',
-  'Lambic',
-  'Gose',
-  'Mead',
-  'Kölsch',
-  'Kolsch',
-];
-
 // ---------------------------------------------------------------------------
-// Charlton — linked beer label images + #### [Name](url)Style headings
+// Untappd for Business embed
 // ---------------------------------------------------------------------------
+//
+// Every Tree House draft list page embeds an Untappd for Business menu:
+//
+//   PreloadEmbedMenu("menu-container", <locationId>, <themeId>)
+//
+// which loads https://business.untappd.com/locations/<locationId>/themes/<themeId>/js.
+// That script contains the full rendered menu — every tab — as a string assigned to
+// `container.innerHTML`, so we can read it without running any JavaScript.
 
-/**
- * Two-pass approach:
- *   Pass 1 — build a lookup of fully-described beers (#### heading, style, ABV, description).
- *   Pass 2 — walk linked image lines in visual order; plain ![...] cocktail images are excluded.
- */
-function parseTapListCharlton(markdown: string): TapBeer[] {
-  type FullEntry = { style: string | null; abv: number; description: string | null };
-  const fullEntries = new Map<string, FullEntry>();
+const EMBED_PATTERN = /PreloadEmbedMenu\(\s*["'][^"']*["']\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/;
 
-  for (const chunk of markdown.split('#### ').slice(1)) {
-    const headerMatch = chunk.match(/^\[([^\]]+)\]\([^)]*\)([^\n]*)/);
-    if (!headerMatch) continue;
-
-    const name = headerMatch[1].trim();
-    const style = headerMatch[2].trim() || null;
-
-    const abvMatch = chunk.match(/([\d.]+)% ABV/);
-    if (!abvMatch) continue;
-
-    const abv = parseFloat(abvMatch[1]);
-
-    let description: string | null = null;
-    const descMatch = chunk.match(/\[More Info[^\n]*\]\([^)]*\)\n\n([\s\S]*?)\n\n\[Less Info/);
-    if (descMatch) description = descMatch[1].trim();
-
-    fullEntries.set(name.toLowerCase(), { style, abv, description });
+async function fetchMenuHtml(draftListUrl: string): Promise<string> {
+  const pageResponse = await fetch(draftListUrl);
+  if (!pageResponse.ok) {
+    throw new Error(`Could not fetch the draft list page (${pageResponse.status}).`);
   }
 
-  const beers: TapBeer[] = [];
-  const seen = new Set<string>();
-  let currentBar: string | null = null;
-  let currentSection: string | null = null;
-
-  for (const line of markdown.split('\n')) {
-    const barMatch = line.match(/^## (.+)/);
-    if (barMatch) {
-      currentBar = barMatch[1].trim();
-      continue;
-    }
-
-    const sectionMatch = line.match(/^### (.+)/);
-    if (sectionMatch) {
-      currentSection = sectionMatch[1].trim();
-      continue;
-    }
-
-    const imageMatch = line.match(/^\[!\[Image \d+: ([^\]]+)\]/);
-    if (!imageMatch) continue;
-
-    const name = imageMatch[1].trim();
-    const nameKey = name.toLowerCase();
-    const seenKey = `${currentBar}:${nameKey}`;
-    if (seen.has(seenKey)) continue;
-    seen.add(seenKey);
-
-    const full = fullEntries.get(nameKey);
-    if (full) {
-      beers.push({
-        name,
-        bar: currentBar,
-        style: full.style,
-        abv: full.abv,
-        description: full.description,
-      });
-    } else {
-      beers.push({ name, bar: currentBar, style: currentSection, abv: null, description: null });
-    }
+  const embedMatch = (await pageResponse.text()).match(EMBED_PATTERN);
+  if (!embedMatch) {
+    throw new Error('Could not find the Untappd menu embed on the draft list page.');
   }
 
-  return beers;
+  const [, locationId, themeId] = embedMatch;
+  const embedResponse = await fetch(
+    `https://business.untappd.com/locations/${locationId}/themes/${themeId}/js`,
+  );
+  if (!embedResponse.ok) {
+    throw new Error(`Could not fetch the Untappd menu (${embedResponse.status}).`);
+  }
+
+  const script = await embedResponse.text();
+  const htmlMatch = script.match(/container\.innerHTML\s*=\s*("(?:[^"\\]|\\.)*")/);
+  if (!htmlMatch) {
+    throw new Error('Could not find the menu markup in the Untappd embed.');
+  }
+
+  return decodeJsString(htmlMatch[1]);
 }
 
-// ---------------------------------------------------------------------------
-// Deerfield — plain-text #### headings, "Style X% ABV" on the following line
-// ---------------------------------------------------------------------------
-
-function parseTapListDeerfield(markdown: string): TapBeer[] {
-  const beers: TapBeer[] = [];
-  const seen = new Set<string>();
-  let currentBar: string | null = null;
-  let currentSection: string | null = null;
-
-  const lines = markdown.split('\n');
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    const barMatch = line.match(/^## (.+)/);
-    if (barMatch) {
-      currentBar = barMatch[1].trim();
-      continue;
-    }
-
-    // Strip optional price suffix (e.g. "IPA $9" → "IPA")
-    const sectionMatch = line.match(/^### (.+)/);
-    if (sectionMatch) {
-      currentSection = sectionMatch[1].replace(/\s+\$[\d.]+$/, '').trim();
-      continue;
-    }
-
-    const beerMatch = line.match(/^#### (.+)/);
-    if (!beerMatch) continue;
-
-    const nameRaw = beerMatch[1].trim();
-    // Linked names belong to the Charlton format — skip if encountered
-    if (nameRaw.startsWith('[')) continue;
-
-    const name = nameRaw;
-    const seenKey = `${currentBar ?? '_'}:${name.toLowerCase()}`;
-    if (seen.has(seenKey)) continue;
-    seen.add(seenKey);
-
-    // The line after the heading has "Style X% ABV" — use the ### heading as style, only extract ABV
-    const style: string | null = currentSection;
-    let abv: number | null = null;
-    let j = i + 1;
-    while (j < lines.length && lines[j].trim() === '') j++;
-    if (j < lines.length) {
-      const abvMatch = lines[j].match(/([\d.]+)%\s*ABV/);
-      if (abvMatch) abv = parseFloat(abvMatch[1]);
-    }
-
-    let description: string | null = null;
-    const remainingChunk = lines.slice(i).join('\n');
-    const nextBeerIdx = remainingChunk.indexOf('\n#### ', 1);
-    const relevantChunk = nextBeerIdx > -1 ? remainingChunk.slice(0, nextBeerIdx) : remainingChunk;
-    const descMatch = relevantChunk.match(
-      /\[More Info[^\n]*\]\([^)]*\)\n\n([\s\S]*?)\n\n\[Less Info/,
-    );
-    if (descMatch) description = descMatch[1].trim();
-
-    beers.push({ name, bar: currentBar, style, abv, description });
-  }
-
-  return beers;
+/**
+ * Decodes a double-quoted JS string literal. JSON handles most of it; escapes that are
+ * legal in JS but not in JSON (like `\'`) are unescaped first.
+ */
+function decodeJsString(literal: string): string {
+  const jsonSafe = literal.replace(/\\(.)/gs, (escape, char) =>
+    '"\\/bfnrtu'.includes(char) ? escape : char,
+  );
+  return JSON.parse(jsonSafe);
 }
 
-// ---------------------------------------------------------------------------
-// Sandwich / Woodstock / Prudential — table format, inline "Name Style ABV%"
-// ---------------------------------------------------------------------------
+function decodeEntities(text: string): string {
+  return text
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+}
+
+function textOf(html: string | undefined): string | null {
+  if (!html) return null;
+  const text = decodeEntities(html.replace(/<[^>]*>/g, '')).trim();
+  return text || null;
+}
 
 /**
- * These pages use an Untappd table embed. Each beer appears as a plain-text line:
- *   "Beer Name Style - Subcategory X.X%[optional serving info on same line]"
- * There are no #### headings or linked images.
+ * Walks the menu markup: tabs (`.tab-content`) → sections (`.section`) → items (`.menu-item`).
+ *
+ * Locations use different Untappd themes (standard, compact, table) with slightly different
+ * markup. Only the standard theme (Charlton, Tewksbury) links each beer to Untappd, giving
+ * us its ID. In all of them, a beer is an item with an Untappd link or an ABV — cocktails,
+ * coffee and soda have neither.
  */
-function parseTapListTableInline(markdown: string): TapBeer[] {
+function parseMenu(html: string): TapBeer[] {
   const beers: TapBeer[] = [];
   const seen = new Set<string>();
-  let currentBar: string | null = null;
-  let inDescription = false;
 
-  const lines = markdown.split('\n');
+  for (const tab of html.split('<div class="tab-content"').slice(1)) {
+    const bar = textOf(tab.match(/<h2 class="h2[^"]*">([\s\S]*?)<\/h2>/)?.[1]);
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    for (const sectionHtml of tab.split(/<div class="(?:[^"]*\s)?section(?:\s[^"]*)?">/).slice(1)) {
+      const section = textOf(sectionHtml.match(/<h3[^>]*>([\s\S]*?)<\/h3>/)?.[1]);
 
-    // Track description blocks so their content is never parsed as beer lines.
-    // [More Info ▸] and [Less Info ▴] both start with '[', so check them before
-    // the generic link-skip below.
-    if (line.startsWith('[More Info')) {
-      inDescription = true;
-      continue;
-    }
-    if (line.startsWith('[Less Info')) {
-      inDescription = false;
-      continue;
-    }
-    if (inDescription) continue;
+      for (const item of sectionHtml.split(/<div class="item-bg-color menu-item[\s"]/).slice(1)) {
+        // In every theme, the item's name is the first element with an id.
+        const name = textOf(item.match(/<span id="[^"]*">([\s\S]*?)<\/span>/)?.[1]);
+        if (!name) continue;
 
-    const barMatch = line.match(/^## (.+)/);
-    if (barMatch) {
-      currentBar = barMatch[1].trim();
-      continue;
-    }
+        const link = item.match(/href="https:\/\/untappd\.com\/b\/[^"]*\/(\d+)"/);
+        const abvMatch = item.match(/class="item-abv">\s*([\d.]+)%/);
+        if (!link && !abvMatch) continue;
 
-    // Skip section headers (pour sizes, cocktail sections, etc.)
-    if (line.match(/^### /)) continue;
+        const untappdId = link ? Number(link[1]) : null;
+        const seenKey = `${bar}:${untappdId ?? name.toLowerCase()}`;
+        if (seen.has(seenKey)) continue;
+        seen.add(seenKey);
 
-    // Skip table structure, links, images, and non-content lines
-    if (
-      line.startsWith('|') ||
-      !line.trim() ||
-      line.startsWith('[') ||
-      line.startsWith('!') ||
-      line.startsWith('Displaying')
-    )
-      continue;
-
-    // Beer lines must have an ABV percentage
-    const abvMatch = line.match(/([\d.]+)%/);
-    if (!abvMatch || abvMatch.index === undefined) continue;
-
-    const abv = parseFloat(abvMatch[1]);
-    // Everything before the ABV is "Name [PrimaryStyle][ - Subcategory]"
-    const beforeAbv = line.slice(0, abvMatch.index).trim();
-    if (!beforeAbv) continue;
-
-    const { name, style } = splitNameAndStyle(beforeAbv);
-    if (!name) continue;
-
-    const seenKey = `${currentBar ?? '_'}:${name.toLowerCase()}`;
-    if (seen.has(seenKey)) continue;
-    seen.add(seenKey);
-
-    // Find the boundary of this beer's block (next beer line or section header),
-    // skipping over description block content so it can't trigger a false boundary.
-    let boundary = lines.length;
-    let inDesc = false;
-    for (let j = i + 1; j < lines.length; j++) {
-      const l = lines[j];
-      if (l.startsWith('[More Info')) { inDesc = true; continue; }
-      if (l.startsWith('[Less Info')) { inDesc = false; continue; }
-      if (inDesc) continue;
-      if (l.match(/^##/)) {
-        boundary = j;
-        break;
-      }
-      const nextAbv = l.match(/([\d.]+)%/);
-      if (nextAbv && l.includes(' - ')) {
-        boundary = j;
-        break;
+        beers.push({
+          untappdId,
+          name,
+          bar,
+          section,
+          style: textOf(item.match(/class="item-category">([\s\S]*?)<\/span>/)?.[1]),
+          abv: abvMatch ? parseFloat(abvMatch[1]) : null,
+          description: textOf(item.match(/_description">([\s\S]*?)<\/p>/)?.[1]),
+        });
       }
     }
-
-    let description: string | null = null;
-    const relevantChunk = lines.slice(i, boundary).join('\n');
-    const descMatch = relevantChunk.match(
-      /\[More Info[^\n]*\]\([^)]*\)\n\n([\s\S]*?)\n\n\[Less Info/,
-    );
-    if (descMatch) description = descMatch[1].trim();
-
-    beers.push({ name, bar: currentBar, style, abv, description });
   }
 
   return beers;
-}
-
-/**
- * Given the text before the ABV on a beer line (e.g. "Julius IPA - New England"),
- * split into the beer name and its style string.
- */
-function splitNameAndStyle(beforeAbv: string): { name: string; style: string | null } {
-  const dashIdx = beforeAbv.lastIndexOf(' - ');
-
-  const nameAndPrimary = dashIdx !== -1 ? beforeAbv.slice(0, dashIdx).trim() : beforeAbv;
-  const subcategory = dashIdx !== -1 ? beforeAbv.slice(dashIdx + 3).trim() : null;
-
-  for (const ps of PRIMARY_STYLES) {
-    if (nameAndPrimary === ps || nameAndPrimary.endsWith(` ${ps}`)) {
-      const name = nameAndPrimary === ps ? ps : nameAndPrimary.slice(0, -(ps.length + 1)).trim();
-      const style = subcategory ? `${ps} - ${subcategory}` : ps;
-      return { name, style };
-    }
-  }
-
-  // Primary style not recognised — use nameAndPrimary as name, subcategory as style
-  return { name: nameAndPrimary, style: subcategory };
-}
-
-// ---------------------------------------------------------------------------
-// Unsupported — JS-rendered pages that Jina cannot scrape
-// ---------------------------------------------------------------------------
-
-function parseTapListUnavailable(): TapBeer[] {
-  return [];
 }
 
 // ---------------------------------------------------------------------------
 // Location registry
 // ---------------------------------------------------------------------------
 
-const LOCATIONS: Record<string, { name: string; url: string; parse: (md: string) => TapBeer[] }> = {
-  charlton: {
-    name: 'Charlton',
-    url: 'https://treehousebrew.com/draft-list',
-    parse: parseTapListCharlton,
-  },
-  tewksbury: {
-    name: 'Tewksbury',
-    url: 'https://treehousebrew.com/draft-list-tewksbury',
-    parse: parseTapListUnavailable, // JS-rendered; Jina cannot fetch this content
-  },
+const LOCATIONS: Record<string, { name: string; url: string }> = {
+  charlton: { name: 'Charlton', url: 'https://treehousebrew.com/draft-list' },
+  tewksbury: { name: 'Tewksbury', url: 'https://treehousebrew.com/draft-list-tewksbury' },
   prudential: {
     name: 'Prudential Center (Boston)',
     url: 'https://treehousebrew.com/draft-list-prudential',
-    parse: parseTapListTableInline,
   },
-  sandwich: {
-    name: 'Sandwich (Cape Cod)',
-    url: 'https://treehousebrew.com/draft-list-sandwich',
-    parse: parseTapListTableInline,
-  },
-  deerfield: {
-    name: 'Deerfield',
-    url: 'https://treehousebrew.com/draft-list-deerfield',
-    parse: parseTapListDeerfield,
-  },
-  saratoga: {
-    name: 'Saratoga',
-    url: 'https://treehousebrew.com/draft-list-saratoga',
-    parse: parseTapListUnavailable, // JS-rendered; Jina cannot fetch this content
-  },
-  woodstock: {
-    name: 'Woodstock (CT)',
-    url: 'https://treehousebrew.com/draft-list-woodstock',
-    parse: parseTapListTableInline,
-  },
+  sandwich: { name: 'Sandwich (Cape Cod)', url: 'https://treehousebrew.com/draft-list-sandwich' },
+  deerfield: { name: 'Deerfield', url: 'https://treehousebrew.com/draft-list-deerfield' },
+  saratoga: { name: 'Saratoga', url: 'https://treehousebrew.com/draft-list-saratoga' },
+  woodstock: { name: 'Woodstock (CT)', url: 'https://treehousebrew.com/draft-list-woodstock' },
 };
 
 // ---------------------------------------------------------------------------
@@ -365,25 +161,13 @@ export async function GET({ url }) {
     return ApiResponse.error('Invalid location.', 400);
   }
 
-  const { name: locationName, url: draftListUrl, parse } = LOCATIONS[location];
+  const { name: locationName, url: draftListUrl } = LOCATIONS[location];
 
   try {
-    const jinaResponse = await fetch(`https://r.jina.ai/${draftListUrl}`, {
-      headers: { Accept: 'text/plain' },
-    });
-
-    if (!jinaResponse.ok) {
-      return ApiResponse.error(
-        `Could not fetch the draft list page (${jinaResponse.status}).`,
-        500,
-      );
-    }
-
-    const markdown = await jinaResponse.text();
-    const beers = parse(markdown);
+    const beers = parseMenu(await fetchMenuHtml(draftListUrl));
 
     if (beers.length === 0) {
-      console.error('[Tap list] Parser found no beers. First 500 chars:', markdown.slice(0, 500));
+      console.error('[Tap list] Parser found no beers for', location);
       return ApiResponse.error('No beers found in the draft list.', 500);
     }
 
