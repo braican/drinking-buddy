@@ -7,9 +7,11 @@
   type TapBeer = {
     name: string;
     bar: string | null;
+    section: string | null;
     style: string | null;
     abv: number | null;
     description: string | null;
+    had: { average: number | null; hads: number | null; last_had: Date | string | null } | null;
   };
 
   type MyBeer = {
@@ -39,6 +41,14 @@
   let chatInput = $state('');
   let chatLoading = $state(false);
   let chatContainer: HTMLDivElement | undefined = $state(undefined);
+  let abortController: AbortController | null = null;
+
+  const SUGGESTIONS = [
+    "What's new to me that I'd love?",
+    'Something hazy under 7%',
+    'Best stout on right now?',
+    'Something light and crisp',
+  ];
 
   $effect(() => {
     void location;
@@ -46,26 +56,39 @@
   });
 
   function resetChat() {
+    abortController?.abort();
+    abortController = null;
     chatMessages = [];
     chatInput = '';
     chatLoading = false;
   }
 
-  async function sendChatMessage() {
-    if (!chatInput.trim() || chatLoading) return;
+  function appendToReply(text: string) {
+    chatMessages = [
+      ...chatMessages.slice(0, -1),
+      { role: 'assistant', content: chatMessages.at(-1)!.content + text },
+    ];
+  }
 
-    const userMessage: ChatMessage = { role: 'user', content: chatInput.trim() };
+  async function sendChatMessage(text = chatInput) {
+    if (!text.trim() || chatLoading) return;
+
+    const userMessage: ChatMessage = { role: 'user', content: text.trim() };
     chatMessages = [...chatMessages, userMessage];
     chatInput = '';
     chatLoading = true;
 
     chatMessages = [...chatMessages, { role: 'assistant', content: '' }];
 
+    const controller = new AbortController();
+    abortController = controller;
+
     try {
       const response = await fetch('/api/tap-list/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: chatMessages.slice(0, -1), tapList, myBeers }),
+        signal: controller.signal,
       });
 
       if (!response.ok || !response.body) throw new Error('Bad response');
@@ -77,21 +100,28 @@
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        chatMessages = [
-          ...chatMessages.slice(0, -1),
-          { role: 'assistant', content: chatMessages.at(-1)!.content + chunk },
-        ];
-
+        appendToReply(decoder.decode(value, { stream: true }));
         if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
       }
+      appendToReply(decoder.decode());
     } catch {
+      // A reset (switching locations) aborts the request; the chat is already cleared.
+      if (controller.signal.aborted) return;
+      const partial = chatMessages.at(-1)?.content;
       chatMessages = [
         ...chatMessages.slice(0, -1),
-        { role: 'assistant', content: 'Sorry, something went wrong. Try again.' },
+        {
+          role: 'assistant',
+          content: partial
+            ? `${partial}\n\n_Sorry, the connection dropped. Try again._`
+            : 'Sorry, something went wrong. Try again.',
+        },
       ];
     } finally {
-      chatLoading = false;
+      if (abortController === controller) {
+        abortController = null;
+        chatLoading = false;
+      }
     }
   }
 
@@ -126,7 +156,7 @@
           <h2 class="drawer-title">Bartender</h2>
           {#if chatMessages.length < 1}
             <p class="empty-state fs-sm color-opacity-50 margin-top-sm">
-              Ask me anything about what's on tap...
+              Tell me what you're in the mood for.
             </p>
           {/if}
         </div>
@@ -138,6 +168,7 @@
       {#if chatMessages.length > 0}
         <div class="chat-messages" bind:this={chatContainer}>
           {#each chatMessages as message, i (i)}
+            {@const streaming = chatLoading && i === chatMessages.length - 1}
             <div class="chat-message chat-message--{message.role}">
               <p class="fs-xs fw-bold color-opacity-50 margin-bottom-xs">
                 {message.role === 'user' ? 'You' : ''}
@@ -146,7 +177,7 @@
                 <div class="chat-text markdown">
                   {#if message.content}
                     <!-- eslint-disable-next-line svelte/no-at-html-tags -- renderStreamingMarkdown sanitizes its output with DOMPurify -->
-                    {@html renderStreamingMarkdown(message.content)}
+                    {@html renderStreamingMarkdown(message.content, streaming)}
                   {:else}
                     <LoadingIcon />
                   {/if}
@@ -155,6 +186,17 @@
                 <p class="chat-text">{message.content}</p>
               {/if}
             </div>
+          {/each}
+        </div>
+      {:else}
+        <div class="suggestions">
+          {#each SUGGESTIONS as suggestion (suggestion)}
+            <button
+              type="button"
+              class="button button-translucent fs-sm"
+              onclick={() => sendChatMessage(suggestion)}>
+              {suggestion}
+            </button>
           {/each}
         </div>
       {/if}
@@ -283,6 +325,13 @@
       padding-left: var(--spacing-sm);
       padding-right: var(--spacing-sm);
     }
+  }
+
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-base) var(--spacing-sm);
   }
 
   .chat-form {

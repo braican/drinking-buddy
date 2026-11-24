@@ -65,6 +65,26 @@
 
   const fetchedAtLabel = $derived(fetchedAt ? timeAgo(fetchedAt) : null);
 
+  // Each tap beer carries your history for it, so the bartender doesn't have to
+  // match names against your history itself.
+  const chatTapList = $derived(
+    crossReferenced.map(({ name, bar, section, style, abv, description, myBeer }) => ({
+      name,
+      bar,
+      section,
+      style,
+      abv,
+      description,
+      had: myBeer
+        ? {
+            average: myBeer.average ?? null,
+            hads: myBeer.hads ?? null,
+            last_had: myBeer.last_had ?? null,
+          }
+        : null,
+    })),
+  );
+
   const chatBeers = $derived(
     data.beers.map(b => ({
       name: b.name,
@@ -295,7 +315,11 @@
   </button>
 {/if}
 
-<ChatDrawer bind:open={chatOpen} {tapList} myBeers={chatBeers} location={selectedLocation} />
+<ChatDrawer
+  bind:open={chatOpen}
+  tapList={chatTapList}
+  myBeers={chatBeers}
+  location={selectedLocation} />
 
 <style lang="scss">
   .locations {
