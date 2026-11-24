@@ -63,6 +63,13 @@
     chatLoading = false;
   }
 
+  // The server accepts at most 20 messages; long chats send only the most recent,
+  // starting on a user message.
+  function recentHistory(): ChatMessage[] {
+    const history = chatMessages.slice(0, -1).slice(-19);
+    return history[0]?.role === 'assistant' ? history.slice(1) : history;
+  }
+
   function appendToReply(text: string) {
     chatMessages = [
       ...chatMessages.slice(0, -1),
@@ -87,7 +94,7 @@
       const response = await fetch('/api/tap-list/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chatMessages.slice(0, -1), tapList, myBeers }),
+        body: JSON.stringify({ messages: recentHistory(), tapList, myBeers }),
         signal: controller.signal,
       });
 
@@ -213,6 +220,7 @@
           onkeydown={handleKeydown}
           placeholder="What should I drink?"
           disabled={chatLoading}
+          maxlength="1000"
           class="chat-input" />
         <button
           type="submit"
