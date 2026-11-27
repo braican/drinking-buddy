@@ -9,3 +9,4 @@ export * from './search';
 export * from './untappd';
 export * from './user';
 export * from './venue';
+export * from './vintage';
