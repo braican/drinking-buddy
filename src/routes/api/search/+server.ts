@@ -1,11 +1,11 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, url }): Promise<Response> {
   try {
     const query = url.searchParams.get('query');
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const results = await supabase.search(query);
 
     const breweryResults = [];

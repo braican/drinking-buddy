@@ -1,4 +1,4 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
@@ -9,7 +9,7 @@ export async function GET({ setHeaders, url }) {
     const year = url.searchParams.get('year');
     const page = url.searchParams.get('page') || '1';
 
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const { checkins, count } = await supabase.getFilteredCheckins(
       { style, state, year },
       parseInt(page),

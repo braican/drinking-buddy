@@ -1,3 +1,4 @@
+import { ANTHROPIC_API_KEY } from '$app/env/private';
 import Anthropic from '@anthropic-ai/sdk';
 import { ApiResponse } from '#utils';
 
@@ -113,12 +114,7 @@ export async function POST({ request }) {
     return invalid('Tap list or history too large.');
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return ApiResponse.error('Anthropic API key not configured.', 500);
-  }
-
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
   const stream = client.messages.stream({
     model: MODEL,

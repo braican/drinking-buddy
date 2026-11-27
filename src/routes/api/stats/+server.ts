@@ -1,4 +1,4 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 import type { Brewery } from '#types';
 
@@ -6,7 +6,7 @@ import type { Brewery } from '#types';
 export async function GET({ setHeaders, url }): Promise<Response> {
   try {
     const timeframe = url.searchParams.get('timeframe') || 'all';
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
 
     let bestBreweries: Brewery[] = [];
     let popularBreweries: Brewery[] = [];

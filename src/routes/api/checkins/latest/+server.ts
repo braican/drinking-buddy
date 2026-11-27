@@ -1,10 +1,10 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders }): Promise<Response> {
   try {
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const { checkins } = await supabase.getCheckins();
     setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ checkins });

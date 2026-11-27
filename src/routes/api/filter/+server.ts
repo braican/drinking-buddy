@@ -1,4 +1,4 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse, mapCheckins } from '#utils';
 import type { CheckinWithData } from '#types';
 
@@ -9,7 +9,7 @@ export async function GET({ setHeaders, url }) {
     const state = url.searchParams.get('state');
     const year = url.searchParams.get('year');
 
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     supabase.CHECKINS_PER_PAGE = 1000;
 
     const initialFetch = await supabase.getFilteredCheckins({ style, state, year });
