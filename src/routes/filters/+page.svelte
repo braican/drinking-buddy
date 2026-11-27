@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { states, styleOptGroups } from '#utils/constants.ts';
-  import { ApiRequest, createQueryString } from '#utils';
+  import { ApiRequest, createQueryString, pageTitle } from '#utils';
   import { Tabs, BeerList, CheckinList, BreweryPlacard } from '#components';
   import { FiltersIcon } from '#icons';
   import type { BeerWithData, Brewery, PaginatedCheckins, FilterParameters } from '#types';
@@ -79,6 +79,10 @@
     loading = false;
   };
 </script>
+
+<svelte:head>
+  <title>{pageTitle('Filters')}</title>
+</svelte:head>
 
 <header class="padding-bottom-lg">
   <h1>Filters</h1>

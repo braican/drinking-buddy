@@ -7,6 +7,9 @@
   "observability": {
     "enabled": true,
   },
+  // Required by `wrangler preview` (PR preview deploys). Empty means previews inherit the
+  // top-level settings.
+  "previews": {},
   // Secrets (SUPABASE_URL, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY, UNTAPPD_ACCESS_TOKEN,
   // APP_PASSWORD) are set with `wrangler secret put` or in the dashboard, not here.
 }

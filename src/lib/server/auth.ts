@@ -11,6 +11,8 @@ const SESSION_COOKIE = 'session';
 const SESSION_MAX_AGE = 60 * 60 * 24 * 365; // one year, refreshed on each visit
 
 function hmac(value: string): Buffer {
+  // Fail closed: with no password, every request errors rather than the app running open.
+  if (!APP_PASSWORD) throw new Error('APP_PASSWORD must be set.');
   return createHmac('sha256', APP_PASSWORD).update(value).digest();
 }
 

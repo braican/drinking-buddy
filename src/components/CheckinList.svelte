@@ -8,6 +8,7 @@
     breweryId?: number;
     beerId?: number;
     venueId?: number;
+    vintageSlug?: string;
     filterQuery?: FilterParameters;
   }
 
@@ -16,6 +17,7 @@
     breweryId = null,
     beerId = null,
     venueId = null,
+    vintageSlug = null,
     filterQuery = null,
   }: Props = $props();
 
@@ -41,6 +43,8 @@
       endpoint = `beer/${beerId}/checkins?page=${currentPage + 1}`;
     } else if (venueId) {
       endpoint = `venue/${venueId}/checkins?page=${currentPage + 1}`;
+    } else if (vintageSlug) {
+      endpoint = `vintages/${vintageSlug}/checkins?page=${currentPage + 1}`;
     } else if (filterQuery) {
       endpoint = `filter/checkins?page=${currentPage + 1}&${createQueryString(filterQuery)}`;
     }
@@ -64,7 +68,7 @@
   {/each}
 </ul>
 
-{#if (breweryId || beerId || venueId || filterQuery) && currentPage < totalPages}
+{#if (breweryId || beerId || venueId || vintageSlug || filterQuery) && currentPage < totalPages}
   <p class="margin-top-lg">
     <button class="button button-translucent button-full" onclick={loadMore}>
       {loadingButtonText}

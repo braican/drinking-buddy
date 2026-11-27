@@ -7,12 +7,16 @@ dotenv.config();
 const supabase = new SupabaseClient();
 supabase.CHECKINS_PER_PAGE = 1000;
 
-function incrementRecord<T extends Beer | Brewery | Venue>(record: T, id: number, checkin: CheckinWithData): T {
+function incrementRecord<T extends Beer | Brewery | Venue>(
+  record: T,
+  id: number,
+  checkin: CheckinWithData,
+): T {
   const rating = checkin.rating;
   const newHads = record ? record.hads + 1 : 1;
   const newRatedHads = record ? record.rated_hads + (rating ? 1 : 0) : rating ? 1 : 0;
-  const totalRating = record ? record.total_rating + rating : rating;
-  const average = totalRating / newRatedHads;
+  const totalRating = (record ? record.total_rating : 0) + (rating || 0);
+  const average = newRatedHads ? totalRating / newRatedHads : null;
 
   return {
     id,

@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
 import { matchMenuItems } from './menuMatcher.ts';
+import { detectVintageFamilies } from './vintages.ts';
+import type { VintageFamily, VintageBeerInput, VintageBreweryInput } from './vintages.ts';
 import type { MatchableBeer, MatchableBrewery } from './menuMatcher.ts';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 import type {
@@ -615,6 +617,60 @@ export default class SupabaseClient {
       breweryMatched: result.breweryMatched,
       alternatives: result.alternatives,
     }));
+  }
+
+  /**
+   * Gets every vintage family: beers from one brewery released by year and/or as
+   * variants of the same line. See `src/lib/vintages.ts` for how they're detected.
+   *
+   * @return VintageFamily[]
+   */
+  public async getVintageFamilies(): Promise<VintageFamily[]> {
+    const [beers, breweries] = await Promise.all([
+      this.fetchAllRows<VintageBeerInput>(
+        'beers',
+        'id,name,slug,brewery,hads,average,last_had,abv',
+      ),
+      this.fetchAllRows<VintageBreweryInput>('breweries', 'id,name,slug'),
+    ]);
+
+    return detectVintageFamilies(beers, breweries);
+  }
+
+  /**
+   * Gets a single vintage family by slug.
+   *
+   * @param {string} slug Family slug.
+   *
+   * @return VintageFamily|null
+   */
+  public async getVintageFamily(slug: string): Promise<VintageFamily | null> {
+    const families = await this.getVintageFamilies();
+    return families.find(f => f.slug === slug) ?? null;
+  }
+
+  /**
+   * Gets checkins for any of a set of beers.
+   *
+   * @param {number[]} ids Beer IDs.
+   *
+   * @return PaginatedCheckins
+   */
+  public async getBeersCheckins(ids: number[], page = 1): Promise<PaginatedCheckins> {
+    if (!ids.length) {
+      return { checkins: [], count: 0 };
+    }
+
+    const { data, error, count } = await this.checkinsWithDataQuery(page)
+      .in('beer', ids)
+      .returns<CheckinWithData[]>();
+
+    if (error) throw error;
+
+    return {
+      checkins: data,
+      count,
+    };
   }
 
   /**

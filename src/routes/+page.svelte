@@ -1,9 +1,14 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { Tabs, BreweryPlacard, CheckinPlacard } from '#components';
 
   let { data } = $props();
   let allTime = $state(false);
 </script>
+
+<svelte:head>
+  <title>{pageTitle()}</title>
+</svelte:head>
 
 <div>
   <Tabs views={['Breweries', 'Checkins']}>

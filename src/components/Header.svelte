@@ -11,6 +11,7 @@
     FiltersIcon,
     BuildingIcon,
     CameraIcon,
+    BottleIcon,
   } from '#icons';
   import { ApiRequest, formatDate } from '#utils';
   import { userStore as user } from '#stores';
@@ -30,6 +31,7 @@
     { href: '/', label: 'Home', icon: HomeIcon },
     { href: '/filters', label: 'Filters', icon: FiltersIcon },
     { href: '/scan-menu', label: 'Scan Menu', icon: CameraIcon },
+    { href: '/vintages', label: 'Vintages', icon: BottleIcon },
     { href: '/taproom/tree-house', label: 'Tree House Tap List', icon: BuildingIcon },
   ] as const;
 
@@ -142,8 +144,7 @@
         <CloseIcon />
       </button>
       <figure class="user-photo">
-        <a href={resolve('/')}
-          ><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
+        <a href={resolve('/')}><img src={$user.avatar} alt="Nick Braica's Untappd profile." /></a>
       </figure>
     </div>
 
@@ -154,7 +155,8 @@
           <a
             href={resolve(link.href)}
             class="menu-link"
-            class:menu-link--active={page.url.pathname === link.href}>
+            class:menu-link--active={page.url.pathname === link.href ||
+              (link.href !== '/' && page.url.pathname.startsWith(`${link.href}/`))}>
             <span class="menu-link-icon"><Icon /></span>
             {link.label}
           </a>
