@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { Tabs, BeerList, CheckinList } from '#components';
 
   let { data } = $props();
 </script>
+
+<svelte:head>
+  <title>{pageTitle(data.brewery.name)}</title>
+</svelte:head>
 
 <div data-id={data.brewery.id}>
   <header class="padding-bottom-lg">

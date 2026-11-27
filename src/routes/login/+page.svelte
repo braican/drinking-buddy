@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { page } from '$app/state';
 
   interface Props {
@@ -9,7 +10,7 @@
 </script>
 
 <svelte:head>
-  <title>Sign in</title>
+  <title>{pageTitle('Sign in')}</title>
 </svelte:head>
 
 <div class="login">

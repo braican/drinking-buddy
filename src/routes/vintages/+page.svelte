@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { resolve } from '$app/paths';
   import type { VintageFamily } from '#types';
 
@@ -26,6 +27,10 @@
     return first === last ? `${first}` : `${first}–${last}`;
   }
 </script>
+
+<svelte:head>
+  <title>{pageTitle('Vintages')}</title>
+</svelte:head>
 
 <div>
   <header class="padding-bottom-lg">

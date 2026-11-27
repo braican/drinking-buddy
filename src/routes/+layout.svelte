@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { page } from '$app/state';
   import { Header, Nav } from '#components';
   import { userStore as user, viewStore } from '#stores';
@@ -28,6 +29,10 @@
     viewStore.hideSearch();
   });
 </script>
+
+<svelte:head>
+  <title>{pageTitle()}</title>
+</svelte:head>
 
 <div class="app">
   {#if page.url.pathname !== '/login'}

@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { CheckinList } from '#components';
 
   let { data } = $props();
 </script>
+
+<svelte:head>
+  <title>{pageTitle(data.venue.name)}</title>
+</svelte:head>
 
 <div data-id={data.venue.id}>
   <header class="venue-header padding-bottom-lg">

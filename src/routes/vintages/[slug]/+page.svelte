@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { resolve } from '$app/paths';
   import { CheckinList } from '#components';
   import type { PaginatedCheckins, VintageEntry, VintageFamily } from '#types';
@@ -36,6 +37,10 @@
     return `${entry.name} · ${entry.hads} had${entry.hads === 1 ? '' : 's'}${rating}`;
   }
 </script>
+
+<svelte:head>
+  <title>{pageTitle(`${family.name} Vintages`, family.brewery.name)}</title>
+</svelte:head>
 
 <div>
   <header class="padding-bottom-lg">

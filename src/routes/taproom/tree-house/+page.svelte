@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageTitle } from '#utils';
   import { resolve } from '$app/paths';
   import { SvelteMap } from 'svelte/reactivity';
   import type { Beer } from '#types';
@@ -217,6 +218,10 @@
     expandedDescriptions[name] = !expandedDescriptions[name];
   }
 </script>
+
+<svelte:head>
+  <title>{pageTitle('Tree House Tap List')}</title>
+</svelte:head>
 
 <div>
   <header class="padding-bottom-lg">

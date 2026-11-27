@@ -5,7 +5,7 @@
   import { LoadingMessage, MenuBeerPlacard } from '#components';
   import { scanStore } from '#stores';
   import type { SearchResult, MenuMatchCandidate } from '#types';
-  import { debounce, formatUsd } from '#utils';
+  import { debounce, formatUsd, pageTitle } from '#utils';
 
   // The long edge Claude's vision tier renders at — resizing past this costs
   // upload time and image tokens without adding detail.
@@ -242,6 +242,10 @@
     closeBreweryResults();
   }
 </script>
+
+<svelte:head>
+  <title>{pageTitle('Scan Menu')}</title>
+</svelte:head>
 
 <!-- Near-misses, linked so a questionable call can be checked against the beer page. -->
 {#snippet candidates(list: MenuMatchCandidate[])}
