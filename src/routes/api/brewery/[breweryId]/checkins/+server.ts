@@ -1,4 +1,4 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
@@ -6,7 +6,7 @@ export async function GET({ setHeaders, params, url }) {
   try {
     const page = url.searchParams.get('page') || '1';
     const breweryId = params.breweryId;
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const { checkins, count } = await supabase.getBreweryCheckins(breweryId, parseInt(page));
 
     setHeaders({ 'cache-control': 'private, max-age=300' });

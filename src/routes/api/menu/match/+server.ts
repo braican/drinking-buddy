@@ -1,4 +1,4 @@
-import SupabaseClient from '#lib/SupabaseClient.ts';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 
 /**
@@ -28,7 +28,7 @@ export async function POST({ request }) {
       brewery: item.brewery || menuBrewery || null,
     }));
 
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const matches = await supabase.findMenuMatches(resolved);
 
     return ApiResponse.success({

@@ -17,3 +17,6 @@ node_modules
 /.svelte-kit
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# Cloudflare
+/.wrangler
+.dev.vars*

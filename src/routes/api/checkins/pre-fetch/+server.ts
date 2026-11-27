@@ -1,11 +1,12 @@
-import { UntappdClient, SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
+import { UntappdClient } from '#lib';
 import { ApiResponse } from '#utils';
 import { UNTAPPD_ACCESS_TOKEN } from '$app/env/private';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
   try {
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const untappd = new UntappdClient();
 
     untappd.setToken(UNTAPPD_ACCESS_TOKEN);

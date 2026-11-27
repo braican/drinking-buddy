@@ -1,3 +1,4 @@
+import { ANTHROPIC_API_KEY } from '$app/env/private';
 import Anthropic from '@anthropic-ai/sdk';
 import { ApiResponse, estimateCost } from '#utils';
 import type { MenuScanResult } from '#types';
@@ -77,11 +78,6 @@ Rules that keep repeat scans of the same menu consistent:
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return ApiResponse.error('Anthropic API key not configured.', 500);
-  }
-
   try {
     const formData = await request.formData();
     const imageFile = formData.get('image') as File;
@@ -106,7 +102,7 @@ export async function POST({ request }) {
 
     const base64Image = Buffer.from(arrayBuffer).toString('base64');
 
-    const client = new Anthropic({ apiKey });
+    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
     const response = await client.messages.create({
       model: MODEL,

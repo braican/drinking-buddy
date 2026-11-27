@@ -1,11 +1,11 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders, params }) {
   try {
     const breweryId = params.breweryId;
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const beers = await supabase.getBreweryBeers(breweryId);
 
     setHeaders({ 'cache-control': 'private, max-age=600' });

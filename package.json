@@ -10,7 +10,8 @@
     "check:watch": "svelte-kit sync && svelte-check --watch",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "generate-db-types": "supabase gen types typescript --project-id oxcsxckyszouiiykmiyc > types/database.d.ts"
+    "generate-db-types": "supabase gen types typescript --project-id oxcsxckyszouiiykmiyc > types/database.d.ts",
+    "deploy": "vite build && wrangler deploy"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,7 @@
   "main": "index.js",
   "devDependencies": {
     "@eslint/js": "^9.0.0",
-    "@sveltejs/adapter-auto": "^8.0.0",
+    "@sveltejs/adapter-cloudflare": "^9.0.1",
     "@sveltejs/kit": "^3.2.0",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
@@ -47,7 +48,8 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "typescript": "^6.0.2",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "wrangler": "^4.169.0"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",

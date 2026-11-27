@@ -1,4 +1,4 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { Mapper, ApiResponse, incrementRecord } from '#utils';
 import type { Beer, Brewery, UntappdCheckinData, Venue } from '#types';
 
@@ -6,7 +6,7 @@ import type { Beer, Brewery, UntappdCheckinData, Venue } from '#types';
 export async function POST({ request }) {
   try {
     const { newCheckins }: { newCheckins: UntappdCheckinData[] } = await request.json();
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
 
     if (!newCheckins || !newCheckins.length) {
       return ApiResponse.error('No checkins to add.');

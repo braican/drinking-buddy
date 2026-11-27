@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { styles } from '../utils/constants.ts'; // Do this so it's available in scripts.
 import { matchMenuItems } from './menuMatcher.ts';
@@ -20,17 +19,19 @@ import type {
   MenuMatch,
 } from '#types';
 
-dotenv.config();
-
 export default class SupabaseClient {
   supabase: SupabaseClientType;
 
   CHECKINS_PER_PAGE = 32;
 
-  constructor() {
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_KEY;
-
+  /**
+   * The app passes credentials in (see `getSupabase` in `src/lib/server/supabase.ts`).
+   * Scripts call it with no arguments and fall back to `process.env`, loaded by dotenv.
+   */
+  constructor(
+    url: string | undefined = process.env.SUPABASE_URL,
+    key: string | undefined = process.env.SUPABASE_SERVICE_KEY,
+  ) {
     if (!url || !key) {
       throw new Error('No Supabase URL or API key found.');
     }

@@ -1,10 +1,10 @@
-import { SupabaseClient } from '#lib';
+import { getSupabase } from '#lib/server/supabase.ts';
 import { ApiResponse, Mapper } from '#utils';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ setHeaders }) {
   try {
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const user = await supabase.getUser();
     setHeaders({ 'cache-control': 'private, max-age=300' });
     return ApiResponse.success({ user });
@@ -18,7 +18,7 @@ export async function GET({ setHeaders }) {
 export async function POST({ request }) {
   try {
     const { untappdUser } = await request.json();
-    const supabase = new SupabaseClient();
+    const supabase = getSupabase();
     const newDbUser = Mapper.user(untappdUser);
     await supabase.addUser(newDbUser);
     return ApiResponse.success({ user: newDbUser });
